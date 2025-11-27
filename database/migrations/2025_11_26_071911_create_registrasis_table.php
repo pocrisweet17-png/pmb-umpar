@@ -23,7 +23,7 @@ return new class extends Migration
     $table->string('noHP');
     $table->string('email')->unique();
     $table->string('asalSekolah');
-    $table->integer('jurusan');
+    $table->string('jurusan');
     $table->integer('tahunLulus');
     $table->date('tanggalDaftar');
     $table->enum('statusRegistrasi', ['pending', 'lunas', 'diterima', 'ditolak'])->default('pending');
