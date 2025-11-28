@@ -11,3 +11,10 @@ migrasi satu satu tabelnya:
 7. 2025_11_28_000007_create_users_table.php
 8. 2025_11_28_000008_create_jobs_table.php
 9. 2025_11_28_000009_create_cache_table.php
+
+// ini cara gantinya
+php artisan migrate --path=/database/migrations/nama_file_tabel
+
+atau pake ini kalau muncul nothing to migrate:
+
+php artisan migrate:refresh --path=/database/migrations/nama_file_tabel

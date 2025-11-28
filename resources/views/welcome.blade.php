@@ -42,7 +42,7 @@
         <a href="#testimoni" class="hover:text-sky-700">Testimoni</a>
         <a href="#berita" class="hover:text-sky-700">Berita</a>
         <a href="/login" class="px-4 py-2 rounded-md border border-slate-200">Masuk</a>
-        <a href="/register" class="px-4 py-2 rounded-md bg-[var(--primary)] text-white shadow hover:opacity-95">Daftar</a>
+        <a href="/register?program=ti" class="px-3 py-2 rounded-md bg-[var(--primary)] text-white">Daftar</a>
       </nav>
 
       <!-- Mobile menu button -->
@@ -69,7 +69,7 @@
           <a href="#berita" class="py-2">Berita</a>
           <div class="flex gap-2 mt-2">
             <a href="/login" class="flex-1 text-center py-2 rounded-md border">Masuk</a>
-            <a href="{{ route('registrasi.create') }}" class="flex-1 text-center py-2 rounded-md bg-[var(--primary)] text-white">Daftar</a>
+            <a href="/register?program=ti" class="px-3 py-2 rounded-md bg-[var(--primary)] text-white" class="flex-1 text-center py-2 rounded-md bg-[var(--primary)] text-white">Daftar</a>
           </div>
         </nav>
       </div>
@@ -303,7 +303,7 @@
         </div>
 
         <div class="mt-6 text-center">
-          <a href="/register" class="px-6 py-3 rounded-lg bg-[var(--primary)] text-white font-semibold">Mulai Daftar Sekarang</a>
+          <a href="/register?program=ti" class="px-3 py-2 rounded-md bg-[var(--primary)] text-white" class="px-6 py-3 rounded-lg bg-[var(--primary)] text-white font-semibold">Mulai Daftar Sekarang</a>
         </div>
       </div>
     </section>
@@ -421,7 +421,7 @@
       <div>
         <h6 class="font-semibold">Link Cepat</h6>
         <ul class="mt-3 text-sm space-y-2">
-          <li><a href="/register" class="opacity-90">Daftar</a></li>
+          <li><a href="/register?program=ti" class="px-3 py-2 rounded-md bg-[var(--primary)] text-white" class="opacity-90">Daftar</a></li>
           <li><a href="/programs" class="opacity-90">Program Studi</a></li>
           <li><a href="/news" class="opacity-90">Berita</a></li>
         </ul>
