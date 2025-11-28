@@ -9,7 +9,7 @@ class Registrasi extends Model
     protected $table = 'registrasis';
     protected $primaryKey = 'idRegistrasi';
     public $incrementing = true;
-    protected $keyType = 'Integer';
+    protected $keyType = 'integer';
 
     protected $fillable = [
     'nomorPendaftaran',
@@ -26,6 +26,9 @@ class Registrasi extends Model
     'tahunLulus',
     'tanggalDaftar',
     'statusRegistrasi',
+];
+protected $casts = [
+    'tanggalDaftar' => 'datetime'
 ];
 
     public function formulir()
