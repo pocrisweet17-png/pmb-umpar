@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Registrasi;
+use App\Models\RegistrasiFormModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -51,7 +52,7 @@ class RegistrasiController extends Controller
             // mempeding status registrasi secara default, kalau tidak diisi
             $validate['statusRegistrasi'] = 'pending';
 
-        Registrasi::create($validate);
+        RegistrasiFormModel::create($validate);
 
         return redirect()->back()->with('success', 'Registrasi berhasil disimpan.');
     }
