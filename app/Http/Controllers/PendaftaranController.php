@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use App\Models\Registrasi;
 use App\Models\FormulirPendaftaran;
 use App\Models\ProgramStudy;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 class PendaftaranController extends Controller
 {
@@ -34,94 +32,86 @@ class PendaftaranController extends Controller
         'programStudiPilihan' => 'required|exists:program_studis,kodeProdi',
     ]);
 
-    // GENERATE NOMOR PENDAFTARAN DULU — WAJIB ADA SEBELUM CREATE!
-    $nomor = 'UMPAR' . date('Y') . str_pad((Registrasi::count() + 1), 5, '0', STR_PAD_LEFT);
-    // Hasil: UMPAR202500001, UMPAR202500002, dst.
+    try {
+        $last = Registrasi::count();
+        $nomor = 'UMPAR' . date('Y') . str_pad($last + 1, 5, '0', STR_PAD_LEFT);
 
-    // SIMPAN KE REGISTRASI — PASTIKAN nomorPendaftaran DIKIRIM!
-    Registrasi::create([
-        'nomorPendaftaran' => $nomor,           // INI YANG LUPA BRO!
-        'namaLengkap'      => $request->namaLengkap,
-        'jenisKelamin'     => $request->jenisKelamin,
-        'tempatLahir'      => $request->tempatLahir,
-        'tanggalLahir'     => $request->tanggalLahir,
-        'agama'            => $request->agama,
-        'alamat'           => $request->alamat,
-        'noHP'             => $request->noHP,
-        'email'            => $request->email,
-        'asalSekolah'      => $request->asalSekolah,
-        'jurusan'          => $request->jurusan,
-        'tahunLulus'       => $request->tahunLulus,
-        'tanggalDaftar'    => now(),
-        'statusRegistrasi' => 'pending',
-    ]);
-
-    // SIMPAN KE FORMULIR PENDAFTARAN
-    $kodeAkses = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 10));
-
-    FormulirPendaftaran::create([
-        'nomorPendaftaran'    => $nomor,
-        'tanggalSubmit'       => now(),
-        'programStudiPilihan' => $request->programStudiPilihan,
-        'statusVerifikasi'    => 'menunggu',
-        'kodeAkses'           => $kodeAkses,
-    ]);
-
-    return redirect()->route('pendaftaran.sukses')
-        ->with([
-            'nomorPendaftaran' => $nomor,
-            'kodeAkses'        => $kodeAkses,
-            'success'          => 'Pendaftaran berhasil! Simpan baik-baik nomor pendaftaran dan kode akses Anda.'
-        ]);
-}
-
-    public function sukses()
-    {
-        return view('pendaftaran.sukses');
-    }
-
-    // Login calon maba menggunakan kode akses
-    public function loginForm()
-    {
-        return view('pendaftaran.login');
-    }
-
-    public function login(Request $request)
-    {
-        $request->validate([
-            'kodeAkses' => 'required|string|exists:formulir_pendaftarans,kodeAkses'
-        ]);
-
-        $formulir = FormulirPendaftaran::where('kodeAkses', $request->kodeAkses)
-                    ->with('registrasi')
-                    ->firstOrFail();
-
-        // Simpan ke session
-        session([
-            'calon_maba' => true,
-            'nomorPendaftaran' => $formulir->nomorPendaftaran,
-            'namaLengkap'      => $formulir->registrasi->namaLengkap,
-        ]);
-
-        return redirect()->route('dashboard.calon');
-    }
-
-    public function dashboardCalon()
-    {
-        if (!session('calon_maba')) {
-            return redirect()->route('pendaftaran.login');
+        // CEK APAKAH NOMOR SUDAH ADA (pencegahan duplikat)
+        if (Registrasi::where('nomorPendaftaran', $nomor)->exists()) {
+            throw new \Exception('Nomor pendaftaran sudah ada! Silakan coba lagi.');
         }
 
-        $formulir = FormulirPendaftaran::where('nomorPendaftaran', session('nomorPendaftaran'))
-                    ->with('registrasi', 'programStudi')
-                    ->firstOrFail();
+        // SIMPAN KE REGISTRASI
+        $registrasi = Registrasi::create([
+            'nomorPendaftaran' => $nomor,
+            'namaLengkap'      => $request->namaLengkap,
+            'jenisKelamin'     => $request->jenisKelamin,
+            'tempatLahir'      => $request->tempatLahir,
+            'tanggalLahir'     => $request->tanggalLahir,
+            'agama'            => $request->agama,
+            'alamat'           => $request->alamat,
+            'noHP'             => $request->noHP,
+            'email'            => $request->email,
+            'asalSekolah'      => $request->asalSekolah,
+            'jurusan'          => $request->jurusan,
+            'tahunLulus'       => $request->tahunLulus,
+            'tanggalDaftar'    => now(),
+            'statusRegistrasi' => 'pending',
+        ]);
 
-        return view('pendaftaran.dashboard', compact('formulir'));
+        // SIMPAN KE FORMULIR PENDAFTARAN
+        $kodeAkses = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 10));
+
+        $formulir = FormulirPendaftaran::create([
+            'nomorPendaftaran'    => $nomor,
+            'tanggalSubmit'       => now(),
+            'programStudiPilihan' => $request->programStudiPilihan,
+            'statusVerifikasi'    => 'menunggu',
+            'kodeAkses'           => $kodeAkses,
+        ]);
+
+        // Ambil data program studi
+        $programStudi = ProgramStudy::where('kodeProdi', $request->programStudiPilihan)->first();
+
+        // Redirect dengan parameter
+        return redirect()->route('pendaftaran.sukses', [
+            'nomor' => $nomor,
+            'kode' => $kodeAkses
+        ]);
+
+    } catch (\Exception $e) {
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['error' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
+    }
+}
+
+public function sukses(Request $request)
+{
+    $nomor = $request->query('nomor');
+    $kode = $request->query('kode');
+
+    if (!$nomor || !$kode) {
+        return redirect()->route('pendaftaran.index');
     }
 
-    public function logout()
-    {
-        session()->forget(['calon_maba', 'nomorPendaftaran', 'namaLengkap']);
-        return redirect()->route('pendaftaran.login');
+    // Ambil data dari database
+    $registrasi = Registrasi::where('nomorPendaftaran', $nomor)->first();
+    $formulir = FormulirPendaftaran::where('nomorPendaftaran', $nomor)->first();
+    $programStudi = ProgramStudy::where('kodeProdi', $formulir->programStudiPilihan)->first();
+
+    if (!$registrasi) {
+        return redirect()->route('pendaftaran.index');
     }
+
+    $data = [
+        'nomor_pendaftaran' => $registrasi->nomorPendaftaran,
+        'nama_lengkap' => $registrasi->namaLengkap,
+        'program_studi' => $programStudi ? $programStudi->namaProdi . ' (' . $programStudi->jenjang . ')' : $formulir->programStudiPilihan,
+        'kode_akses' => $formulir->kodeAkses,
+        'tanggal_daftar' => $registrasi->tanggalDaftar->format('d F Y')
+    ];
+
+    return view('pendaftaran.sukses', compact('data'));
+}
 }
