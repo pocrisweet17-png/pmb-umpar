@@ -92,7 +92,7 @@
             <h2 class="text-4xl md:text-5xl font-extrabold leading-tight">Kembangkan Potensimu di <span class="text-amber-200">[Nama Kampus]</span></h2>
             <p class="text-lg md:text-xl opacity-90">Kampus dengan akreditasi A dan jaringan industri terluas. Siapkan masa depan profesionalmu bersama pengajar berpengalaman dan fasilitas modern.</p>
             <div class="flex gap-4 mt-4">
-              <a href="{{ route('pendaftaran.form') }}" class="inline-flex items-center gap-3 px-6 py-3 rounded-lg bg-white text-[var(--primary)] font-semibold shadow-lg transform hover:-translate-y-1 transition"> 
+              <a href="{{ route('pendaftaran.form') }}" class="inline-flex items-center gap-3 px-6 py-3 rounded-lg bg-white text-[var(--primary)] font-semibold shadow-lg transform hover:-translate-y-1 transition">
                 <!-- CTA besar -->
                 DAFTAR SEKARANG
               </a>
