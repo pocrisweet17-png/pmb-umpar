@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dokumens', function (Blueprint $table) {
+    Schema::create('dokumens', function (Blueprint $table) {
     $table->id('idDokumen');
     $table->unsignedBigInteger('idRegistrasi');
     $table->string('jenisDokumen'); // ijazah, ktp, dll

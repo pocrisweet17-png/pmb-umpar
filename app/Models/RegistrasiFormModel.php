@@ -4,9 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Registrasi extends Model
+class RegistrasiFormModel extends Model
 {
-
     protected $table = 'registrasis';
     protected $primaryKey = 'idRegistrasi';
     public $incrementing = true;
