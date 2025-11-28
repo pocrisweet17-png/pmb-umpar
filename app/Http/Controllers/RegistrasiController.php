@@ -49,7 +49,7 @@ class RegistrasiController extends Controller
             // jika tidak diisi, set tanggalDaftar dengan tanggal hari ini
             $validate['tanggalDaftar'] = Carbon::now()->toDateString();
         }
-            // mempeding status registrasi secara default, kalau tidak diisi
+            // mempeding status registrasi secara default, kalau sudah nanti na bayar baru di update jadi diterima atau lunas dll
             $validate['statusRegistrasi'] = 'pending';
 
         RegistrasiFormModel::create($validate);
