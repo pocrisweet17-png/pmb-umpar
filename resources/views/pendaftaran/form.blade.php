@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-</head>
-<body>
+@extends('layouts.app')
 
 @section('title', 'Pendaftaran Mahasiswa Baru - PMB UMpar')
 
@@ -16,6 +10,15 @@
     </div>
 
     <div class="p-8">
+        @if($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                <ul class="list-disc pl-5">
+                @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+                </ul>
+            </div>
+        @endif
         <form action="{{ route('pendaftaran.store') }}" method="POST" class="space-y-8">
             @csrf
 
@@ -27,7 +30,7 @@
                 </h2>
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2" value="{{ old('namaLengkap') }}">Nama Lengkap <span class="text-red-500">*</span></label>
                         <input type="text" name="namaLengkap" required class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Nama anda">
                     </div>
                     <div>
@@ -165,5 +168,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-</body>
-</html>
+@endsection

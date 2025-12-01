@@ -20,8 +20,7 @@ class DokumentController extends Controller
             'dokumen.*' => 'required|file|max:5120', // 5MB
         ]);
 
-        // 1. Ambil idRegistrasi berdasarkan user yang login
-        $registrasi = Registrasi::where('user_id', Auth::id())->first();
+        $registrasi = Registrasi::where('idRegistrasi', Auth::id())->first();
 
         if (!$registrasi) {
             return back()->with('error', 'Registrasi tidak ditemukan. Silakan lakukan pendaftaran dulu.');
