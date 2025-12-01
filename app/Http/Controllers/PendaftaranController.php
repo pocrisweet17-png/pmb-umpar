@@ -58,6 +58,7 @@ class PendaftaranController extends Controller
             'tanggalDaftar'    => now(),
             'statusRegistrasi' => 'pending',
         ]);
+            // dd($registrasi);
 
         // SIMPAN KE FORMULIR PENDAFTARAN
         $kodeAkses = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 10));
@@ -92,7 +93,7 @@ public function sukses(Request $request)
     $kode = $request->query('kode');
 
     if (!$nomor || !$kode) {
-        return redirect()->route('pendaftaran.index');
+        return redirect()->route('pendaftaran.form');
     }
 
     // Ambil data dari database
@@ -101,7 +102,7 @@ public function sukses(Request $request)
     $programStudi = ProgramStudy::where('kodeProdi', $formulir->programStudiPilihan)->first();
 
     if (!$registrasi) {
-        return redirect()->route('pendaftaran.index');
+        return redirect()->route('pendaftaran.form');
     }
 
     $data = [

@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>PMB UMPAR</title>
+@extends('layouts.app')
 
-</head>
-<body>
+@section('title', 'Pendaftaran Mahasiswa Baru - PMB UMpar')
+
+@section('content')
 <div class="max-w-3xl mx-auto bg-white p-8 shadow-lg rounded-lg mt-10">
 
     <h2 class="text-2xl font-bold mb-6">Upload Dokumen Pendaftaran</h2>
@@ -60,5 +54,4 @@
         </button>
     </form>
 </div>
-</body>
-</html>
+@endsection

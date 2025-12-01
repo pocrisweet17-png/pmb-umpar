@@ -68,8 +68,8 @@
           <a href="#testimoni" class="py-2">Testimoni</a>
           <a href="#berita" class="py-2">Berita</a>
           <div class="flex gap-2 mt-2">
-            <a href="/login" class="flex-1 text-center py-2 rounded-md border">Masuk</a>
-            <a href="/register?program=ti" class="px-3 py-2 rounded-md bg-[var(--primary)] text-white" class="flex-1 text-center py-2 rounded-md bg-[var(--primary)] text-white">Daftar</a>
+            <a href="{{ route('login') }}" class="flex-1 text-center py-2 rounded-md border">Masuk</a>
+            <a href="{{ route('register.form') }}" class="px-3 py-2 rounded-md bg-[var(--primary)] text-white" class="flex-1 text-center py-2 rounded-md bg-[var(--primary)] text-white">Daftar</a>
           </div>
         </nav>
       </div>
