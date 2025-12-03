@@ -11,6 +11,10 @@ migrasi satu satu tabelnya:
 7. 2025_11_28_000007_create_users_table.php
 8. 2025_11_28_000008_create_jobs_table.php
 9. 2025_11_28_000009_create_cache_table.php
+10.2025_12_02_131120_create_ujians_table.php
+11.2025_12_02_093239_create_soals.php
+11.2025_12_02_093431_create_jawabans.php
+12.2025_12_02_114150_create_leaderboards.php
 
 // ini cara gantinya
 php artisan migrate --path=/database/migrations/nama_file_tabel

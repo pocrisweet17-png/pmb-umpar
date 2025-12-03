@@ -11,6 +11,7 @@ use App\Http\Controllers\AuthRegisterController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\MidtransCallbackController;
+use App\Http\Controllers\SoalController;
 
 Route::post('/midtrans/callback', [MidtransCallbackController::class, 'callback'])->name('midtrans.callback');
 Route::get('/', function () {
@@ -54,13 +55,25 @@ Route::post('/logout', [AuthLoginController::class, 'logout'])->name('logout');
 
 // Dashboard Admin
 Route::get('/admin/dashboard', function () {
-    return 'Ini Dashboard Admin';
+    return view('admin.dashboard');
 })->name('admin.dashboard')->middleware(['auth', AdminMiddleware::class]);
+
+// crud soal
+Route::middleware(['auth', AdminMiddleware::class])->group(function () {
+    Route::get('/admin/soal', [SoalController::class, 'index'])->name('admin.soal.index');
+    Route::get('/admin/soal/create', [SoalController::class, 'showSoal'])->name('admin.soal.create');
+    Route::post('/admin/soal/store', [SoalController::class, 'createSoal'])->name('admin.soal.store');
+});
 
 // Dashboard Mahasiswa
 Route::get('/mahasiswa/dashboard', function () {
-    return 'Ini Dashboard Mahasiswa';
+    return view('mahasiswa.dashboard');
 })->name('mahasiswa.dashboard')->middleware('auth');
+
+// Halaman ujian
+Route::get('/mahasiswa/ujian', function(){
+    return view('mahasiswa.ujian');
+});
 
 
 //testing payment
@@ -86,4 +99,6 @@ Route::get('/tagihan-test-midtrans', function () {
 
     return view('payment.tagihan', compact('reg', 'biaya'));
 });
+
+
 
