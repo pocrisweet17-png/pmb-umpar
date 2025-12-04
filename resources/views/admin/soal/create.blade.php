@@ -1,75 +1,84 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Tambah Soal</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+@extends('admin.layouts.app')
 
-    <div class="w-full max-w-xl bg-white shadow-md rounded-lg p-8">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">Buat Soal Baru</h1>
+@section('title', 'Tambah Soal')
+@section('page-title', 'Tambah Soal Baru')
 
-        <!-- Notifikasi sukses -->
-        @if (session('success'))
-            <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">
-                {{ session('success') }}
+@section('content')
+<div class="max-w-3xl">
+
+    <div class="bg-white shadow rounded-lg p-8">
+        <!-- Notifikasi error -->
+        @if ($errors->any())
+            <div class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded">
+                <p class="font-medium mb-2">Terdapat kesalahan:</p>
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         @endif
 
         <!-- Form tambah soal -->
-        <form action="{{ route('admin.soal.store') }}" method="POST" class="space-y-4">
+        <form action="{{ route('admin.soal.store') }}" method="POST" class="space-y-6">
             @csrf
 
             <div>
-                <label class="block text-gray-700 font-medium mb-1">Soal:</label>
-                <textarea name="textSoal" required
-                          class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                <label class="block text-gray-700 font-medium mb-2">Soal <span class="text-red-500">*</span></label>
+                <textarea name="textSoal" required rows="4"
+                          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">{{ old('textSoal') }}</textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Opsi A <span class="text-red-500">*</span></label>
+                    <input type="text" name="opsi_a" required value="{{ old('opsi_a') }}"
+                           class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Opsi B <span class="text-red-500">*</span></label>
+                    <input type="text" name="opsi_b" required value="{{ old('opsi_b') }}"
+                           class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Opsi C <span class="text-red-500">*</span></label>
+                    <input type="text" name="opsi_c" required value="{{ old('opsi_c') }}"
+                           class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Opsi D <span class="text-red-500">*</span></label>
+                    <input type="text" name="opsi_d" required value="{{ old('opsi_d') }}"
+                           class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
             </div>
 
             <div>
-                <label class="block text-gray-700 font-medium mb-1">Opsi A:</label>
-                <input type="text" name="opsi_a" required
-                       class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <div>
-                <label class="block text-gray-700 font-medium mb-1">Opsi B:</label>
-                <input type="text" name="opsi_b" required
-                       class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <div>
-                <label class="block text-gray-700 font-medium mb-1">Opsi C:</label>
-                <input type="text" name="opsi_c" required
-                       class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <div>
-                <label class="block text-gray-700 font-medium mb-1">Opsi D:</label>
-                <input type="text" name="opsi_d" required
-                       class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <div>
-                <label class="block text-gray-700 font-medium mb-1">Jawaban Benar:</label>
+                <label class="block text-gray-700 font-medium mb-2">Jawaban Benar <span class="text-red-500">*</span></label>
                 <select name="jawabanBenar" required
-                        class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="a">A</option>
-                    <option value="b">B</option>
-                    <option value="c">C</option>
-                    <option value="d">D</option>
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="">-- Pilih Jawaban --</option>
+                    <option value="a" {{ old('jawabanBenar') == 'a' ? 'selected' : '' }}>A</option>
+                    <option value="b" {{ old('jawabanBenar') == 'b' ? 'selected' : '' }}>B</option>
+                    <option value="c" {{ old('jawabanBenar') == 'c' ? 'selected' : '' }}>C</option>
+                    <option value="d" {{ old('jawabanBenar') == 'd' ? 'selected' : '' }}>D</option>
                 </select>
             </div>
 
-            <div>
+            <div class="flex gap-3 pt-4">
                 <button type="submit"
-                        class="w-full bg-blue-600 text-white font-semibold py-2 rounded shadow hover:bg-blue-700 transition">
+                        class="flex-1 bg-blue-600 text-white font-semibold py-3 rounded-lg shadow hover:bg-blue-700 transition">
                     Simpan Soal
                 </button>
+                <a href="{{ route('admin.soal.index') }}"
+                   class="flex-1 bg-gray-500 text-white font-semibold py-3 rounded-lg shadow hover:bg-gray-600 transition text-center">
+                    Batal
+                </a>
             </div>
         </form>
     </div>
 
-</body>
-</html>
+</div>
+@endsection
