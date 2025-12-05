@@ -12,47 +12,50 @@ class PaymentController extends Controller
 {
     public function __construct()
     {
-        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
-        Config::$isSanitized = true;
-        Config::$is3ds = true;
+        Config::$serverKey       = env('MIDTRANS_SERVER_KEY');
+        Config::$isProduction    = env('MIDTRANS_IS_PRODUCTION', false);
+        Config::$isSanitized     = true;
+        Config::$is3ds           = true;
     }
 
-    // Halaman tagihan calon mahasiswa
-    public function tagihan($idRegistrasi)
+   
+    public function tagihan()
     {
-        $reg = Registrasi::with('payments')->findOrFail($idRegistrasi);
-
-        $biaya = BiayaPmb::where('tahun', $reg->gelombang ?? date('Y'))
-                         ->where('kodeProdi', $reg->kodeProdi)
-                         ->firstOrFail();
+       $reg = request()->user();
+        // Mengambil biaya berdasarkan prodi yang dipilih
+        $biaya = BiayaPmb::where('tahun', date('Y'))
+            ->where('kodeProdi', $reg->prodi_1)
+            ->firstOrFail();
 
         return view('payment.tagihan', compact('reg', 'biaya'));
     }
 
-    public function bayar($idRegistrasi, $tipe)
+   
+    public function bayar($tipe)
     {
-        $reg = Registrasi::findOrFail($idRegistrasi);
-        $biaya = BiayaPmb::where('tahun', $reg->gelombang ?? date('Y'))
-                         ->where('kodeProdi', $reg->kodeProdi)
-                         ->firstOrFail();
+        $reg = request()->user();
 
-        $sudahLunas = Payment::where('id_registrasi', $idRegistrasi)
+        $biaya = BiayaPmb::where('tahun', date('Y'))
+            ->where('kodeProdi', $reg->prodi_1)
+            ->firstOrFail();
+
+        // Cek apakah sudah lunas
+        $sudahLunas = Payment::where('id_registrasi', $reg->idRegistrasi)
             ->where('tipe_pembayaran', $tipe)
             ->where('status_transaksi', 'settlement')
             ->exists();
 
         if ($sudahLunas) {
-            return redirect()->back()->with('error', 'Sudah lunas!');
+            return redirect()->back()->with('error', 'Pembayaran sudah lunas.');
         }
 
-        $jumlah = $tipe === 'pendaftaran' ? $biaya->biaya_pendaftaran : $biaya->ukt_semester_1;
-        $nama = $tipe === 'pendaftaran' ? 'Biaya Pendaftaran' : 'UKT Semester 1';
+        $jumlah = $biaya->biaya_pendaftaran;
+        $nama = "Biaya Pendaftaran";
 
-        $order_id = strtoupper($tipe[0]) . "-{$reg->idRegistrasi}-" . time();
+        $order_id = "PD-" . $reg->idRegistrasi . "-" . time();
 
         $payment = Payment::create([
-            'id_registrasi' => $idRegistrasi,
+            'id_registrasi' => $reg->idRegistrasi,
             'order_id' => $order_id,
             'jumlah' => $jumlah,
             'tipe_pembayaran' => $tipe,
@@ -68,43 +71,59 @@ class PaymentController extends Controller
             'id' => $tipe,
             'price' => $jumlah,
             'quantity' => 1,
-            'name' => $nama . " - " . $reg->nama_lengkap,
+            'name' => $nama . " - " . $reg->namaLengkap,
         ]];
 
         $customer_details = [
-            'first_name' => $reg->nama_lengkap,
+            'first_name' => $reg->namaLengkap,
             'email' => $reg->email,
-            'phone' => $reg->no_hp,
+            'phone' => $reg->noHp,
         ];
 
-        $snapToken = Snap::getSnapToken(compact('transaction_details', 'item_details', 'customer_details'));
+        $snapToken = Snap::getSnapToken([
+            'transaction_details' => $transaction_details,
+            'item_details'        => $item_details,
+            'customer_details'    => $customer_details
+        ]);
 
         return view('payment.checkout', compact('snapToken', 'payment', 'reg'));
     }
 
-    // Webhook Midtrans (WAJIB HTTPS di production)
+   //midrans webhok
     public function webhook()
     {
         $notif = new \Midtrans\Notification();
 
-        $payment = Payment::where('order_id', $notif->order_id)->firstOrFail();
+        $payment = Payment::where('order_id', $notif->order_id)->first();
+
+        if (!$payment) {
+            return response()->json(['error' => 'Payment not found'], 404);
+        }
 
         if ($notif->transaction_status == 'settlement') {
+
             $payment->update([
                 'status_transaksi' => 'settlement',
                 'id_transaksi' => $notif->transaction_id,
                 'payload' => json_encode($notif),
             ]);
-        } elseif (in_array($notif->transaction_status, ['expire', 'cancel', 'deny'])) {
+
+            // UPDATE STATUS USER JADI PAID
+            $payment->registrasi->update([
+                'is_paid' => 1
+            ]);
+        } 
+        else if (in_array($notif->transaction_status, ['expire', 'cancel', 'deny'])) {
             $payment->update(['status_transaksi' => 'expire']);
         }
 
         return response('OK', 200);
     }
 
-    // Redirect setelah bayar
-    public function selesai($idRegistrasi)
+    // redirec klo udah bayar
+    public function selesai()
     {
-        return redirect("/tagihan/{$idRegistrasi}")->with('success', 'Pembayaran sedang diproses!');
+        return redirect()->route('tagihan')
+            ->with('success', 'Pembayaran sedang diproses...');
     }
 }

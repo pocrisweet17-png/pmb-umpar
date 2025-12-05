@@ -14,6 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
         'prodi.selected' => \App\Http\Middleware\EnsureProdiSelected::class,
         ]);
+        $middleware->alias([
+        'check.payment' => \App\Http\Middleware\CheckPayment::class,
+    ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

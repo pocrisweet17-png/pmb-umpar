@@ -2,98 +2,136 @@
 
 @section('content')
 
-@if(!auth()->user()->is_prodi_selected)
-    <script>
-        window.onload = function() {
-            const modal = new bootstrap.Modal(document.getElementById('modalPilihProdi'));
-            modal.show();
-        }
-    </script>
-@endif
+@php
+    $user = request()->user();
+@endphp
 
 <div class="container mt-4">
-    <h3>Dashboard Mahasiswa</h3>
-    <p>Selamat datang, {{ auth()->user()->namaLengkap ?? auth()->user()->username }}</p>
-</div>
+    <h3 class="fw-bold">Dashboard Mahasiswa</h3>
+    <p>Selamat datang, {{ $user->namaLengkap ?? $user->username }}</p>
 
+    <div class="card p-4 shadow mt-4">
+        <h5 class="fw-bold mb-3">Progres Pendaftaran Mahasiswa Baru</h5>
 
+        <ul class="list-group">
 
-<div class="modal fade" id="modalPilihProdi" tabindex="-1" aria-labelledby="prodiLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+            {{-- 1. PILIH PRODI --}}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>1. Pilih Program Studi</span>
 
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="prodiLabel">Pilih Program Studi</h5>
-            </div>
+                @if(!$user->is_prodi_selected)
+                    <a href="#" class="btn btn-primary btn-sm" onclick="showModalProdi()">Pilih</a>
+                @else
+                    <span class="badge bg-success">Selesai</span>
+                @endif
+            </li>
 
-            <div class="modal-body">
-                <p class="mb-3">Silakan pilih <b>2 Program Studi</b> sesuai minat Anda.</p>
+            {{-- 2. BAYAR PENDAFTARAN --}}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>2. Bayar Pendaftaran</span>
 
-                {{-- FORM --}}
-                <form action="{{ route('prodi.store') }}" method="POST">
-                    @csrf
+                @if(!$user->is_prodi_selected)
+                    <button class="btn btn-secondary btn-sm" disabled>Menunggu Pilih Prodi</button>
+                @elseif(!$user->is_bayar_pendaftaran)
+                    <a href="{{ route('tagihan') }}" class="btn btn-primary btn-sm">Bayar</a>
+                @else
+                    <span class="badge bg-success">Lunas</span>
+                @endif
+            </li>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Fakultas</label>
-                            <select id="fakultas">
-                                <option value="">-- Pilih Fakultas --</option>
-                                @foreach ($fakultas as $f)
-                                    <option value="{{ $f->fakultas }}">{{ $f->fakultas }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+            {{-- 3. LENGKAPI DATA DIRI --}}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>3. Lengkapi Data</span>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Program Studi (Pilihan 1)</label>
-                            <select name="prodi1" id="prodi1" class="form-select" required>
-                                <option value="">-- Pilih Prodi --</option>
-                                {{-- Akan diisi via AJAX --}}
-                            </select>
-                        </div>
+                @if(!$user->is_bayar_pendaftaran)
+                    <button class="btn btn-secondary btn-sm" disabled>Menunggu Pembayaran</button>
+                @elseif(!$user->is_data_completed)
+                    <a href="{{ route('pendaftaran.form') }}" class="btn btn-primary btn-sm">Isi Data</a>
+                @else
+                    <span class="badge bg-success">Selesai</span>
+                @endif
+            </li>
 
-                        <div class="col-md-12 mb-3">
-                            <label class="form-label">Program Studi (Pilihan 2)</label>
-                            <select name="prodi2" id="prodi2" class="form-select" required>
-                                <option value="">-- Pilih Prodi --</option>
-                                {{-- Akan diisi via AJAX --}}
-                            </select>
-                        </div>
-                    </div>
+            {{-- 4. UPLOAD DOKUMEN --}}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>4. Upload Dokumen</span>
 
-                    <button class="btn btn-primary w-100">Simpan Pilihan Prodi</button>
-                </form>
-            </div>
+                @if(!$user->is_data_completed)
+                    <button class="btn btn-secondary btn-sm" disabled>Lengkapi Data Dulu</button>
+                @elseif(!$user->is_dokumen_uploaded)
+                    <a href="{{ route('dokumen.form') }}" class="btn btn-primary btn-sm">Upload</a>
+                @else
+                    <span class="badge bg-success">Selesai</span>
+                @endif
+            </li>
 
-        </div>
+            {{-- 5. TES --}}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>5. Tes Offline / Online</span>
+
+                @if(!$user->is_dokumen_uploaded)
+                    <button class="btn btn-secondary btn-sm" disabled>Menunggu Dokumen</button>
+                @elseif(!$user->is_tes_selesai)
+                    <a href="#" class="btn btn-warning btn-sm">Menunggu Jadwal</a>
+                @else
+                    <span class="badge bg-success">Lulus Tes</span>
+                @endif
+            </li>
+
+            {{-- 6. WAWANCARA --}}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>6. Wawancara</span>
+
+                @if(!$user->is_tes_selesai)
+                    <button class="btn btn-secondary btn-sm" disabled>Menunggu Tes</button>
+                @elseif(!$user->is_wawancara_selesai)
+                    <a href="#" class="btn btn-warning btn-sm">Menunggu Wawancara</a>
+                @else
+                    <span class="badge bg-success">Selesai</span>
+                @endif
+            </li>
+
+            {{-- 7. DAFTAR ULANG --}}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>7. Daftar Ulang</span>
+
+                @if(!$user->is_wawancara_selesai)
+                    <button class="btn btn-secondary btn-sm" disabled>Menunggu Wawancara</button>
+                @elseif(!$user->is_daftar_ulang)
+                    <a href="#" class="btn btn-primary btn-sm">Daftar Ulang</a>
+                @else
+                    <span class="badge bg-success">Selesai</span>
+                @endif
+            </li>
+
+            {{-- 8. BAYAR UKT --}}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>8. Pembayaran UKT Semester 1</span>
+
+                @if(!$user->is_daftar_ulang)
+                    <button class="btn btn-secondary btn-sm" disabled>Menunggu Daftar Ulang</button>
+                @elseif(!$user->is_ukt_paid)
+                    <a href="{{ route('bayar', 'ukt') }}" class="btn btn-primary btn-sm">Bayar UKT</a>
+                @else
+                    <span class="badge bg-success">Lunas</span>
+                @endif
+            </li>
+
+        </ul>
     </div>
 </div>
 
+{{-- Modal Pilih Prodi --}}
+@if(!$user->is_prodi_selected)
+    @include('mahasiswa.modal-pilih-prodi')
+@endif
 
 @endsection
 
-
 @section('scripts')
-<script src="{{ asset('js/pilih-prodi.js') }}" defer></script>
 <script>
-    document.getElementById('fakultas').addEventListener('change', function() {
-        let fakultas = this.value;
-
-        fetch(`/get-prodi/${fakultas}`)
-            .then(response => response.json())
-            .then(data => {
-                let prodi1 = document.getElementById('prodi1');
-                let prodi2 = document.getElementById('prodi2');
-
-                prodi1.innerHTML = '<option value="">-- Pilih Prodi --</option>';
-                prodi2.innerHTML = '<option value="">-- Pilih Prodi --</option>';
-
-                data.forEach(p => {
-                    let opt = `<option value="${p.kodeProdi}">${p.namaProdi} (${p.jenjang})</option>`;
-                    prodi1.innerHTML += opt;
-                    prodi2.innerHTML += opt;
-                });
-            });
-    });
+function showModalProdi() {
+    new bootstrap.Modal(document.getElementById('modalPilihProdi')).show();
+}
 </script>
 @endsection
