@@ -14,18 +14,20 @@ use App\Http\Controllers\MidtransCallbackController;
 use App\Http\Controllers\ProdiController;
 use App\Models\Registrasi;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\VerificationController;
 
 
 Route::post('/midtrans/callback', [MidtransCallbackController::class, 'callback'])->name('midtrans.callback');
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/pendaftaran', [PendaftaranController::class, 'index'])
+Route::middleware(['auth', 'check.payment'])->group(function () {
+    Route::get('/pendaftaran', [PendaftaranController::class, 'index'])
      ->name('pendaftaran.form');
-Route::post('/pendaftaran', [PendaftaranController::class, 'store'])
-     ->name('pendaftaran.store');
-Route::get('/pendaftaran/sukses', [PendaftaranController::class, 'sukses'])->name('pendaftaran.sukses');
+    Route::post('/pendaftaran', [PendaftaranController::class, 'store'])
+        ->name('pendaftaran.store');
+    Route::get('/pendaftaran/sukses', [PendaftaranController::class, 'sukses'])->name('pendaftaran.sukses');
+});
 
 Route::get('/api/prodi-by-fakultas/{fakultas}', function ($fakultas) {
     return ProgramStudy::where('fakultas', $fakultas)
@@ -35,11 +37,21 @@ Route::get('/api/prodi-by-fakultas/{fakultas}', function ($fakultas) {
 
 Route::get('/upload-dokumen', [DokumentController::class, 'index'])->name('dokumen.form');
 Route::post('/upload-dokumen', [DokumentController::class, 'store'])->name('dokumen.store');
-Route::get('/tagihan/{idRegistrasi}', [PaymentController::class, 'tagihan'])->name('tagihan');
-Route::get('/bayar/{idRegistrasi}/{tipe}', [PaymentController::class, 'bayar'])->name('bayar');
-Route::post('/midtrans/webhook', [PaymentController::class, 'webhook']);
-Route::get('/payment/finish/{idRegistrasi}', [PaymentController::class, 'selesai'])->name('payment.finish');
-use App\Http\Controllers\VerificationController;
+Route::middleware('auth')->group(function () {
+
+    // Tagihan & Pembayaran
+    Route::get('/tagihan', [PaymentController::class, 'tagihan'])
+        ->name('tagihan');
+
+    Route::get('/bayar/{tipe}', [PaymentController::class, 'bayar'])
+        ->name('bayar');
+
+    Route::post('/midtrans/webhook', [PaymentController::class, 'webhook']);
+
+    Route::get('/payment/finish', [PaymentController::class, 'selesai'])
+        ->name('payment.finish');
+});
+
 
 
 // register

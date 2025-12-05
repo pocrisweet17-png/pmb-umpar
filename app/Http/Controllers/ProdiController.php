@@ -34,8 +34,9 @@ class ProdiController extends Controller
             'is_prodi_selected' => true,
         ]);
 
-        return redirect()->route('mahasiswa.dashboard')
-            ->with('success', 'Pilihan program studi berhasil disimpan.');
+        // return redirect()->route('mahasiswa.dashboard')
+        //     ->with('success', 'Pilihan program studi berhasil disimpan.');
+            return redirect()->route('payment.show')->with('success', 'Silakan lakukan pembayaran.');
     }
 
     // dipakai untuk AJAX saat memilih fakultas
