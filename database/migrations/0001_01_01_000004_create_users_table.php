@@ -20,7 +20,15 @@ return new class extends Migration
             $table->string('nama_lengkap');
             $table->string('nik')->unique(); // No KTP / KK
             $table->string('no_whatsapp');
-            $table->enum('jenis_kelamin', ['laki-laki', 'perempuan']);
+
+            $table->boolean('is_verified')->default(false);
+            $table->string('nomor_registrasi')->unique()->nullable();
+            $table->string('verification_token')->nullable();
+
+            $table->string('pilihan_1')->nullable();
+            $table->string('pilihan_2')->nullable();
+            $table->boolean('is_prodi_selected')->default(false);
+
 
             // Role untuk akses admin / user
             $table->enum('role', ['admin', 'user'])->default('user');

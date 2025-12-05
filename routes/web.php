@@ -11,6 +11,8 @@ use App\Http\Controllers\AuthRegisterController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\MidtransCallbackController;
+use App\Http\Controllers\ProdiController;
+
 
 Route::post('/midtrans/callback', [MidtransCallbackController::class, 'callback'])->name('midtrans.callback');
 Route::get('/', function () {
@@ -38,12 +40,15 @@ Route::get('/tagihan/{idRegistrasi}', [PaymentController::class, 'tagihan'])->na
 Route::get('/bayar/{idRegistrasi}/{tipe}', [PaymentController::class, 'bayar'])->name('bayar');
 Route::post('/midtrans/webhook', [PaymentController::class, 'webhook']);
 Route::get('/payment/finish/{idRegistrasi}', [PaymentController::class, 'selesai'])->name('payment.finish');
+use App\Http\Controllers\VerificationController;
 
 
 // register
 Route::get('/register', [AuthRegisterController::class, 'showRegisterForm'])->name('register.form');
 Route::post('/register', [AuthRegisterController::class, 'register'])->name('register');
 
+// route verification (signed)
+Route::get('/email/verify', [VerificationController::class, 'verify'])->name('verification.verify');
 
 // Login
 Route::get('/login', [AuthLoginController::class, 'showLoginForm'])->name('login');
@@ -52,17 +57,21 @@ Route::post('/login', [AuthLoginController::class, 'login'])->name('login.proces
 // Logout
 Route::post('/logout', [AuthLoginController::class, 'logout'])->name('logout');
 
+Route::get('/api/prodi-by-fakultas', [ProdiController::class, 'getProdiByFakultas'])
+    ->name('api.prodi-by-fakultas');
+Route::post('/pilih-prodi', [ProdiController::class, 'store'])->middleware('auth')->name('prodi.store');
+
+
+// Dashboard Mahasiswa
+Route::get('/mahasiswa/dashboard', function () {
+    $fakultas = ProgramStudy::select('fakultas')->distinct()->get();
+    return view('mahasiswa.dashboard', compact('fakultas'));
+})->name('mahasiswa.dashboard')->middleware('auth');
+
 // Dashboard Admin
 Route::get('/admin/dashboard', function () {
     return 'Ini Dashboard Admin';
 })->name('admin.dashboard')->middleware(['auth', AdminMiddleware::class]);
-
-// Dashboard Mahasiswa
-Route::get('/mahasiswa/dashboard', function () {
-    return 'Ini Dashboard Mahasiswa';
-})->name('mahasiswa.dashboard')->middleware('auth');
-
-
 //testing payment
 
 Route::get('/tagihan-test-midtrans', function () {

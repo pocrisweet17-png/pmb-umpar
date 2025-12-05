@@ -20,8 +20,6 @@ return new class extends Migration
     $table->date('tanggalLahir');
     $table->string('agama');
     $table->string('alamat');
-    $table->string('noHP');
-    $table->string('email')->unique();
     $table->string('asalSekolah');
     $table->string('jurusan');
     $table->integer('tahunLulus');
