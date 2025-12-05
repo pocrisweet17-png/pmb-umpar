@@ -1,17 +1,18 @@
 <?php
 
-use App\Http\Controllers\RegistrasiController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PendaftaranController;
 use App\Models\ProgramStudy;
-use App\Http\Controllers\DokumentController;
-use Symfony\Component\HttpKernel\HttpCache\Store;
-use App\Http\Controllers\AuthLoginController;
-use App\Http\Controllers\AuthRegisterController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Middleware\AdminMiddleware;
-use App\Http\Controllers\MidtransCallbackController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SoalController;
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\DokumentController;
+use App\Http\Controllers\AuthLoginController;
+use App\Http\Controllers\RegistrasiController;
+use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\AuthRegisterController;
+use Symfony\Component\HttpKernel\HttpCache\Store;
+use App\Http\Controllers\MidtransCallbackController;
 
 Route::post('/midtrans/callback', [MidtransCallbackController::class, 'callback'])->name('midtrans.callback');
 Route::get('/', function () {
@@ -54,15 +55,17 @@ Route::post('/login', [AuthLoginController::class, 'login'])->name('login.proces
 Route::post('/logout', [AuthLoginController::class, 'logout'])->name('logout');
 
 // Dashboard Admin
-Route::get('/admin/dashboard', function () {
-    return view('admin.dashboard');
-})->name('admin.dashboard')->middleware(['auth', AdminMiddleware::class]);
-
-// crud soal
 Route::middleware(['auth', AdminMiddleware::class])->group(function () {
+
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+
+    // CRUD Soal
     Route::get('/admin/soal', [SoalController::class, 'index'])->name('admin.soal.index');
     Route::get('/admin/soal/create', [SoalController::class, 'showSoal'])->name('admin.soal.create');
     Route::post('/admin/soal/store', [SoalController::class, 'createSoal'])->name('admin.soal.store');
+    Route::get('/admin/soal/{id}/edit', [SoalController::class, 'edit'])->name('admin.soal.edit');
+    Route::put('/admin/soal/{id}', [SoalController::class, 'update'])->name('admin.soal.update');
+    Route::delete('/admin/soal/{id}', [SoalController::class, 'destroy'])->name('admin.soal.destroy');
 });
 
 // Dashboard Mahasiswa
