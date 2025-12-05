@@ -1,20 +1,26 @@
-@component('mail::message')
-# Halo {{ $user->nama_lengkap }}
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial;">
+    <h2>Halo {{ $nama }},</h2>
 
-Terima kasih telah mendaftar di Portal PMB UMPAR.
+    <p>Terima kasih sudah melakukan pendaftaran.</p>
 
-**Nomor Registrasi Anda:**  
-**{{ $user->nomor_registrasi }}**
+    <p>Nomor Registrasi Anda:</p>
 
-Klik tombol di bawah ini untuk memverifikasi email Anda. Setelah verifikasi, Anda bisa melakukan login.
+    <h3 style="color:#2b6cb0; font-weight:bold;">
+        {{ $nomor_registrasi }}
+    </h3>
 
-@component('mail::button', ['url' => $verificationUrl])
-Verifikasi Email & Aktifkan Akun
-@endcomponent
+    <p>Silakan klik tombol berikut untuk melakukan verifikasi email:</p>
 
-Jika tombol tidak bekerja, salin dan tempel link berikut di browser:  
-{{ $verificationUrl }}
+    <p>
+        <a href="{{ $verificationUrl }}"
+           style="background:#4CAF50; padding:12px 20px; color:white; text-decoration:none; border-radius:6px; font-size:16px;">
+           Verifikasi Email
+        </a>
+    </p>
 
-Terima kasih,<br>
-Tim PMB UMPAR
-@endcomponent
+    <p>Atau buka link berikut jika tombol tidak berfungsi:</p>
+    <p>{{ $verificationUrl }}</p>
+</body>
+</html>

@@ -12,15 +12,14 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\MidtransCallbackController;
 use App\Http\Controllers\ProdiController;
+use App\Models\Registrasi;
+use Illuminate\Support\Facades\Mail;
 
 
 Route::post('/midtrans/callback', [MidtransCallbackController::class, 'callback'])->name('midtrans.callback');
 Route::get('/', function () {
     return view('welcome');
 });
-
-
-
 
 Route::get('/pendaftaran', [PendaftaranController::class, 'index'])
      ->name('pendaftaran.form');
@@ -48,7 +47,22 @@ Route::get('/register', [AuthRegisterController::class, 'showRegisterForm'])->na
 Route::post('/register', [AuthRegisterController::class, 'register'])->name('register');
 
 // route verification (signed)
-Route::get('/email/verify', [VerificationController::class, 'verify'])->name('verification.verify');
+Route::get('/verify-email/{id}/{hash}', function ($id, $hash) {
+    $user = Registrasi::findOrFail($id);
+
+    // Validasi hash email
+    if ($hash !== sha1($user->email)) {
+        abort(403);
+    }
+
+    // Tandai sudah diverifikasi
+    $user->email_verified_at = now();
+    $user->save();
+
+    return view('emails.verified-success');
+})
+->name('verification.verify')
+->middleware('signed');
 
 // Login
 Route::get('/login', [AuthLoginController::class, 'showLoginForm'])->name('login');
@@ -72,27 +86,3 @@ Route::get('/mahasiswa/dashboard', function () {
 Route::get('/admin/dashboard', function () {
     return 'Ini Dashboard Admin';
 })->name('admin.dashboard')->middleware(['auth', AdminMiddleware::class]);
-//testing payment
-
-Route::get('/tagihan-test-midtrans', function () {
-
-    // Dummy Registrasi (object dengan method)
-    $reg = new class {
-        public $idRegistrasi = 999;
-        public $nama_lengkap = "Test User";
-        public $prodi_kode = "TI";
-        public $gelombang = "2025";
-
-        public function sudahBayarPendaftaran() { return false; }
-        public function sudahBayarUKT() { return false; }
-    };
-
-    // Dummy biaya
-    $biaya = (object) [
-        "biaya_pendaftaran" => 150000,
-        "ukt_semester_1"     => 2500000,
-    ];
-
-    return view('payment.tagihan', compact('reg', 'biaya'));
-});
-
