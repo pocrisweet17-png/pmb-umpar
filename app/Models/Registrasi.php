@@ -19,21 +19,18 @@ class Registrasi extends Model
         'tanggalLahir',
         'agama',
         'alamat',
-        'noHP',
-        'email',
         'asalSekolah',
         'jurusan',
         'tahunLulus',
         'tanggalDaftar',
         'statusRegistrasi',
-        'programStudiPilihan', // ini penting buat relasi prodi
+        'programStudiPilihan',
     ];
 
     protected $casts = [
         'tanggalDaftar' => 'datetime',
     ];
 
-    // === RELASI YANG SUDAH ADA ===
     public function formulir()
     {
         return $this->hasOne(FormulirPendaftaran::class, 'nomorPendaftaran', 'nomorPendaftaran');
@@ -44,7 +41,6 @@ class Registrasi extends Model
         return $this->belongsTo(ProgramStudy::class, 'programStudiPilihan', 'kodeProdi');
     }
 
-    // === RELASI PEMBAYARAN (BARU) ===
     public function payments()
     {
         return $this->hasMany(Payment::class, 'id_registrasi', 'idRegistrasi');
@@ -62,7 +58,6 @@ class Registrasi extends Model
                     ->where('tipe_pembayaran', 'ukt');
     }
 
-    // === CEK STATUS LUNAS ===
     public function sudahBayarPendaftaran()
     {
         return $this->payments()

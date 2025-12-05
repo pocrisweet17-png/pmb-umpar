@@ -1,8 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class AuthLoginController extends Controller
 {
@@ -14,34 +17,40 @@ class AuthLoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'login'    => 'required', // email atau username
+            'login'    => 'required',
             'password' => 'required',
         ]);
 
-        // Tentukan apakah login pakai email atau username
-        $loginField = filter_var($request->login, FILTER_VALIDATE_EMAIL)
-            ? 'email'
-            : 'username';
+        // Cari user berdasarkan username atau email
+        $user = User::where('email', $request->login)
+                    ->orWhere('username', $request->login)
+                    ->first();
 
-        $credentials = [
-            $loginField => $request->login,
-            'password'  => $request->password,
-        ];
-
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
-            // Redirect berdasarkan role
-            if (Auth::user()->role === 'admin') {
-                return redirect()->route('admin.dashboard');
-            }
-
-            return redirect()->route('mahasiswa.dashboard');
+        // Cek apakah user tidak ditemukan atau password salah
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            return back()->withErrors([
+                'login' => 'Email/Username atau password tidak cocok.',
+            ]);
         }
 
-        return back()->withErrors([
-            'login' => 'Email/Username atau password salah.',
-        ]);
+        // Cek apakah email sudah diverifikasi
+        if (! $user->is_verified) {
+            return back()->withErrors([
+                'login' => 'Email belum diverifikasi. Silahkan cek email Anda untuk verifikasi.',
+            ]);
+        }
+
+        // Login user (tanpa Auth::attempt)
+        Auth::login($user);
+
+        $request->session()->regenerate();
+
+        // Redirect berdasarkan role
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('mahasiswa.dashboard');
     }
 
     public function logout(Request $request)
@@ -53,4 +62,3 @@ class AuthLoginController extends Controller
         return redirect()->route('login');
     }
 }
-

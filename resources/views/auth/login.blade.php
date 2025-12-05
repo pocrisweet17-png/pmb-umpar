@@ -92,6 +92,25 @@
                                 <p class="text-gray-500 text-sm">Silakan masukkan kredensial Anda</p>
                             </div>
 
+                            @if(session('success'))
+                                <div class="text-green-600 mb-4">{{ session('success') }}</div>
+                            @endif
+
+                            @if(session('error'))
+                                <div class="text-red-600 mb-4">{{ session('error') }}</div>
+                            @endif
+
+                            @if($errors->any())
+                                <div class="text-red-600 mb-4">
+                                    <ul class="list-disc pl-5">
+                                        @foreach($errors->all() as $err)
+                                            <li>{{ $err }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+
                             <form action="{{ route('login.process') }}" method="POST" class="space-y-5" x-data="{ loading: false }" @submit="loading = true">
                                 @csrf
                                 <div>

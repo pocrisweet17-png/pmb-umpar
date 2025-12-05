@@ -35,8 +35,8 @@ class ProgramStudiSeeder extends Seeder
             
             ['FT01', 'Teknik Sipil', 'S1', 'Fakultas Teknik', 90, 70.00],
             ['FT02', 'Teknik Elektro', 'S1', 'Fakultas Teknik', 80, 68.00],
-            ['FT03', 'Teknik Informatika', 'S1', 'Fakultas', 120, 75.00],
-            ['FT04', 'Teknik Perencanaan Wilayah Kota', 'S1', 'Fakultas', 120, 75.00],
+            ['FT03', 'Teknik Informatika', 'S1', 'Fakultas Teknik', 120, 75.00],
+            ['FT04', 'Teknik Perencanaan Wilayah Kota', 'S1', 'Fakultas Teknik', 120, 75.00],
 
             ['FAI01', 'Pendidikan Agama Islam', 'S1', 'Fakultas Agama Islam', 100, 70.00],
             ['FAI02', 'Pendidikan Agama Islam', 'S2', 'Fakultas Agama Islam', 30, null],
