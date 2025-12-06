@@ -13,6 +13,7 @@ use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\AuthRegisterController;
 use Symfony\Component\HttpKernel\HttpCache\Store;
 use App\Http\Controllers\MidtransCallbackController;
+use App\Http\Controllers\UjianController;
 
 Route::post('/midtrans/callback', [MidtransCallbackController::class, 'callback'])->name('midtrans.callback');
 Route::get('/', function () {
@@ -74,8 +75,11 @@ Route::get('/mahasiswa/dashboard', function () {
 })->name('mahasiswa.dashboard')->middleware('auth');
 
 // Halaman ujian
-Route::get('/mahasiswa/ujian', function(){
-    return view('mahasiswa.ujian');
+// Route Ujian Mahasiswa
+Route::middleware(['auth'])->group(function () {
+    Route::get('/mahasiswa/ujian', [UjianController::class, 'index'])->name('mahasiswa.ujian');
+    Route::post('/mahasiswa/ujian/submit', [UjianController::class, 'submit'])->name('mahasiswa.ujian.submit');
+    Route::get('/mahasiswa/hasil/{idUjian}', [UjianController::class, 'hasil'])->name('mahasiswa.hasil');
 });
 
 
