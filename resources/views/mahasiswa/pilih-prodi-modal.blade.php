@@ -14,9 +14,10 @@
             <select id="selectFakultas"
                     class="w-full border rounded-lg p-2 mt-1 mb-3">
                 <option value="">-- Pilih Fakultas --</option>
-                @foreach($fakultas as $f)
+                {{-- ku commen dulu ka erorr, push i nanti nah--}}
+                {{-- @foreach($fakultas as $f)
                     <option value="{{ $f->fakultas }}">{{ $f->fakultas }}</option>
-                @endforeach
+                @endforeach --}}
             </select>
 
             <!-- Prodi 1 -->
