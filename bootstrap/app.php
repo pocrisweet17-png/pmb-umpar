@@ -12,10 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-        'prodi.selected' => \App\Http\Middleware\EnsureProdiSelected::class,
-        ]);
-        $middleware->alias([
-        'check.payment' => \App\Http\Middleware\CheckPayment::class,
+        'step.prodi'     => \App\Http\Middleware\StepPilihProdi::class,
+        'step.bayar'     => \App\Http\Middleware\StepBayarPendaftaran::class,
+        'step.data'      => \App\Http\Middleware\StepLengkapiData::class,
+        'step.dokumen'   => \App\Http\Middleware\StepUploadDokumen::class,
+        'step.tes'       => \App\Http\Middleware\StepTes::class,
+        'step.wawancara' => \App\Http\Middleware\StepWawancara::class,
+        'step.daftarulang'=> \App\Http\Middleware\StepDaftarUlang::class,
+        'step.ukt'       => \App\Http\Middleware\StepBayarUkt::class,
     ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
