@@ -15,6 +15,7 @@ use App\Http\Controllers\ProdiController;
 use App\Models\Registrasi;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\VerificationController;
+use App\Models\User;
 
 
 Route::post('/midtrans/callback', [MidtransCallbackController::class, 'callback'])->name('midtrans.callback');
@@ -59,22 +60,9 @@ Route::get('/register', [AuthRegisterController::class, 'showRegisterForm'])->na
 Route::post('/register', [AuthRegisterController::class, 'register'])->name('register');
 
 // route verification (signed)
-Route::get('/verify-email/{id}/{hash}', function ($id, $hash) {
-    $user = Registrasi::findOrFail($id);
-
-    // Validasi hash email
-    if ($hash !== sha1($user->email)) {
-        abort(403);
-    }
-
-    // Tandai sudah diverifikasi
-    $user->email_verified_at = now();
-    $user->save();
-
-    return view('emails.verified-success');
-})
-->name('verification.verify')
-->middleware('signed');
+Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+    ->name('verification.verify')
+    ->middleware('signed');
 
 // Login
 Route::get('/login', [AuthLoginController::class, 'showLoginForm'])->name('login');
