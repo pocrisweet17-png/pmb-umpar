@@ -147,11 +147,10 @@ Route::get('/qris', [PaymentController::class, 'qris'])->name('qris.view');
 Route::post('/qris/upload', [PaymentController::class, 'uploadBukti'])->name('qris.upload');
 
 
-
 // 3. Lengkapi Data
 Route::get('/lengkapi-data', [PendaftaranController::class, 'index'])
     ->middleware(['auth', 'check.prodi', 'check.bayar'])
-    ->name('pendaftaran.form');
+    ->name('pendaftaran.index');
 
 Route::post('/lengkapi-data', [PendaftaranController::class, 'store'])
     ->middleware(['auth', 'check.prodi', 'check.bayar'])

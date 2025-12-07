@@ -47,7 +47,7 @@ class AuthRegisterController extends Controller
         // 3. Create registrasi steps row
         Registrasi::create([
             'nomorPendaftaran'      => $regNo,
-            'namaLengkap' => $user->nama_lengkap,
+            'namaLengkap'           => $user->nama_lengkap,
             'tanggalDaftar'         => now(),
             'statusRegistrasi'      => 'pending',
 
