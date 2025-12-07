@@ -142,6 +142,10 @@ Route::get('/bayar-pendaftaran', [PaymentController::class, 'index'])
 Route::post('/bayar-pendaftaran', [PaymentController::class, 'store'])
     ->middleware(['auth', 'check.prodi'])
     ->name('bayar.store');
+// QRIS Manual
+Route::get('/qris', [PaymentController::class, 'qris'])->name('qris.view');
+Route::post('/qris/upload', [PaymentController::class, 'uploadBukti'])->name('qris.upload');
+
 
 
 // 3. Lengkapi Data

@@ -45,7 +45,7 @@ class ProdiController extends Controller
 
         // Lanjut ke pembayaran
         return redirect()
-            ->route('payment.show')
+            ->route('bayar.index')
             ->with('success', 'Pilihan program studi berhasil disimpan. Silakan lakukan pembayaran.');
     }
 

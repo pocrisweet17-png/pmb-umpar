@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Registrasi;
 use App\Models\Payment;
 use App\Models\BiayaPmb;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Midtrans\Config;
 use Midtrans\Snap;
 
@@ -18,25 +20,31 @@ class PaymentController extends Controller
         Config::$is3ds           = true;
     }
 
-    //  HALAMAN TAGIHAN
-    public function tagihan()
+    // ============================
+    // 1. HALAMAN TAGIHAN
+    // ============================
+    public function index()
     {
         $user = request()->user();
 
-        // Ambil registrasi user
         $reg = Registrasi::where('user_id', $user->id)->firstOrFail();
 
-        // Biaya berdasarkan pilihan prodi pertama
         $biaya = BiayaPmb::where('tahun', date('Y'))
             ->where('kodeProdi', $user->pilihan_1)
             ->firstOrFail();
 
-        return view('payment.tagihan', compact('reg', 'biaya', 'user'));
+        return view('mahasiswa.bayar-pendaftaran', [
+            'user' => $user,
+            'reg' => $reg,
+            'biaya_pendaftaran' => $biaya->biaya_pendaftaran
+        ]);
     }
 
-    // BAYAR TAGIHAN
 
-    public function bayar($tipe)
+    // ======================================
+    // 2. BAYAR VIA MIDTRANS (AUTO)
+    // ======================================
+    public function store()
     {
         $user = request()->user();
         $reg = Registrasi::where('user_id', $user->id)->firstOrFail();
@@ -44,68 +52,115 @@ class PaymentController extends Controller
         $biaya = BiayaPmb::where('tahun', date('Y'))
             ->where('kodeProdi', $user->pilihan_1)
             ->firstOrFail();
-
-        // Cek apakah sudah bayar
-        $sudahLunas = Payment::where('id_registrasi', $reg->id)
-            ->where('tipe_pembayaran', $tipe)
-            ->where('status_transaksi', 'settlement')
-            ->exists();
-
-        if ($sudahLunas) {
-            return redirect()->back()->with('error', 'Pembayaran sudah lunas.');
-        }
 
         $jumlah = $biaya->biaya_pendaftaran;
-        $nama = "Biaya Pendaftaran";
 
-        $order_id = "PD-" . $reg->id . "-" . time();
+        // Invoice Number
+        $invoice = "INV-PD-" . $reg->id . "-" . time();
 
-        // Catat transaksi
         $payment = Payment::create([
-            'id_registrasi' => $reg->id,
-            'order_id' => $order_id,
-            'jumlah' => $jumlah,
-            'tipe_pembayaran' => $tipe,
-            'status_transaksi' => 'pending',
+            'id_registrasi'   => $reg->id,
+            'order_id'        => $invoice,
+            'jumlah'          => $jumlah,
+            'tipe_pembayaran' => 'pendaftaran',
+            'status_transaksi'=> 'pending'
         ]);
 
-        // Midtrans payload
-        $transaction_details = [
-            'order_id' => $order_id,
-            'gross_amount' => $jumlah,
+        // MIDTRANS SNAP
+        $payload = [
+            'transaction_details' => [
+                'order_id' => $invoice,
+                'gross_amount' => $jumlah,
+            ],
+            'item_details' => [
+                [
+                    'id' => "PD",
+                    'price' => $jumlah,
+                    'quantity' => 1,
+                    'name' => "Biaya Pendaftaran - " . $user->nama_lengkap,
+                ]
+            ],
+            'customer_details' => [
+                'first_name' => $user->nama_lengkap,
+                'email'      => $user->email,
+                'phone'      => $user->no_whatsapp,
+            ],
         ];
 
-        $item_details = [[
-            'id' => $tipe,
-            'price' => $jumlah,
-            'quantity' => 1,
-            'name' => $nama . " - " . $user->nama_lengkap,
-        ]];
+        $snapToken = Snap::getSnapToken($payload);
 
-        $customer_details = [
-            'first_name' => $user->nama_lengkap,
-            'email'      => $user->email,
-            'phone'      => $user->no_whatsapp,
-        ];
-
-        $snapToken = Snap::getSnapToken([
-            'transaction_details' => $transaction_details,
-            'item_details'        => $item_details,
-            'customer_details'    => $customer_details
+        return view('payment.checkout', [
+            'snapToken' => $snapToken,
+            'payment'   => $payment,
+            'user'      => $user
         ]);
-
-        return view('payment.checkout', compact('snapToken', 'payment', 'user', 'reg'));
     }
 
-    // WEBHOOK UNTUK MIDTRANS
+
+    // ======================================
+    // 3. QRIS MANUAL (UPLOAD BUKTI)
+    // ======================================
+    public function qris()
+    {
+        $user = request()->user();
+        
+        $reg = Registrasi::where('user_id', $user->id)->firstOrFail();
+
+        $biaya = BiayaPmb::where('tahun', date('Y'))
+            ->where('kodeProdi', $user->pilihan_1)
+            ->firstOrFail();
+
+        return view('payment.qris', [
+            'user' => $user,
+            'reg' => $reg,
+            'jumlah' => $biaya->biaya_pendaftaran
+        ]);
+    }
+
+
+    public function uploadBukti(Request $request)
+    {
+        $request->validate([
+            'bukti_bayar' => 'required|image|mimes:jpg,png,jpeg|max:2048'
+        ]);
+
+        $user = request()->user();
+        $reg = Registrasi::where('user_id', $user->id)->firstOrFail();
+
+        $filename = "bukti-{$reg->id}-" . time() . "." . $request->file('bukti_bayar')->extension();
+
+        $path = $request->file('bukti_bayar')->storeAs('bukti-pembayaran', $filename, 'public');
+
+        Payment::create([
+            'id_registrasi'   => $reg->id,
+            'order_id'        => "INV-MAN-" . time(),
+            'jumlah'          => $request->jumlah,
+            'tipe_pembayaran' => 'pendaftaran',
+            'status_transaksi'=> 'manual-upload',
+            'bukti_manual'    => $path,
+        ]);
+
+        // Auto Update Step
+        $reg->update([
+            'is_bayar_pendaftaran' => true,
+        ]);
+
+        return redirect()
+            ->route('mahasiswa.dashboard')
+            ->with('success', 'Bukti pembayaran berhasil diupload! Pembayaran sedang diverifikasi.');
+    }
+
+
+    // ======================================
+    // 4. WEBHOOK MIDTRANS
+    // ======================================
     public function webhook()
     {
         $notif = new \Midtrans\Notification();
-
         $payment = Payment::where('order_id', $notif->order_id)->first();
 
         if (! $payment) {
-            return response()->json(['error' => 'Payment not found'], 404);
+            return response()->json(['error' => 'Not Found'], 404);
         }
 
         if ($notif->transaction_status == 'settlement') {
@@ -116,12 +171,12 @@ class PaymentController extends Controller
                 'payload'          => json_encode($notif),
             ]);
 
-            // UPDATE REGISTRASI STEP 2 → Sudah Bayar
+            // Auto update registrasi step
             $payment->registrasi->update([
                 'is_bayar_pendaftaran' => true,
             ]);
 
-        } elseif (in_array($notif->transaction_status, ['expire', 'cancel', 'deny'])) {
+        } else if (in_array($notif->transaction_status, ['deny', 'expire', 'cancel'])) {
 
             $payment->update([
                 'status_transaksi' => 'expire',
@@ -129,13 +184,5 @@ class PaymentController extends Controller
         }
 
         return response('OK', 200);
-    }
-
-
-    //  REDIRECT SETELAH BAYAR
-    public function selesai()
-    {
-        return redirect()->route('tagihan')
-            ->with('success', 'Pembayaran sedang diproses...');
     }
 }
