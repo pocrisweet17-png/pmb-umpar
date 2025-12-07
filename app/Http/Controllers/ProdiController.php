@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProgramStudy;
-use App\Models\Registrasi;
 use Illuminate\Http\Request;
 
 class ProdiController extends Controller

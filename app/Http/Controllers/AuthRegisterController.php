@@ -46,15 +46,20 @@ class AuthRegisterController extends Controller
 
         // 3. Create registrasi steps row
         Registrasi::create([
-            'user_id'               => $user->id,
-            'is_prodi_selected'     => false,
-            'is_bayar_pendaftaran'  => false,
-            'is_data_completed'     => false,
-            'is_dokumen_uploaded'   => false,
-            'is_tes_selesai'        => false,
-            'is_wawancara_selesai'  => false,
-            'is_daftar_ulang'       => false,
-            'is_ukt_paid'           => false,
+            'nomorPendaftaran'      => $regNo,
+            'namaLengkap' => $user->nama_lengkap,
+            'tanggalDaftar'         => now(),
+            'statusRegistrasi'      => 'pending',
+
+            // Step awal
+            'is_prodi_selected'     => 0,
+            'is_bayar_pendaftaran'  => 0,
+            'is_data_completed'     => 0,
+            'is_dokumen_uploaded'   => 0,   
+            'is_tes_selesai'        => 0,
+            'is_wawancara_selesai'  => 0,
+            'is_daftar_ulang'       => 0,
+            'is_ukt_paid'           => 0,
         ]);
 
         // 4. Create signed URL
