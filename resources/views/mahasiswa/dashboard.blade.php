@@ -123,7 +123,7 @@
 
 {{-- Modal Pilih Prodi --}}
 @if(!$user->is_prodi_selected)
-    @include('mahasiswa.modal-pilih-prodi')
+    @include('mahasiswa.pilih-prodi-modal')
 @endif
 
 @endsection
