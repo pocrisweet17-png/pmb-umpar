@@ -2,6 +2,8 @@
 namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
 
 class StepBayarPendaftaran
 {
@@ -9,7 +11,7 @@ class StepBayarPendaftaran
     {
         $user = $request->user();
         
-        \Log::info('StepBayarPendaftaran check', [
+        Log::info('StepBayarPendaftaran check', [
             'user_id' => $user->id,
             'is_prodi_selected' => $user->is_prodi_selected
         ]);
