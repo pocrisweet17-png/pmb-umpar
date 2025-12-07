@@ -1,23 +1,24 @@
 <?php
-
 namespace App\Http\Middleware;
-
 use Closure;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class StepBayarPendaftaran
 {
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next)
     {
-        $user = Auth::user();
-
-        // Kalau user belum bayar
-        // asumsikan relasi registrasi ada: $user->registrasi
-        $reg = $user->registrasi ?? null;
-        if (! $reg || ! $reg->is_prodi_selected) {
-            return redirect()->route('mahasiswa.dashboard')->with('error', 'Silakan lakukan pembayaran pendaftaran terlebih dahulu.');
+        $user = $request->user();
+        
+        \Log::info('StepBayarPendaftaran check', [
+            'user_id' => $user->id,
+            'is_prodi_selected' => $user->is_prodi_selected
+        ]);
+        
+        if (!$user->is_prodi_selected) {
+            return redirect()->route('mahasiswa.dashboard')
+                ->with('error', 'Silakan pilih program studi terlebih dahulu.');
         }
-
+        
         return $next($request);
     }
 }

@@ -26,6 +26,7 @@ class MahasiswaDashboardController extends Controller
                 'completed' => (bool) $user->is_bayar_pendaftaran,
                 'route' => 'bayar.index',
                 'enabled' => (bool) $user->is_prodi_selected,
+                'requires_modal' => false,
             ],
             [
                 'name' => 'Lengkapi Data',
@@ -80,7 +81,8 @@ class MahasiswaDashboardController extends Controller
         $nextStep = collect($steps)->first(function($step) {
             return !$step['completed'] && $step['enabled'];
         });
-        // Data fakultas untuk modal
+
+        // Data fakultas untuk modal pilih prodi
         $fakultas = ProgramStudy::select('fakultas')
             ->distinct()
             ->orderBy('fakultas')

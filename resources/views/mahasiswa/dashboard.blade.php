@@ -115,7 +115,8 @@
                                         <i class="bi bi-arrow-right-circle"></i> Pilih Prodi
                                     </button>
                                 @else
-                                    <a href="{{ route($step['route']) }}" class="btn btn-primary btn-sm">
+                                    <a href="{{ route($step['route']) }}" class="btn btn-primary btn-sm" 
+                                       onclick="console.log('Navigating to: {{ route($step['route']) }}')">
                                         <i class="bi bi-arrow-right-circle"></i> Lanjutkan
                                     </a>
                                 @endif
@@ -144,13 +145,77 @@
     </div>
     @endif
 
+    {{-- DEBUG PANEL (only in development) --}}
+    @if(config('app.debug'))
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <div class="card border-warning">
+                <div class="card-header bg-warning">
+                    <h6 class="mb-0">🔧 DEBUG PANEL</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>User Status:</h6>
+                            <ul class="list-unstyled">
+                                <li>User ID: <code>{{ $user->id }}</code></li>
+                                <li>Prodi Selected: 
+                                    <span class="badge bg-{{ $user->is_prodi_selected ? 'success' : 'danger' }}">
+                                        {{ $user->is_prodi_selected ? 'YES' : 'NO' }}
+                                    </span>
+                                </li>
+                                <li>Bayar Pendaftaran: 
+                                    <span class="badge bg-{{ $user->is_bayar_pendaftaran ? 'success' : 'danger' }}">
+                                        {{ $user->is_bayar_pendaftaran ? 'YES' : 'NO' }}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Direct Access Test:</h6>
+                            <a href="{{ route('bayar.index') }}" class="btn btn-sm btn-danger mb-2 w-100">
+                                Test Bayar Route
+                            </a>
+                            <a href="{{ route('prodi.view') }}" class="btn btn-sm btn-info w-100">
+                                Test Prodi Route
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+    {{-- TEST BUTTON (sementara) --}}
+<div class="alert alert-warning mt-3">
+    <h6>🔧 TEST NAVIGATION:</h6>
+    <a href="{{ route('bayar.index') }}" class="btn btn-danger btn-sm">
+        Direct Link ke Bayar Pendaftaran
+    </a>
 </div>
 
-
-
+</div>
 
 @push('scripts')
+<script>
+// Debug: Log all step routes
+console.group('📍 Route Debug Info');
+@foreach($steps as $index => $step)
+console.log('Step {{ $index + 1 }}: {{ $step['name'] }}', {
+    route: '{{ route($step['route']) }}',
+    enabled: {{ $step['enabled'] ? 'true' : 'false' }},
+    completed: {{ $step['completed'] ? 'true' : 'false' }}
+});
+@endforeach
+console.groupEnd();
 
+// Debug: User status
+console.log('👤 User Status:', {
+    id: {{ $user->id }},
+    prodi_selected: {{ $user->is_prodi_selected ? 'true' : 'false' }},
+    bayar_pendaftaran: {{ $user->is_bayar_pendaftaran ? 'true' : 'false' }}
+});
+</script>
 @endpush
 
 <style>
@@ -170,23 +235,8 @@
     .badge {
         font-weight: 600;
     }
-    
-    .fixed {
-        position: fixed !important;
-    }
-    
-    .inset-0 {
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-    }
-    
-    .hidden {
-        display: none !important;
-    }
 </style>
-
 @endsection
-@include('partials.modals.modal-prodi')
 
+{{-- Include Modal Prodi --}}
+@include('partials.modals.modal-prodi')
