@@ -220,6 +220,7 @@
     </div>
 </div>
 
+
 @push('scripts')
 <script>
 // Fungsi untuk membuka modal
@@ -382,4 +383,5 @@ document.addEventListener("DOMContentLoaded", function () {
         display: none !important;
     }
 </style>
+
 @endsection

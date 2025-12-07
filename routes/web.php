@@ -126,7 +126,7 @@ Route::get('/admin/dashboard', function () {
 
 // 1. Pilih Prodi
 Route::get('/pilih-prodi', [ProdiController::class, 'show'])
-    ->middleware('auth')
+    ->middleware('auth',)
     ->name('prodi.view');
 
 Route::post('/pilih-prodi', [ProdiController::class, 'store'])
@@ -136,11 +136,11 @@ Route::post('/pilih-prodi', [ProdiController::class, 'store'])
 
 // 2. Bayar Pendaftaran
 Route::get('/bayar-pendaftaran', [PaymentController::class, 'index'])
-    ->middleware(['auth', 'check.prodi'])
+    ->middleware(['auth', 'step.prodi'])
     ->name('bayar.index');
 
 Route::post('/bayar-pendaftaran', [PaymentController::class, 'store'])
-    ->middleware(['auth', 'check.prodi'])
+    ->middleware(['auth', 'step.prodi'])
     ->name('bayar.store');
 // QRIS Manual
 Route::get('/qris', [PaymentController::class, 'qris'])->name('qris.view');
@@ -151,7 +151,7 @@ Route::post('/qris/upload', [PaymentController::class, 'uploadBukti'])->name('qr
 // 3. Lengkapi Data
 Route::get('/lengkapi-data', [PendaftaranController::class, 'index'])
     ->middleware(['auth', 'check.prodi', 'check.bayar'])
-    ->name('pendaftaran.index');
+    ->name('pendaftaran.form');
 
 Route::post('/lengkapi-data', [PendaftaranController::class, 'store'])
     ->middleware(['auth', 'check.prodi', 'check.bayar'])
