@@ -92,7 +92,7 @@
             <h2 class="text-4xl md:text-5xl font-extrabold leading-tight">Kembangkan Potensimu di <span class="text-amber-200">[Nama Kampus]</span></h2>
             <p class="text-lg md:text-xl opacity-90">Kampus dengan akreditasi A dan jaringan industri terluas. Siapkan masa depan profesionalmu bersama pengajar berpengalaman dan fasilitas modern.</p>
             <div class="flex gap-4 mt-4">
-              <a href="{{ route('pendaftaran.form') }}" class="inline-flex items-center gap-3 px-6 py-3 rounded-lg bg-white text-[var(--primary)] font-semibold shadow-lg transform hover:-translate-y-1 transition">
+              <a href="{{ route('pendaftaran.index') }}" class="inline-flex items-center gap-3 px-6 py-3 rounded-lg bg-white text-[var(--primary)] font-semibold shadow-lg transform hover:-translate-y-1 transition">
                 <!-- CTA besar -->
                 DAFTAR SEKARANG
               </a>
@@ -125,7 +125,7 @@
                 <h3 class="text-2xl font-semibold text-gray-900">Pendaftaran Gelombang 1 Terbuka</h3>
                 <p class="mt-2 text-sm text-gray-600">Daftarkan dirimu sekarang dan dapatkan kesempatan beasiswa serta bimbingan karier.</p>
                 <div class="mt-4 flex gap-3">
-                  <a href="{{ route('pendaftaran.form') }}" class="px-4 py-2 bg-[var(--primary)] text-white rounded-md">Daftar</a>
+                  <a href="{{ route('pendaftaran.index') }}" class="px-4 py-2 bg-[var(--primary)] text-white rounded-md">Daftar</a>
                   <a href="/programs" class="px-4 py-2 border rounded-md">Lihat Program</a>
                 </div>
               </div>

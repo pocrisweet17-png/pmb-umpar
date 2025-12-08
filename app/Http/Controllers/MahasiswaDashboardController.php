@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ProgramStudy;
+use App\Models\BiayaPmb;
 
 class MahasiswaDashboardController extends Controller
 {
@@ -87,7 +88,37 @@ class MahasiswaDashboardController extends Controller
             ->distinct()
             ->orderBy('fakultas')
             ->get();
+        // ambil data registrasi
+        $registrasi = \App\Models\Registrasi::where('nomorPendaftaran', $user->nomor_registrasi)->first();
+        // ambil data formulir (untuk cek step/boolean)
+        $formulir = \App\Models\FormulirPendaftaran::where('nomorPendaftaran', $user->nomor_registrasi)->first();
 
-        return view('mahasiswa.dashboard', compact('steps', 'percent', 'nextStep', 'user', 'fakultas'));
+        $kodeProdi = $user->kodeProdi_1 ?? $user->pilihan_1 ?? $user->pilihan_utama ?? null;
+        
+        // jika belum ketemu, cek registrasi/formulir
+        if (! $kodeProdi && $registrasi && isset($registrasi->programStudiPilihan)) {
+            $kodeProdi = $registrasi->programStudiPilihan;
+        }
+        if (! $kodeProdi && $formulir && isset($formulir->programStudiPilihan)) {
+            $kodeProdi = $formulir->programStudiPilihan;
+        }
+
+        // Ambil biaya dari tabel BiayaPmb berdasarkan tahun berjalan dan kode prodi
+        $biaya_pendaftaran = null;
+        if ($kodeProdi) {
+            $biaya = BiayaPmb::where('tahun', date('Y'))
+                ->where('kodeProdi', $kodeProdi)
+                ->first();
+            if ($biaya) {
+                $biaya_pendaftaran = $biaya->biaya_pendaftaran;
+            }
+        }
+
+        // fallback bila tidak ditemukan (nilai default)
+        if (! $biaya_pendaftaran) {
+            $biaya_pendaftaran = 30000; // ganti sesuai default yang kamu mau
+        }
+        $reg = $registrasi;
+        return view('mahasiswa.dashboard', compact('steps', 'percent', 'nextStep', 'user', 'fakultas','registrasi', 'formulir','biaya_pendaftaran','reg'));
     }
 }

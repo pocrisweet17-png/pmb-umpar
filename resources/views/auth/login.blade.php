@@ -235,16 +235,6 @@
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
-                                        <select name="jenis_kelamin" required
-                                            class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                                            <option value="">-- Pilih --</option>
-                                            <option value="laki-laki">Laki-Laki</option>
-                                            <option value="perempuan">Perempuan</option>
-                                        </select>
-                                    </div>
-
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                                         <div class="relative">

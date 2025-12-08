@@ -43,7 +43,7 @@ class PaymentController extends Controller
 
         // Jika tidak ada data biaya, set default
         if (!$biaya) {
-            $biaya_pendaftaran = 300000; // Default 300rb
+            $biaya_pendaftaran = 30000; // Default 30rb
         } else {
             $biaya_pendaftaran = $biaya->biaya_pendaftaran;
         }
@@ -210,7 +210,6 @@ class PaymentController extends Controller
         return response('OK', 200);
     }
 
-    
     // ======================================
     // 5. SELESAI PEMBAYARAN (FINISH PAGE)
     // ======================================

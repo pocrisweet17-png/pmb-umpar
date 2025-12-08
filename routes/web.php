@@ -149,21 +149,21 @@ Route::post('/qris/upload', [PaymentController::class, 'uploadBukti'])->name('qr
 
 // 3. Lengkapi Data
 Route::get('/lengkapi-data', [PendaftaranController::class, 'index'])
-    ->middleware(['auth', 'check.prodi', 'check.bayar'])
+    ->middleware(['auth', 'step.prodi', 'check.bayar'])
     ->name('pendaftaran.index');
 
 Route::post('/lengkapi-data', [PendaftaranController::class, 'store'])
-    ->middleware(['auth', 'check.prodi', 'check.bayar'])
+    ->middleware(['auth', 'step.prodi', 'check.bayar'])
     ->name('pendaftaran.store');
 
 
 // 4. Upload Dokumen (DIPERTAHANKAN & DISERAGAMKAN)
 Route::get('/upload-dokumen', [DokumentController::class, 'index'])
-    ->middleware(['auth', 'check.prodi', 'check.bayar', 'check.lengkapi'])
+    ->middleware(['auth', 'step.prodi', 'check.bayar', 'check.lengkapi'])
     ->name('dokumen.index');
 
 Route::post('/upload-dokumen', [DokumentController::class, 'store'])
-    ->middleware(['auth', 'check.prodi', 'check.bayar', 'check.lengkapi'])
+    ->middleware(['auth', 'step.prodi', 'check.bayar', 'check.lengkapi'])
     ->name('dokumen.store');
 
 

@@ -24,28 +24,21 @@ class ProdiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'pilihan_1' => 'required',
-            'pilihan_2' => 'required|different:pilihan_1',
+            'pilihan1' => 'required',
+            'pilihan2' => 'required|different:pilihan1',
         ]);
 
-        $user = request()->user();
+        $user = $request->user();
 
-        // Simpan pilihan prodi ke tabel users 
         $user->update([
-            'pilihan_1' => $request->pilihan_1,
-            'pilihan_2' => $request->pilihan_2,
+            'pilihan_1'          => $request->pilihan_1,
+            'pilihan_2'          => $request->pilihan_2,
+            'is_prodi_selected' => 1,
         ]);
 
-        // Update langkah ke tabel registrasis 
-        $user->update([
-            'is_prodi_selected' => true,
-        ]);
-
-
-        // Lanjut ke pembayaran
         return redirect()
             ->route('bayar.index')
-            ->with('success', 'Pilihan program studi berhasil disimpan. Silakan lakukan pembayaran.');
+            ->with('success', 'Pilihan program studi berhasil disimpan. Silakan lanjut ke pembayaran.');
     }
 
     // === AJAX untuk dropdown Prodi berdasarkan Fakultas ===
