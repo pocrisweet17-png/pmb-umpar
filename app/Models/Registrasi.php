@@ -25,6 +25,15 @@ class Registrasi extends Model
         'tanggalDaftar',
         'statusRegistrasi',
         'programStudiPilihan',
+
+        'is_prodi_selected',
+        'is_bayar_pendaftaran',
+        'is_data_completed',
+        'is_dokumen_uploaded',
+        'is_tes_selesai',
+        'is_wawancara_selesai',
+        'is_daftar_ulang',
+        'is_ukt_paid',
     ];
 
     protected $casts = [
