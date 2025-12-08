@@ -127,12 +127,6 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::delete('/admin/soal/{id}', [SoalController::class, 'destroy'])->name('admin.soal.destroy');
 });
 
-// Dashboard Mahasiswa
-Route::get('/mahasiswa/dashboard', function () {
-    return view('mahasiswa.dashboard');
-})->name('mahasiswa.dashboard')->middleware('auth');
-
-// Halaman ujian
 // Route Ujian Mahasiswa
 Route::middleware(['auth'])->group(function () {
     Route::get('/mahasiswa/ujian', [UjianController::class, 'index'])->name('mahasiswa.ujian');
