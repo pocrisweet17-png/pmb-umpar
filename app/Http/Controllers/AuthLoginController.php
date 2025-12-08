@@ -21,35 +21,34 @@ class AuthLoginController extends Controller
             'password' => 'required',
         ]);
 
-        // Cari user berdasarkan username atau email
+        // Cari user berdasarkan email/username
         $user = User::where('email', $request->login)
                     ->orWhere('username', $request->login)
                     ->first();
 
-        // Cek apakah user tidak ditemukan atau password salah
         if (! $user || ! Hash::check($request->password, $user->password)) {
             return back()->withErrors([
                 'login' => 'Email/Username atau password tidak cocok.',
             ]);
         }
 
-        // Cek apakah email sudah diverifikasi
+        // Cek sudah verifikasi?
         if (! $user->is_verified) {
             return back()->withErrors([
-                'login' => 'Email belum diverifikasi. Silahkan cek email Anda untuk verifikasi.',
+                'login' => 'Email belum diverifikasi.',
             ]);
         }
 
-        // Login user (tanpa Auth::attempt)
+        // Login
         Auth::login($user);
-
         $request->session()->regenerate();
 
-        // Redirect berdasarkan role
+        // Redirect admin
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
         }
 
+        // Redirect mahasiswa
         return redirect()->route('mahasiswa.dashboard');
     }
 

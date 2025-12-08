@@ -12,9 +12,10 @@ class ProdiController extends Controller
         $prodi = ProgramStudy::all();
         return view('mahasiswa.pilih-prodi-modal', compact('prodi'));
     }
+
     public function show()
     {
-        // Ambil daftar fakultas (unique)
+        // Ambil daftar fakultas unik
         $fakultas = ProgramStudy::select('fakultas')->distinct()->get();
 
         return view('mahasiswa.pilih-prodi-modal', compact('fakultas'));
@@ -28,35 +29,44 @@ class ProdiController extends Controller
         ]);
 
         $user = request()->user();
+
+        // Simpan pilihan prodi ke tabel users 
         $user->update([
             'pilihan_1' => $request->pilihan_1,
             'pilihan_2' => $request->pilihan_2,
+        ]);
+
+        // Update langkah ke tabel registrasis 
+        $user->update([
             'is_prodi_selected' => true,
         ]);
 
-        // return redirect()->route('mahasiswa.dashboard')
-        //     ->with('success', 'Pilihan program studi berhasil disimpan.');
-            return redirect()->route('payment.show')->with('success', 'Silakan lakukan pembayaran.');
+
+        // Lanjut ke pembayaran
+        return redirect()
+            ->route('bayar.index')
+            ->with('success', 'Pilihan program studi berhasil disimpan. Silakan lakukan pembayaran.');
     }
 
-    // dipakai untuk AJAX saat memilih fakultas
+    // === AJAX untuk dropdown Prodi berdasarkan Fakultas ===
     public function getProdiByFakultas(Request $request)
-{
-    $fakultas = $request->query('fakultas');
+    {
+        $fakultas = $request->query('fakultas');
 
-    if (!$fakultas) {
-        return response()->json([]);
+        if (!$fakultas) {
+            return response()->json([]);
+        }
+
+        $prodi = ProgramStudy::where('fakultas', $fakultas)
+                    ->select('kodeProdi', 'namaProdi')
+                    ->get();
+
+        return response()->json($prodi);
     }
 
-    $prodi = ProgramStudy::where('fakultas', $fakultas)
-                ->select('kodeProdi', 'namaProdi') // lebih ringan
-                ->get();
-
-    return response()->json($prodi);
-}
+    // Opsional API versi cepat
     public function apiGetProdi(Request $request)
     {
-    return ProgramStudy::where('fakultas', $request->fakultas)->get();
+        return ProgramStudy::where('fakultas', $request->fakultas)->get();
     }
-
 }
