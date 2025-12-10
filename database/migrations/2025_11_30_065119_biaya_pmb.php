@@ -1,4 +1,5 @@
 <?php
+// 2025_11_30_065119_create_biaya_pmb_table.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -6,26 +7,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('biaya_pmb', function (Blueprint $table) {
             $table->id();
-            $table->year('tahun');                        
-            $table->string('kodeProdi', 20);         
-            $table->bigInteger('biaya_pendaftaran');
-            $table->bigInteger('ukt_semester_1');
-            $table->timestamps();
-
-            $table->unique(['tahun', 'kodeProdi']);
+            $table->year('tahun');
+            $table->string('kodeProdi', 50);
+            $table->decimal('biaya_pendaftaran', 15, 2);
+            $table->decimal('biaya_ukt', 15, 2)->nullable();
+            $table->timestamp('created_at')->useCurrent();
+            
+            // Foreign key
+            $table->foreign('kodeProdi')
+                  ->references('kodeProdi')
+                  ->on('program_studis')
+                  ->onDelete('cascade');
+            
+            // Index untuk query cepat
+            $table->index(['tahun', 'kodeProdi']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('biaya_pmb');

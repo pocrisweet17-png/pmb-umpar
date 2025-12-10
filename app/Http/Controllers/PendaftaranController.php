@@ -3,119 +3,139 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\Registrasi;
-use App\Models\FormulirPendaftaran;
-use App\Models\ProgramStudy;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PendaftaranController extends Controller
 {
+    /**
+     * Tampilkan halaman pendaftaran
+     */
     public function index()
     {
-        $prodis = ProgramStudy::all();
-        return view('pendaftaran.form', compact('prodis'));
+        $user = Auth::user();
+
+        $registrasi = Registrasi::where('user_id', $user->id)->first();
+
+        return view('pendaftaran.index', compact('user', 'registrasi'));
     }
 
+    /**
+     * Simpan data registrasi
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'namaLengkap'         => 'required|string|max:255',
-            'email'               => 'required|email|unique:registrasis,email',
-            'noHP'                => 'required|string|max:15',
-            'jenisKelamin'        => 'required|in:Laki-laki,Perempuan',
-            'tempatLahir'         => 'required|string',
-            'tanggalLahir'        => 'required|date',
-            'agama'               => 'required|string',
-            'alamat'              => 'required|string',
-            'asalSekolah'         => 'required|string',
-            'jurusan'             => 'required|string',
-            'tahunLulus'          => 'required|integer|min:2000|max:' . (date('Y') + 1),
-            'programStudiPilihan' => 'required|exists:program_studis,kodeProdi',
+        $validated = $request->validate([
+            'jenisKelamin'  => 'required|string|in:Laki-laki,Perempuan',
+            'tempatLahir'   => 'required|string|max:100',
+            'tanggalLahir'  => 'required|date|before:today',
+            'agama'         => 'required|string|in:Islam,Kristen,Katolik,Hindu,Buddha,Konghucu',
+            'alamat'        => 'required|string|max:500',
+            'asalSekolah'   => 'required|string|max:200',
+            'jurusan'       => 'required|string|max:100',
+            'tahunLulus'    => 'required|integer|min:2000|max:' . (date('Y') + 1),
+        ]);
+
+        $user = Auth::user();
+
+        try {
+            DB::beginTransaction();
+
+            $existingRegistrasi = Registrasi::where('user_id', $user->id)->first();
+
+            if ($existingRegistrasi) {
+                // UPDATE data
+                $existingRegistrasi->update($validated);
+                $registrasi = $existingRegistrasi;
+                $message = 'Data pribadi berhasil diperbarui.';
+            } else {
+                // CREATE data baru
+                $registrasi = Registrasi::create([
+                    'user_id'              => $user->id,
+                    'nomorPendaftaran'     => $user->nomor_registrasi,
+                    'programStudiPilihan'  => $user->pilihan_1 ?? null,
+                    'tanggalDaftar'        => now(),
+                    'statusRegistrasi'     => 'pending',
+
+                    'jenisKelamin'         => $validated['jenisKelamin'],
+                    'tempatLahir'          => $validated['tempatLahir'],
+                    'tanggalLahir'         => $validated['tanggalLahir'],
+                    'agama'                => $validated['agama'],
+                    'alamat'               => $validated['alamat'],
+                    'asalSekolah'          => $validated['asalSekolah'],
+                    'jurusan'              => $validated['jurusan'],
+                    'tahunLulus'           => $validated['tahunLulus'],
+                ]);
+
+                $message = 'Data pribadi berhasil disimpan.';
+            }
+
+            // UPDATE status step pada users
+            $user = User::find($registrasi->user_id);
+            $user->is_data_completed = true;
+            $user->save();
+
+            DB::commit();
+
+            Log::info('Registrasi berhasil disimpan', [
+                'user_id' => $user->id,
+                'data' => $validated
+            ]);
+
+            return redirect()->back()->with('success', $message);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Error saving registrasi', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Gagal menyimpan data: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Update data registrasi
+     */
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'jenisKelamin'  => 'required|string|in:Laki-laki,Perempuan',
+            'tempatLahir'   => 'required|string|max:100',
+            'tanggalLahir'  => 'required|date|before:today',
+            'agama'         => 'required|string',
+            'alamat'        => 'required|string|max:500',
+            'asalSekolah'   => 'required|string|max:200',
+            'jurusan'       => 'required|string|max:100',
+            'tahunLulus'    => 'required|integer|min:2000|max:' . (date('Y') + 1),
         ]);
 
         try {
-            $last  = Registrasi::count();
-            $nomor = 'UMPAR' . date('Y') . str_pad($last + 1, 5, '0', STR_PAD_LEFT);
+            $registrasi = Registrasi::where('user_id', Auth::id())
+                ->where('idRegistrasi', $id)
+                ->firstOrFail();
 
-            if (Registrasi::where('nomorPendaftaran', $nomor)->exists()) {
-                throw new \Exception('Nomor pendaftaran sudah ada! Silakan coba lagi.');
-            }
+            $registrasi->update($validated);
 
-            $registrasi = Registrasi::create([
-                'nomorPendaftaran' => $nomor,
-                'namaLengkap'      => $request->namaLengkap,
-                'jenisKelamin'     => $request->jenisKelamin,
-                'tempatLahir'      => $request->tempatLahir,
-                'tanggalLahir'     => $request->tanggalLahir,
-                'agama'            => $request->agama,
-                'alamat'           => $request->alamat,
-                'noHP'             => $request->noHP,
-                'email'            => $request->email,
-                'asalSekolah'      => $request->asalSekolah,
-                'jurusan'          => $request->jurusan,
-                'tahunLulus'       => $request->tahunLulus,
-                'tanggalDaftar'    => now(),
-                'statusRegistrasi' => 'pending',
-            ]);
-
-            $kodeAkses = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 10));
-
-            FormulirPendaftaran::create([
-                'nomorPendaftaran'    => $nomor,
-                'tanggalSubmit'       => now(),
-                'programStudiPilihan' => $request->programStudiPilihan,
-                'statusVerifikasi'    => 'menunggu',
-                'kodeAkses'           => $kodeAkses,
-
-                // indikator langkah PMB (awal semua false)
-                'is_data_completed'     => true,   // karena ini langkah pertama
-                'is_bayar_pendaftaran'  => false,
-                'is_dokumen_uploaded'   => false,
-                'is_tes_selesai'        => false,
-                'is_wawancara_selesai'  => false,
-                'is_daftar_ulang'       => false,
-                'is_ukt_paid'           => false,
-            ]);
-
-            return redirect()->route('pendaftaran.sukses', [
-                'nomor' => $nomor,
-                'kode'  => $kodeAkses
-            ]);
+            return redirect()->back()->with('success', 'Data berhasil diperbarui.');
 
         } catch (\Exception $e) {
-            return back()->withInput()->withErrors([
-                'error' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+            Log::error('Error updating registrasi', [
+                'id' => $id,
+                'error' => $e->getMessage()
             ]);
+
+            return redirect()->back()
+                ->with('error', 'Gagal memperbarui data.')
+                ->withInput();
         }
-    }
-
-    public function sukses(Request $request)
-    {
-        $nomor = $request->query('nomor');
-        $kode  = $request->query('kode');
-
-        if (!$nomor || !$kode) {
-            return redirect()->route('pendaftaran.form');
-        }
-
-        $registrasi = Registrasi::where('nomorPendaftaran', $nomor)->first();
-        $formulir   = FormulirPendaftaran::where('nomorPendaftaran', $nomor)->first();
-
-        if (!$registrasi || !$formulir) {
-            return redirect()->route('pendaftaran.form');
-        }
-
-        $programStudi = ProgramStudy::where('kodeProdi', $formulir->programStudiPilihan)->first();
-
-        $data = [
-            'nomor_pendaftaran' => $registrasi->nomorPendaftaran,
-            'nama_lengkap'      => $registrasi->namaLengkap,
-            'program_studi'     => $programStudi
-                                    ? $programStudi->namaProdi . ' (' . $programStudi->jenjang . ')'
-                                    : $formulir->programStudiPilihan,
-            'kode_akses'        => $formulir->kodeAkses,
-            'tanggal_daftar'    => $registrasi->tanggalDaftar->format('d F Y'),
-        ];
-
-        return view('pendaftaran.sukses', compact('data'));
     }
 }

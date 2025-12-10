@@ -1,4 +1,5 @@
 <?php
+// 0001_01_01_000004_create_users_table.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -10,31 +11,38 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-
-            // Data login
             $table->string('username')->unique();
             $table->string('email')->unique();
             $table->string('password');
-
-            // Data mahasiswa
             $table->string('nama_lengkap');
-            $table->string('nik')->unique(); // No KTP / KK
+            $table->string('nik')->unique();
             $table->string('no_whatsapp');
-
+            
+            // Email verification
             $table->boolean('is_verified')->default(false);
-            $table->string('nomor_registrasi')->unique()->nullable();
-            $table->string('verification_token')->nullable();
-
-            $table->string('pilihan_1')->nullable();
-            $table->string('pilihan_2')->nullable();
-            $table->boolean('is_prodi_selected')->default(false);
-
-
-            // Role untuk akses admin / user
-            $table->enum('role', ['admin', 'user'])->default('user');
-
-            // Fitur Laravel
             $table->timestamp('email_verified_at')->nullable();
+            $table->string('verification_token')->nullable();
+            
+            // Nomor registrasi (auto-generated)
+            $table->string('nomor_registrasi')->unique()->nullable();
+            
+            // Pilihan Program Studi
+            $table->string('pilihan_1')->nullable(); // kodeProdi pilihan 1
+            $table->string('pilihan_2')->nullable(); // kodeProdi pilihan 2
+            
+            // ========== STEP PROGRESS PMB ==========
+            $table->boolean('is_prodi_selected')->default(false);
+            $table->boolean('is_bayar_pendaftaran')->default(false);
+            $table->boolean('is_data_completed')->default(false);
+            $table->boolean('is_dokumen_uploaded')->default(false);
+            $table->boolean('is_tes_selesai')->default(false);
+            $table->boolean('is_wawancara_selesai')->default(false);
+            $table->boolean('is_daftar_ulang')->default(false);
+            $table->boolean('is_ukt_paid')->default(false);
+            
+            // Role
+            $table->enum('role', ['admin', 'user'])->default('user');
+            
             $table->rememberToken();
             $table->timestamps();
         });

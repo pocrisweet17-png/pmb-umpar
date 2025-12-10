@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Middleware;
 
 use Closure;
@@ -9,16 +10,22 @@ class StepPilihProdi
     public function handle(Request $request, Closure $next)
     {
         $user = $request->user();
-        if (! $user) {
-            return redirect()->route('login');
+        
+        if (!$user || !$user->is_prodi_selected) {
+            // Jika AJAX request, return JSON
+            if ($request->expectsJson() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Silakan pilih program studi terlebih dahulu.',
+                    'redirect' => route('prodi.view')
+                ], 403);
+            }
+            
+            // Jika normal request, redirect
+            return redirect()->route('prodi.view')
+                ->with('error', 'Silakan pilih program studi terlebih dahulu.');
         }
-
-        // asumsikan relasi registrasi ada: $user->registrasi
-        $reg = $user->registrasi ?? null;
-        if (! $reg || ! $reg->is_prodi_selected) {
-            return redirect()->route('mahasiswa.dashboard')->with('error', 'Silakan pilih program studi terlebih dahulu.');
-        }
-
+        
         return $next($request);
     }
 }

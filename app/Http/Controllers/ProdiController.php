@@ -4,51 +4,69 @@ namespace App\Http\Controllers;
 
 use App\Models\ProgramStudy;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProdiController extends Controller
 {
-    public function index()
-    {
-        $prodi = ProgramStudy::all();
-        return view('mahasiswa.pilih-prodi-modal', compact('prodi'));
-    }
-
     public function show()
     {
-        // Ambil daftar fakultas unik
         $fakultas = ProgramStudy::select('fakultas')->distinct()->get();
-
         return view('mahasiswa.pilih-prodi-modal', compact('fakultas'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'pilihan_1' => 'required',
-            'pilihan_2' => 'required|different:pilihan_1',
+        // Validasi input
+        $validated = $request->validate([
+            'pilihan_1' => 'required|string',
+            'pilihan_2' => 'required|string|different:pilihan_1',
+        ], [
+            'pilihan_1.required' => 'Pilihan 1 harus diisi',
+            'pilihan_2.required' => 'Pilihan 2 harus diisi',
+            'pilihan_2.different' => 'Pilihan 1 dan 2 tidak boleh sama',
         ]);
 
-        $user = request()->user();
+        // Cek prodi valid
+        $prodi1 = ProgramStudy::where('kodeProdi', $validated['pilihan_1'])->first();
+        $prodi2 = ProgramStudy::where('kodeProdi', $validated['pilihan_2'])->first();
 
-        // Simpan pilihan prodi ke tabel users 
-        $user->update([
-            'pilihan_1' => $request->pilihan_1,
-            'pilihan_2' => $request->pilihan_2,
-        ]);
+        if (!$prodi1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Program studi pilihan 1 tidak ditemukan'
+            ], 422);
+        }
 
-        // Update langkah ke tabel registrasis 
+        if (!$prodi2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Program studi pilihan 2 tidak ditemukan'
+            ], 422);
+        }
+
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User tidak ditemukan. Silakan login kembali.'
+            ], 401);
+        }
+
+        // Update data user
         $user->update([
+            'pilihan_1'         => $validated['pilihan_1'],
+            'pilihan_2'         => $validated['pilihan_2'],
             'is_prodi_selected' => true,
         ]);
 
-
-        // Lanjut ke pembayaran
-        return redirect()
-            ->route('bayar.index')
-            ->with('success', 'Pilihan program studi berhasil disimpan. Silakan lakukan pembayaran.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Pilihan program studi berhasil disimpan',
+            'redirect' => route('mahasiswa.dashboard')
+        ]);
     }
 
-    // === AJAX untuk dropdown Prodi berdasarkan Fakultas ===
     public function getProdiByFakultas(Request $request)
     {
         $fakultas = $request->query('fakultas');
@@ -58,15 +76,9 @@ class ProdiController extends Controller
         }
 
         $prodi = ProgramStudy::where('fakultas', $fakultas)
-                    ->select('kodeProdi', 'namaProdi')
+                    ->select('kodeProdi', 'namaProdi', 'jenjang')
                     ->get();
 
         return response()->json($prodi);
-    }
-
-    // Opsional API versi cepat
-    public function apiGetProdi(Request $request)
-    {
-        return ProgramStudy::where('fakultas', $request->fakultas)->get();
     }
 }

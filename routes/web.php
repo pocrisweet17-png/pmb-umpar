@@ -1,49 +1,29 @@
 <?php
 
-use App\Models\Registrasi;
-use App\Models\ProgramStudy;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SoalController;
-use App\Http\Middleware\AdminMiddleware;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\ProdiController;
-use App\Http\Controllers\UjianController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\DokumentController;
-use App\Http\Controllers\AuthLoginController;
+use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\DokumentController;
+use App\Http\Controllers\AuthLoginController;
 use App\Http\Controllers\AuthRegisterController;
-use Symfony\Component\HttpKernel\HttpCache\Store;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\MidtransCallbackController;
-use Illuminate\Support\Facades\Mail;
-use App\Http\Controllers\VerificationController;
-use App\Models\User;
+use App\Http\Controllers\ProdiController;
 use App\Http\Controllers\BayarUktController;
 use App\Http\Controllers\TesController;
 use App\Http\Controllers\WawancaraController;
 use App\Http\Controllers\DaftarUlangController;
 use App\Http\Controllers\MahasiswaDashboardController;
 
+use App\Http\Middleware\AdminMiddleware;
+use App\Models\ProgramStudy;
+use App\Models\Registrasi;
 
-// ====================
-// MIDTRANS CALLBACK
-// ====================
-Route::post('/midtrans/callback', [MidtransCallbackController::class, 'callback'])
-    ->name('midtrans.callback');
-
-
-// ====================
-// LANDING PAGE
-// ====================
-Route::get('/', function () {
-    return view('welcome');
-});
-
-
-// ====================
+// ======================================================================
 // API PRODI
-// ====================
+// ======================================================================
 Route::get('/api/prodi-by-fakultas/{fakultas}', function ($fakultas) {
     return ProgramStudy::where('fakultas', $fakultas)
         ->orderBy('namaProdi')
@@ -53,168 +33,156 @@ Route::get('/api/prodi-by-fakultas/{fakultas}', function ($fakultas) {
 Route::get('/api/prodi-by-fakultas', [ProdiController::class, 'getProdiByFakultas'])
     ->name('api.prodi-by-fakultas');
 
+// ======================================================================
+// MIDTRANS WEBHOOK (PUBLIC)
+// ======================================================================
+Route::post('/midtrans/webhook', [PaymentController::class, 'webhook'])
+    ->name('midtrans.webhook');
 
-// ====================
+// ======================================================================
+// LANDING PAGE
+// ======================================================================
+Route::get('/', fn() => view('welcome'));
+
+// ======================================================================
 // REGISTER
-// ====================
-Route::get('/register', [AuthRegisterController::class, 'showRegisterForm'])
-    ->name('register.form');
+// ======================================================================
+Route::get('/register', [AuthRegisterController::class, 'showRegisterForm'])->name('register.form');
+Route::post('/register', [AuthRegisterController::class, 'register'])->name('register');
 
-Route::post('/register', [AuthRegisterController::class, 'register'])
-    ->name('register');
+// ======================================================================
+// EMAIL VERIFICATION
+// ======================================================================
+Route::get('/verify-email/{id}/{hash}', function ($id, $hash) {
+    $user = Registrasi::findOrFail($id);
+    if ($hash !== sha1($user->email)) abort(403);
 
-// route verification (signed)
-Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
-    ->name('verification.verify')
-    ->middleware('signed');
+    $user->email_verified_at = now();
+    $user->save();
 
+    return view('emails.verified-success');
+})->name('verification.verify')->middleware('signed');
 
-// ====================
+// ======================================================================
 // LOGIN / LOGOUT
-// ====================
-Route::get('/login', [AuthLoginController::class, 'showLoginForm'])
-    ->name('login');
+// ======================================================================
+Route::get('/login', [AuthLoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthLoginController::class, 'login'])->name('login.process');
+Route::post('/logout', [AuthLoginController::class, 'logout'])->name('logout');
 
-Route::post('/login', [AuthLoginController::class, 'login'])
-    ->name('login.process');
-
-Route::post('/logout', [AuthLoginController::class, 'logout'])
-    ->name('logout');
-
-
-// ====================================================================
-// AUTH USER ROUTES
-// ====================================================================
+// ======================================================================
+// MAHASISWA DASHBOARD
+// ======================================================================
 Route::middleware('auth')->group(function () {
-
-    // --------------------
-    // DASHBOARD MAHASISWA
-    // --------------------
     Route::get('/mahasiswa/dashboard', [MahasiswaDashboardController::class, 'index'])
-    ->middleware('auth')
-    ->name('mahasiswa.dashboard');
-    // --------------------
-    // TAGIHAN & PEMBAYARAN
-    // --------------------
-    Route::get('/tagihan', [PaymentController::class, 'tagihan'])->name('tagihan');
-
-    Route::get('/bayar/{tipe}', [PaymentController::class, 'bayar'])->name('bayar');
-
-    Route::post('/midtrans/webhook', [PaymentController::class, 'webhook']);
-
-    Route::get('/payment/finish', [PaymentController::class, 'selesai'])
-        ->name('payment.finish');
+        ->name('mahasiswa.dashboard');
 });
 
+// ======================================================================
+// PEMBAYARAN (Midtrans + Manual Upload)
+// ======================================================================
+Route::middleware(['auth', 'verified', 'step.prodi'])->group(function () {
 
-// ====================================================================
+    Route::get('/bayar', [PaymentController::class, 'index'])->name('bayar.index');
+    Route::post('/bayar/store', [PaymentController::class, 'store'])->name('bayar.store');
+
+    // Upload bukti manual
+    Route::post('/bayar/upload-manual', [PaymentController::class, 'uploadBukti'])
+        ->name('bayar.upload');
+});
+
+// Midtrans redirect (satu kali saja)
+Route::get('/payment/finish', [PaymentController::class, 'finish'])->name('payment.finish');
+
+// ======================================================================
 // ADMIN DASHBOARD
-// ====================================================================
-Route::get('/admin/dashboard', function () {
-    return 'Ini Dashboard Admin';
-})->name('admin.dashboard')->middleware(['auth', AdminMiddleware::class]);
-// Dashboard Admin
-Route::middleware(['auth', AdminMiddleware::class])->group(function () {
+// ======================================================================
+Route::get('/admin/dashboard', fn() => 'Ini Dashboard Admin')
+    ->middleware(['auth', AdminMiddleware::class])
+    ->name('admin.dashboard');
 
-    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-
-    // CRUD Soal
-    Route::get('/admin/soal', [SoalController::class, 'index'])->name('admin.soal.index');
-    Route::get('/admin/soal/create', [SoalController::class, 'showSoal'])->name('admin.soal.create');
-    Route::post('/admin/soal/store', [SoalController::class, 'createSoal'])->name('admin.soal.store');
-    Route::get('/admin/soal/{id}/edit', [SoalController::class, 'edit'])->name('admin.soal.edit');
-    Route::put('/admin/soal/{id}', [SoalController::class, 'update'])->name('admin.soal.update');
-    Route::delete('/admin/soal/{id}', [SoalController::class, 'destroy'])->name('admin.soal.destroy');
+// ======================================================================
+// 1. PILIH PRODI
+// ======================================================================
+Route::middleware('auth')->group(function () {
+    Route::get('/pilih-prodi', [ProdiController::class, 'show'])->name('prodi.view');
+    Route::post('/prodi/store', [ProdiController::class, 'store'])->name('prodi.store');
 });
 
-// Route Ujian Mahasiswa
-Route::middleware(['auth'])->group(function () {
-    Route::get('/mahasiswa/ujian', [UjianController::class, 'index'])->name('mahasiswa.ujian');
-    Route::post('/mahasiswa/ujian/submit', [UjianController::class, 'submit'])->name('mahasiswa.ujian.submit');
-    Route::get('/mahasiswa/hasil/{idUjian}', [UjianController::class, 'hasil'])->name('mahasiswa.hasil');
+// ======================================================================
+// 2. PEMBAYARAN PENDAFTARAN (QRIS)
+// ======================================================================
+Route::middleware(['auth', 'step.prodi'])->group(function () {
+    Route::get('/bayar-pendaftaran', [PaymentController::class, 'index'])->name('bayar.index.pendaftaran');
+    Route::post('/bayar-pendaftaran', [PaymentController::class, 'store'])->name('bayar.store.pendaftaran');
 });
 
-
-
-
-// 1. Pilih Prodi
-Route::get('/pilih-prodi', [ProdiController::class, 'show'])
-    ->middleware('auth',)
-    ->name('prodi.view');
-
-Route::post('/pilih-prodi', [ProdiController::class, 'store'])
-    ->middleware('auth')
-    ->name('prodi.store');
-
-
-// 2. Bayar Pendaftaran
-Route::get('/bayar-pendaftaran', [PaymentController::class, 'index'])
-    ->middleware(['auth', 'step.prodi'])
-    ->name('bayar.index');
-
-Route::post('/bayar-pendaftaran', [PaymentController::class, 'store'])
-    ->middleware(['auth', 'step.prodi'])
-    ->name('bayar.store');
-// QRIS Manual
-Route::get('/qris', [PaymentController::class, 'qris'])->name('qris.view');
+// Upload bukti qris
 Route::post('/qris/upload', [PaymentController::class, 'uploadBukti'])->name('qris.upload');
 
+// ======================================================================
+// 3. LENGKAPI DATA
+// ======================================================================
+Route::middleware(['auth', 'step.prodi', 'check.bayar'])->group(function () {
+    Route::get('/lengkapi-data', [PendaftaranController::class, 'index'])->name('pendaftaran.index');
+    Route::post('/lengkapi-data', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
+    Route::put('/pendaftaran/{id}', [PendaftaranController::class, 'update'])->name('pendaftaran.update');
+});
 
-// 3. Lengkapi Data
-Route::get('/lengkapi-data', [PendaftaranController::class, 'index'])
-    ->middleware(['auth', 'check.prodi', 'check.bayar'])
-    ->name('pendaftaran.index');
+// ======================================================================
+// 4. UPLOAD DOKUMEN
+// ======================================================================
+Route::middleware(['auth', 'step.prodi', 'check.bayar', 'check.lengkapi'])->group(function () {
+    Route::get('/upload-dokumen', [DokumentController::class, 'index'])->name('dokumen.index');
+    Route::post('/upload-dokumen', [DokumentController::class, 'store'])->name('dokumen.store');
+});
 
-Route::post('/lengkapi-data', [PendaftaranController::class, 'store'])
-    ->middleware(['auth', 'check.prodi', 'check.bayar'])
-    ->name('pendaftaran.store');
+// ======================================================================
+// 5. TES
+// ======================================================================
+Route::middleware(['auth', 'check.upload'])->group(function () {
+    Route::get('/tes', [TesController::class, 'index'])->name('tes.index');
+    Route::post('/tes', [TesController::class, 'store'])->name('tes.store');
+});
 
+// ======================================================================
+// 6. WAWANCARA
+// ======================================================================
+Route::middleware(['auth', 'check.tes'])->group(function () {
+    Route::get('/wawancara', [WawancaraController::class, 'index'])->name('wawancara.index');
+    Route::post('/wawancara', [WawancaraController::class, 'store'])->name('wawancara.store');
+});
 
-// 4. Upload Dokumen (DIPERTAHANKAN & DISERAGAMKAN)
-Route::get('/upload-dokumen', [DokumentController::class, 'index'])
-    ->middleware(['auth', 'check.prodi', 'check.bayar', 'check.lengkapi'])
-    ->name('dokumen.index');
+// ======================================================================
+// 7. DAFTAR ULANG
+// ======================================================================
+Route::middleware(['auth', 'check.wawancara'])->group(function () {
+    Route::get('/daftar-ulang', [DaftarUlangController::class, 'index'])->name('daftar-ulang.index');
+    Route::post('/daftar-ulang', [DaftarUlangController::class, 'store'])->name('daftar-ulang.store');
+});
 
-Route::post('/upload-dokumen', [DokumentController::class, 'store'])
-    ->middleware(['auth', 'check.prodi', 'check.bayar', 'check.lengkapi'])
-    ->name('dokumen.store');
+// ======================================================================
+// 8. BAYAR UKT
+// ======================================================================
+Route::middleware(['auth', 'check.daftarulang'])->group(function () {
+    Route::get('/bayar-ukt', [BayarUktController::class, 'index'])->name('ukt.index');
+    Route::post('/bayar-ukt', [BayarUktController::class, 'store'])->name('ukt.store');
+});
 
-
-// 5. Tes
-Route::get('/tes', [TesController::class, 'index'])
-    ->middleware(['auth', 'check.step4'])
-    ->name('tes.index');
-
-Route::post('/tes', [TesController::class, 'store'])
-    ->middleware(['auth', 'check.step4'])
-    ->name('tes.store');
-
-
-// 6. Wawancara
-Route::get('/wawancara', [WawancaraController::class, 'index'])
-    ->middleware(['auth', 'check.step5'])
-    ->name('wawancara.index');
-
-Route::post('/wawancara', [WawancaraController::class, 'store'])
-    ->middleware(['auth', 'check.step5'])
-    ->name('wawancara.store');
-
-
-// 7. Daftar Ulang
-Route::get('/daftar-ulang', [DaftarUlangController::class, 'index'])
-    ->middleware(['auth', 'check.step6'])
-    ->name('daftar-ulang.index');
-
-Route::post('/daftar-ulang', [DaftarUlangController::class, 'store'])
-    ->middleware(['auth', 'check.step6'])
-    ->name('daftar-ulang.store');
-
-
-// 8. Bayar UKT
-Route::get('/bayar-ukt', [BayarUktController::class, 'index'])
-    ->middleware(['auth', 'check.step7'])
-    ->name('ukt.index');
-
-Route::post('/bayar-ukt', [BayarUktController::class, 'store'])
-    ->middleware(['auth', 'check.step7'])
-    ->name('ukt.store');
+// ======================================================================
+// API CEK STATUS
+// ======================================================================
+Route::get('/api/check-registration-status', function() {
+    $user = Auth::user();
+    return response()->json([
+        'prodi_selected'     => (bool) $user->is_prodi_selected,
+        'pembayaran_completed' => (bool) $user->is_bayar_pendaftaran,
+        'data_pribadi_completed' => (bool) $user->is_data_completed,
+        'dokumen_uploaded'   => (bool) $user->is_dokumen_uploaded,
+        'tes_selesai'        => (bool) $user->is_tes_selesai,
+        'wawancara_selesai'  => (bool) $user->is_wawancara_selesai,
+        'daftar_ulang'       => (bool) $user->is_daftar_ulang,
+        'ukt_paid'           => (bool) $user->is_ukt_paid,
+        'redirect_url'       => route('mahasiswa.dashboard')
+    ]);
+})->middleware('auth');
