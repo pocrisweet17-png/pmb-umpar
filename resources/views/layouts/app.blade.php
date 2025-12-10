@@ -12,11 +12,6 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> 0ccf0a7 (fix-modal)
 </head>
 <body class="bg-gray-100">
     {{-- Tambahkan setelah opening <body> atau di bagian atas content --}}

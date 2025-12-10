@@ -15,6 +15,7 @@ class Registrasi extends Model
 
     protected $fillable = [
         'user_id',
+        'id',
         'nomorPendaftaran',
         'jenisKelamin',
         'tempatLahir',

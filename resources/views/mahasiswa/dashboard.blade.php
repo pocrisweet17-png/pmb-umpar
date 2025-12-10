@@ -13,8 +13,6 @@
                         <p class="text-gray-600">Selamat datang, <span class="font-semibold text-gray-900">{{ $user->name }}</span></p>
                     </div>
                     <div class="hidden md:flex items-center gap-3">
-<<<<<<< HEAD
-=======
                         {{-- Tombol Test Modal Isi Data --}}
                         <button onclick="openModalDataPribadi()" class="flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors border border-purple-200" title="Test Modal Isi Data">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -23,7 +21,6 @@
                             <span class="text-sm font-medium">Test Isi Data</span>
                         </button>
                         
->>>>>>> 0ccf0a7 (fix-modal)
                         {{-- Tombol Lihat Data Pribadi --}}
                         <button onclick="openModalLihatDataPribadi()" class="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors border border-blue-200" title="Lihat Data Pribadi">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,7 +128,7 @@
                                 <p class="text-sm font-bold text-gray-900">{{ $nextStep['name'] }}</p>
                             </div>
                         </div>
-                        @if($nextStep['key'] === 'is_prodi_selected')
+                        {{-- @if($nextStep['key'] === 'is_prodi_selected')
                             <button onclick="openModalProdi()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors">
                                 Lanjutkan →
                             </button>
@@ -139,7 +136,7 @@
                             <a href="{{ route($nextStep['route']) }}" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors">
                                 Lanjutkan →
                             </a>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
                 @endif
@@ -210,10 +207,7 @@
                                 Langkah ini akan tersedia setelah menyelesaikan langkah sebelumnya.
                             @endif
                         </p>
-<<<<<<< HEAD
-=======
 
->>>>>>> 0ccf0a7 (fix-modal)
                         {{-- Action Buttons --}}
                         <div class="flex gap-2">
                             @php
@@ -231,24 +225,18 @@
                             @endphp
 
                             @if($step['completed'])
-<<<<<<< HEAD
                                 {{-- Jika sudah selesai --}}
                                 @if($modalFunction)
-                                    <button onclick="{{ $modalFunction }}" 
+                                    <div 
                                             class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
-=======
-                                @if($step['key'] === 'is_prodi_selected')
-                                    <button onclick="openModalProdi()" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
->>>>>>> 0ccf0a7 (fix-modal)
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
-                                        Lihat / Ubah
-                                    </button>
-<<<<<<< HEAD
+                                        Selesai
+                                    </div>
                                 @endif
                             @elseif($step['enabled'])
-                                {{-- Jika enabled (bisa dikerjakan) - INI YANG PENTING! --}}
+                                {{-- Jika enabled (bisa dikerjakan) --}}
                                 @if($modalFunction)
                                     <button onclick="{{ $modalFunction }}" 
                                             class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
@@ -257,28 +245,6 @@
                                 @endif
                             @else
                                 {{-- Jika disabled --}}
-=======
-                                @else
-                                    <a href="{{ route($step['route']) }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                        Lihat Detail
-                                    </a>
-                                @endif
-                            @elseif($step['enabled'])
-                                @if($step['key'] === 'is_prodi_selected')
-                                    <button onclick="openModalProdi()" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
-                                        Mulai →
-                                    </button>
-                                @else
-                                    <a href="{{ route($step['route']) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
-                                        Mulai →
-                                    </a>
-                                @endif
-                            @else
->>>>>>> 0ccf0a7 (fix-modal)
                                 <button class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-400 rounded-lg text-sm font-medium cursor-not-allowed" disabled>
                                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
@@ -332,7 +298,10 @@
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-800 mb-3">Direct Access Test:</h4>
-<<<<<<< HEAD
+                        <div class="space-y-2">
+                            <a href="{{ route('bayar.index') }}" class="block px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded text-center transition-colors">Test Bayar Route</a>
+                            <a href="{{ route('prodi.view') }}" class="block px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded text-center transition-colors">Test Prodi Route</a>
+                        </div>
                         <div class="mt-4">
                             <h4 class="font-bold text-gray-800 mb-3">🧪 Test Modal Buttons:</h4>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -345,11 +314,6 @@
                                 <button onclick="openModalDaftarUlang()" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-xs font-semibold">Test Daftar Ulang</button>
                                 <button onclick="openModalBayarUkt()" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-xs font-semibold">Test Bayar UKT</button>
                             </div>
-=======
-                        <div class="space-y-2">
-                            <a href="{{ route('bayar.index') }}" class="block px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded text-center transition-colors">Test Bayar Route</a>
-                            <a href="{{ route('prodi.view') }}" class="block px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded text-center transition-colors">Test Prodi Route</a>
->>>>>>> 0ccf0a7 (fix-modal)
                         </div>
                     </div>
                 </div>
@@ -363,11 +327,7 @@
 
 @push('scripts')
 <script>
-<<<<<<< HEAD
 // DEBUG LOGGING 
-=======
-// Debug logging
->>>>>>> 0ccf0a7 (fix-modal)
 console.group('📍 Route Debug Info');
 @foreach($steps as $index => $step)
 console.log('Step {{ $index + 1 }}: {{ $step["name"] }}', {
@@ -478,34 +438,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     console.groupEnd();
 });
-
-// Fungsi untuk membuka modal (pastikan fungsi ini ada di modal file Anda)
-function openModalProdi() {
-    console.log('Opening Modal Prodi');
-    // Implementasi buka modal prodi
-    const modal = document.getElementById('modalProdi');
-    if (modal) {
-        modal.classList.remove('hidden');
-    }
-}
-
-function openModalDataPribadi() {
-    console.log('Opening Modal Isi Data Pribadi');
-    // Implementasi buka modal isi data pribadi
-    const modal = document.getElementById('modalIsiDataPribadi');
-    if (modal) {
-        modal.classList.remove('hidden');
-    }
-}
-
-function openModalLihatDataPribadi() {
-    console.log('Opening Modal Lihat Data Pribadi');
-    // Implementasi buka modal lihat data pribadi
-    const modal = document.getElementById('modalLihatDataPribadi');
-    if (modal) {
-        modal.classList.remove('hidden');
-    }
-}
 </script>
 @endpush
 @endsection
@@ -514,13 +446,9 @@ function openModalLihatDataPribadi() {
 @include('partials.modals.modal-prodi')
 @include('partials.modals.isi-data-pribadi')
 @include('partials.modals.lihat-data-pribadi')
-<<<<<<< HEAD
 @include('partials.modals.modal-bayar-pendaftaran')
 @include('partials.modals.modal-upload-dokumen')
 @include('partials.modals.modal-tes')
 @include('partials.modals.modal-wawancara')
 @include('partials.modals.modal-daftar-ulang')
 @include('partials.modals.modal-bayar-ukt')
-=======
-@include('partials.modals.modal-bayar-pendaftaran')
->>>>>>> 0ccf0a7 (fix-modal)
