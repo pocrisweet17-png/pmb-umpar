@@ -145,6 +145,30 @@ class CheckStep7
             !$user->is_dokumen_uploaded ||
             !$user->is_tes_selesai ||
             !$user->is_wawancara_selesai ||
+            !$user->is_ukt_paid 
+        ) {
+            return redirect()->route('mahasiswa.dashboard')
+                ->with('error', 'Silakan selesaikan step sebelumnya terlebih dahulu.');
+        }
+
+        return $next($request);
+    }
+}
+class CheckStep8
+{
+    public function handle(Request $request, Closure $next)
+    {
+        $user = $request->user();
+
+        if (
+            !$user ||
+            !$user->is_prodi_selected ||
+            !$user->is_bayar_pendaftaran ||
+            !$user->is_data_completed ||
+            !$user->is_dokumen_uploaded ||
+            !$user->is_tes_selesai ||
+            !$user->is_wawancara_selesai ||
+            !$user->is_ukt_paid ||
             !$user->is_daftar_ulang
         ) {
             return redirect()->route('mahasiswa.dashboard')

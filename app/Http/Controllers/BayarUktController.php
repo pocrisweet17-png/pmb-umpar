@@ -43,7 +43,7 @@ class BayarUktController extends Controller
             ->first();
 
         if (!$biaya) {
-            return back()->with('error', 'Biaya pendaftaran belum tersedia untuk program studi Anda.');
+            return back()->with('error', 'Biaya semester belum tersedia untuk program studi Anda.');
         }
 
         $biaya_ukt = $biaya->biaya_ukt;
@@ -62,7 +62,7 @@ class BayarUktController extends Controller
         if ($user->is_ukt_paid) {
             return response()->json([
                 'success' => false,
-                'message' => 'Anda sudah menyelesaikan pembayaran pendaftaran.'
+                'message' => 'Anda sudah menyelesaikan pembayaran ini.'
             ], 400);
         }
 
@@ -143,7 +143,7 @@ class BayarUktController extends Controller
                     'id'       => 'PD-' . date('Y'),
                     'price'    => (int) $amount,
                     'quantity' => 1,
-                    'name'     => 'Biaya Pendaftaran PMB ' . date('Y'),
+                    'name'     => 'Biaya ukt ' . date('Y'),
                 ]
             ],
             'customer_details' => [
@@ -251,8 +251,8 @@ class BayarUktController extends Controller
         ]);
 
         $user = User::find($payment->user_id);
-        if ($user && !$user->is_bayar_pendaftaran) {
-            $user->is_bayar_pendaftaran = true;
+        if ($user && !$user->is_ukt_paid) {
+            $user->is_ukt_paid = true;
             $user->save();
 
             Log::info('User payment status updated', [
@@ -290,7 +290,7 @@ class BayarUktController extends Controller
 
         $user = Auth::user();
 
-        if ($user->is_bayar_pendaftaran) {
+        if ($user->is_ukt_paid) {
             return back()->with('info', 'Anda sudah menyelesaikan pembayaran.');
         }
 
@@ -300,7 +300,7 @@ class BayarUktController extends Controller
             'user_id'          => $user->id,
             'order_id'         => 'MANUAL-' . $user->id . '-' . time(),
             'jumlah'           => $request->jumlah,
-            'tipe_pembayaran'  => 'pendaftaran',
+            'tipe_pembayaran'  => 'ukt',
             'status_transaksi' => 'manual-upload',
             'bukti_manual'     => $path,
         ]);
@@ -329,7 +329,7 @@ class BayarUktController extends Controller
         // UPDATE TABLE USERS JIKA SETTLEMENT
         $user = $payment->user;
         if ($user) {
-            $user->is_bayar_pendaftaran = true;
+            $user->is_ukt_paid = true;
             $user->save();
         }
 

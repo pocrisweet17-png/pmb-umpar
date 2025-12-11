@@ -23,8 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.dokumen'     => \App\Http\Middleware\StepUploadDokumen::class,
             'check.tes'         => \App\Http\Middleware\StepTes::class,
             'check.wawancara'   => \App\Http\Middleware\StepWawancara::class,
-            'check.daftarulang' => \App\Http\Middleware\StepDaftarUlang::class,
             'check.ukt'         => \App\Http\Middleware\StepBayarUkt::class,
+            'check.daftarulang' => \App\Http\Middleware\StepDaftarUlang::class,
         ]);
 
     })
