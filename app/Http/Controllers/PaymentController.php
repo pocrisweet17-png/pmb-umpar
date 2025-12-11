@@ -69,21 +69,31 @@ class PaymentController extends Controller
 
         $jumlah = $biaya->biaya_pendaftaran;
 
-        $existingPayment = Payment::where('user_id', $user->id)
+        // Cek payment yang sudah settlement
+        $settledPayment = Payment::where('user_id', $user->id)
             ->where('tipe_pembayaran', 'pendaftaran')
-            ->whereIn('status_transaksi', ['pending', 'settlement'])
+            ->where('status_transaksi', 'settlement')
             ->first();
 
-        if ($existingPayment && $existingPayment->status_transaksi === 'settlement') {
+        if ($settledPayment) {
             return response()->json([
                 'success' => false,
                 'message' => 'Pembayaran Anda sudah diverifikasi.'
             ], 400);
         }
 
-        if ($existingPayment) {
-            $orderId = $existingPayment->order_id;
+        // Cek payment yang masih pending dan belum expire (< 24 jam)
+        $pendingPayment = Payment::where('user_id', $user->id)
+            ->where('tipe_pembayaran', 'pendaftaran')
+            ->where('status_transaksi', 'pending')
+            ->where('created_at', '>', now()->subHours(24))
+            ->first();
+
+        if ($pendingPayment) {
+            // Gunakan payment yang masih pending
+            $orderId = $pendingPayment->order_id;
         } else {
+            // Buat order_id baru untuk payment baru atau retry
             $orderId = 'PMB-PD-' . $user->id . '-' . time();
             
             Payment::create([
@@ -105,16 +115,62 @@ class PaymentController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Midtrans Snap Token Error: ' . $e->getMessage());
+            Log::error('Midtrans Snap Token Error: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'order_id' => $orderId,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Jika error karena duplicate order_id, buat order_id baru
+            if (strpos($e->getMessage(), 'order_id') !== false || 
+                strpos($e->getMessage(), 'already exists') !== false) {
+                
+                // Hapus payment yang baru dibuat jika bukan pending payment lama
+                if (!$pendingPayment) {
+                    Payment::where('order_id', $orderId)->delete();
+                }
+                
+                // Generate order_id baru dengan random string
+                $newOrderId = 'PMB-PD-' . $user->id . '-' . time() . '-' . substr(md5(uniqid()), 0, 6);
+                
+                Payment::create([
+                    'user_id'          => $user->id,
+                    'order_id'         => $newOrderId,
+                    'jumlah'           => $jumlah,
+                    'tipe_pembayaran'  => 'pendaftaran',
+                    'status_transaksi' => 'pending',
+                ]);
+                
+                try {
+                    $snapToken = $this->generateSnapToken($user, $jumlah, $newOrderId);
+                    
+                    return response()->json([
+                        'success' => true,
+                        'snap_token' => $snapToken,
+                        'order_id' => $newOrderId
+                    ]);
+                } catch (\Exception $e2) {
+                    Log::error('Midtrans Retry Error: ' . $e2->getMessage());
+                }
+            }
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal membuat transaksi pembayaran. Silakan coba lagi.'
+                'message' => 'Gagal membuat transaksi pembayaran. Silakan coba lagi. Error: ' . $e->getMessage()
             ], 500);
         }
     }
 
     private function generateSnapToken($user, $amount, $orderId)
     {
+            // Validasi input
+        if (empty($orderId)) {
+            throw new \Exception('Order ID tidak boleh kosong');
+        }
+        
+        if ($amount <= 0) {
+            throw new \Exception('Jumlah pembayaran tidak valid');
+        }
         $params = [
             'transaction_details' => [
                 'order_id'     => $orderId,
@@ -141,6 +197,11 @@ class PaymentController extends Controller
                 'finish' => route('payment.finish'),
             ],
         ];
+        Log::info('Generate Snap Token Params', [
+            'order_id' => $orderId,
+            'amount' => $amount,
+            'params' => $params
+        ]);
 
         return Snap::getSnapToken($params);
     }
