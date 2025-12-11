@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8 max-w-7xl">
-    
+
     {{-- Header --}}
     <div class="mb-8">
         <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl overflow-hidden">
@@ -10,7 +10,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-4xl font-bold mb-2">Dashboard PMB</h1>
-                        <p class="text-blue-100 text-lg">Selamat datang, <span class="font-semibold">{{ $user->name }}</span></p>
+                        <p class="text-blue-100 text-lg">Selamat datang, <span class="font-semibold">{{ auth()->user()->name }}</span></p>
                     </div>
                     <div class="hidden md:block">
                         <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
@@ -38,7 +38,7 @@
                         <span class="text-sm font-medium text-gray-600">{{ $completedSteps }}/{{ $totalSteps }} Selesai</span>
                     </div>
                 </div>
-                
+
                 {{-- Progress Steps Visualization --}}
                 <div class="relative">
                     <div class="flex items-center justify-between mb-4">
@@ -64,7 +64,7 @@
                                     </div>
                                 @endif
                             </div>
-                            
+
                             {{-- Step Label --}}
                             <div class="text-center hidden lg:block">
                                 <p class="text-xs font-semibold {{ $step['completed'] ? 'text-green-600' : ($step['enabled'] ? 'text-orange-600' : 'text-gray-400') }}">
@@ -72,12 +72,12 @@
                                 </p>
                             </div>
                         </div>
-                        
+
                         {{-- Connecting Line --}}
                         @if($index < count($steps) - 1)
                         <div class="flex-1 h-1 mx-2 relative" style="top: -18px;">
                             <div class="absolute inset-0 bg-gray-200 rounded-full"></div>
-                            <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all duration-500" 
+                            <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all duration-500"
                                  style="width: {{ $steps[$index]['completed'] && $steps[$index + 1]['completed'] ? '100' : ($steps[$index]['completed'] ? '50' : '0') }}%">
                             </div>
                         </div>
@@ -172,7 +172,7 @@
                                 </span>
                             @endif
                         </div>
-                        
+
                         <p class="text-sm text-gray-600 mb-4">
                             @if($step['completed'])
                                 Langkah ini sudah selesai. Anda dapat melanjutkan ke langkah berikutnya.
@@ -210,7 +210,7 @@
                                         Pilih Prodi
                                     </button>
                                 @else
-                                    <a href="{{ route($step['route']) }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold text-sm hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105" 
+                                    <a href="{{ route($step['route']) }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold text-sm hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
                                        onclick="console.log('Navigating to: {{ route($step['route']) }}')">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -314,18 +314,7 @@
 
 </div>
 
-<<<<<<< HEAD
-{{-- Modal Pilih Prodi --}}
-@if(!$user->is_prodi_selected)
-    @include('mahasiswa.pilih-prodi-modal')
-@endif
-
-@endsection
-
-@section('scripts')
-=======
 @push('scripts')
->>>>>>> update-kesekian-kali
 <script>
 // Debug: Log all step routes
 console.group('📍 Route Debug Info');
