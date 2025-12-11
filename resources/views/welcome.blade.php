@@ -908,7 +908,7 @@
             </p>
 
             <div class="reveal-left delay-3 flex flex-wrap gap-4">
-              <a href="{{ route('register.form') }}" class="btn-gold group inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold shadow-2xl">
+              <a href="{{ route('pendaftaran.form') }}" class="btn-gold group inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold shadow-2xl">
                 DAFTAR SEKARANG
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -967,7 +967,7 @@
                   <h3 class="text-2xl font-bold text-[#0c2340] mb-3">Pendaftaran Mahasiswa Baru</h3>
                   <p class="text-gray-600 mb-6">Bergabunglah dengan keluarga besar Muhammadiyah dan raih masa depan gemilang.</p>
                   <div class="flex gap-3">
-                    <a href="{{ route('register.form') }}" class="flex-1 btn-muhammadiyah text-center px-6 py-3 text-white rounded-xl font-semibold">
+                    <a href="{{ route('pendaftaran.form') }}" class="flex-1 btn-muhammadiyah text-center px-6 py-3 text-white rounded-xl font-semibold">
                       Daftar
                     </a>
                     <a href="/programs" class="flex-1 text-center px-6 py-3 border-2 border-[#0c2340] text-[#0c2340] rounded-xl font-semibold hover:bg-[#0c2340]/5 transition-all duration-300">
