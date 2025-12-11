@@ -128,15 +128,11 @@
                                 <p class="text-sm font-bold text-gray-900">{{ $nextStep['name'] }}</p>
                             </div>
                         </div>
-                        {{-- @if($nextStep['key'] === 'is_prodi_selected')
-                            <button onclick="openModalProdi()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                        @if($modalFunction)
+                            <button onclick="{{ $modalFunction }}" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors">
                                 Lanjutkan →
                             </button>
-                        @else
-                            <a href="{{ route($nextStep['route']) }}" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                Lanjutkan →
-                            </a>
-                        @endif --}}
+                        @endif
                     </div>
                 </div>
                 @endif

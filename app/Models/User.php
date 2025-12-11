@@ -110,4 +110,20 @@ class User extends Authenticatable
     {
         return $query->where('is_verified', false);
     }
+    public function programStudiPilihan1()
+    {
+        return $this->belongsTo(ProgramStudy::class, 'pilihan_1', 'kodeProdi');
+    }
+
+    // Relasi ke program studi untuk pilihan_2 (jika ada)
+    public function programStudiPilihan2()
+    {
+        return $this->belongsTo(ProgramStudy::class, 'pilihan_2', 'kodeProdi');
+    }
+
+    // Accessor untuk mendapatkan nama prodi pilihan 1
+    public function getNamaProdiPilihan1Attribute()
+    {
+        return $this->programStudiPilihan1 ? $this->programStudiPilihan1->namaProdi : $this->pilihan_1;
+    }
 }
