@@ -32,6 +32,10 @@
                             <td class="font-medium">{{ $user->name }}</td>
                         </tr>
                         <tr>
+                            <td class="text-gray-500 py-1">NIM</td>
+                            <td class="font-medium">{{ $user->nim }}</td>
+                        </tr>
+                        <tr>
                             <td class="text-gray-500 py-1">Email</td>
                             <td class="font-medium">{{ $user->email }}</td>
                         </tr>
@@ -45,14 +49,14 @@
 
                     <h4 class="font-semibold mb-2 text-blue-700">Pilihan Prodi</h4>
 
-                    @if($user->namaProdi_1)
+                    @if($user->pilihan_1)
                         <div class="bg-blue-50 p-3 rounded-lg border text-sm">
                             <p class="text-gray-500">Pilihan 1</p>
                             <p class="font-semibold">{{ $user->pilihan_1 }}</p>
                         </div>
                     @endif
 
-                    @if($user->namaProdi_2)
+                    @if($user->pilihan_2)
                         <div class="bg-blue-50 p-3 rounded-lg border mt-2 text-sm">
                             <p class="text-gray-500">Pilihan 2</p>
                             <p class="font-semibold">{{ $user->pilihan_2 }}</p>
@@ -95,7 +99,7 @@
 
                     <div class="p-6">
 
-                        @if($user->is_bayar_ukt)
+                        @if($user->is_ukt_paid)
                             <!-- SUDAH BAYAR -->
                             <div class="p-6 bg-green-100 border border-green-300 rounded-xl text-center">
                                 <div class="text-green-600 text-5xl mb-3">✓</div>

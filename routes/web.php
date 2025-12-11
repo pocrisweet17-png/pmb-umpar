@@ -115,6 +115,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'step.prodi'])->group(function () {
     Route::get('/bayar-pendaftaran', [PaymentController::class, 'index'])->name('bayar.index.pendaftaran');
     Route::post('/bayar-pendaftaran', [PaymentController::class, 'store'])->name('bayar.store.pendaftaran');
+    Route::post('/bayar-ukt/upload-manual', [PaymentController::class, 'uploadBukti'])
+        ->name('ukt.upload');
 });
 
 // Upload bukti qris
@@ -154,19 +156,21 @@ Route::middleware(['auth', 'check.tes'])->group(function () {
 });
 
 // ======================================================================
-// 7. DAFTAR ULANG
+// 7. BAYAR UKT
 // ======================================================================
-Route::middleware(['auth', 'check.wawancara'])->group(function () {
-    Route::get('/daftar-ulang', [DaftarUlangController::class, 'index'])->name('daftar-ulang.index');
-    Route::post('/daftar-ulang', [DaftarUlangController::class, 'store'])->name('daftar-ulang.store');
+Route::middleware(['auth', 'check.before.ukt'])->group(function () {
+    Route::get('/bayar-ukt', [BayarUktController::class, 'index'])->name('ukt.index');
+    Route::post('/bayar-ukt', [BayarUktController::class, 'store'])->name('ukt.store');
+    Route::post('/bayar-ukt/upload-manual', [BayarUktController::class, 'uploadBukti'])
+        ->name('ukt.upload');
 });
 
 // ======================================================================
-// 8. BAYAR UKT
+// 8. DAFTAR ULANG
 // ======================================================================
-Route::middleware(['auth', 'check.daftarulang'])->group(function () {
-    Route::get('/bayar-ukt', [BayarUktController::class, 'index'])->name('ukt.index');
-    Route::post('/bayar-ukt', [BayarUktController::class, 'store'])->name('ukt.store');
+Route::middleware(['auth', 'check.ukt'])->group(function () {
+    Route::get('/daftar-ulang', [DaftarUlangController::class, 'index'])->name('daftar-ulang.index');
+    Route::post('/daftar-ulang', [DaftarUlangController::class, 'store'])->name('daftar-ulang.store');
 });
 
 // ======================================================================
@@ -181,8 +185,8 @@ Route::get('/api/check-registration-status', function() {
         'dokumen_uploaded'   => (bool) $user->is_dokumen_uploaded,
         'tes_selesai'        => (bool) $user->is_tes_selesai,
         'wawancara_selesai'  => (bool) $user->is_wawancara_selesai,
-        'daftar_ulang'       => (bool) $user->is_daftar_ulang,
         'ukt_paid'           => (bool) $user->is_ukt_paid,
+        'daftar_ulang'       => (bool) $user->is_daftar_ulang,
         'redirect_url'       => route('mahasiswa.dashboard')
     ]);
 })->middleware('auth');

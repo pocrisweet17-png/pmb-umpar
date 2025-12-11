@@ -110,4 +110,12 @@ class User extends Authenticatable
     {
         return $query->where('is_verified', false);
     }
+    public function programStudiPilihan1()
+    {
+        return $this->belongsTo(ProgramStudy::class, 'pilihan_1', 'kodeProdi');
+    }
+    public function getNamaProdiPilihan1Attribute()
+    {
+        return $this->programStudiPilihan1 ? $this->programStudiPilihan1->namaProdi : $this->pilihan_1;
+    }
 }

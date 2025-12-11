@@ -45,7 +45,7 @@
 
                     <h4 class="font-semibold mb-2 text-blue-700">Pilihan Prodi</h4>
 
-                    @if($user->namaProdi_1)
+                    @if($user->pilihan_1)
                         <div class="bg-blue-50 p-3 rounded-lg border text-sm">
                             <p class="text-gray-500">Pilihan 1</p>
                             <p class="font-semibold">{{ $user->pilihan_1 }}</p>
@@ -53,7 +53,7 @@
                         </div>
                     @endif
 
-                    @if($user->namaProdi_2)
+                    @if($user->pilihan_2)
                         <div class="bg-blue-50 p-3 rounded-lg border mt-2 text-sm">
                             <p class="text-gray-500">Pilihan 2</p>
                             <p class="font-semibold">{{ $user->pilihan_2 }}</p>

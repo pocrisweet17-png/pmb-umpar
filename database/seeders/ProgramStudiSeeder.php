@@ -18,7 +18,7 @@ class ProgramStudiSeeder extends Seeder
             ['FKIP02', 'Pendidikan Bahasa Inggris', 'S1', 'Fakultas Keguruan dan Ilmu Pendidikan', 90, 72.00],
             ['FKIP03', 'Pendidikan Biologi', 'S1', 'Fakultas Keguruan dan Ilmu Pendidikan', 70, 68.00],
             ['FKIP04', 'Pendidikan Non Formal (Pendidikan Luar Sekolah)', 'S1', 'Fakultas Keguruan dan Ilmu Pendidikan', 60, 65.00],
-            ['PPG01', 'Pendidikan Profesi Guru (PPG)', 'Profesi', 'Fakultas Keguruan dan Ilmu Pendidikan', 100, null],
+            ['PKIP05', 'Pendidikan Profesi Guru (PPG)', 'Profesi', 'Fakultas Keguruan dan Ilmu Pendidikan', 100, null],
 
             ['FAP01', 'Agroteknologi', 'S1', 'Fakultas Pertanian, Peternakan, dan Perikanan', 80, 65.00],
             ['FAP02', 'Agribisnis', 'S1', 'Fakultas Pertanian, Peternakan, dan Perikanan', 90, 67.00],
