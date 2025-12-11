@@ -15,8 +15,8 @@ class Payment extends Model
         'payload',
     ];
 
-    public function registrasi()
+    public function user()
     {
-        return $this->belongsTo(Registrasi::class, 'id_registrasi');
+        return $this->belongsTo(User::class, 'id_registrasi');
     }
 }

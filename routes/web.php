@@ -24,7 +24,7 @@ use App\Http\Controllers\TesController;
 use App\Http\Controllers\WawancaraController;
 use App\Http\Controllers\DaftarUlangController;
 use App\Http\Controllers\MahasiswaDashboardController;
-
+use App\Http\Controllers\UserController;
 
 // ====================
 // MIDTRANS CALLBACK
@@ -114,6 +114,7 @@ Route::get('/admin/dashboard', function () {
     return 'Ini Dashboard Admin';
 })->name('admin.dashboard')->middleware(['auth', AdminMiddleware::class]);
 // Dashboard Admin
+// Dashboard Admin
 Route::middleware(['auth', AdminMiddleware::class])->group(function () {
 
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
@@ -125,6 +126,14 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/admin/soal/{id}/edit', [SoalController::class, 'edit'])->name('admin.soal.edit');
     Route::put('/admin/soal/{id}', [SoalController::class, 'update'])->name('admin.soal.update');
     Route::delete('/admin/soal/{id}', [SoalController::class, 'destroy'])->name('admin.soal.destroy');
+
+    // CRUD User
+    Route::get('/admin/user', [UserController::class, 'index'])->name('admin.user.index');
+    Route::get('/admin/user/create', [UserController::class, 'create'])->name('admin.user.create');
+    Route::post('/admin/user/store', [UserController::class, 'store'])->name('admin.user.store');
+    Route::get('/admin/user/{id}/edit', [UserController::class, 'edit'])->name('admin.user.edit');
+    Route::put('/admin/user/{id}', [UserController::class, 'update'])->name('admin.user.update');
+    Route::delete('/admin/user/{id}', [UserController::class, 'destroy'])->name('admin.user.destroy');
 });
 
 // Route Ujian Mahasiswa

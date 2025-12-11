@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Registrasi;
 use App\Models\Payment;
 use App\Models\BiayaPmb;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Midtrans\Config;
@@ -29,7 +30,7 @@ class PaymentController extends Controller
         $user = request()->user();
 
         // Cek apakah user sudah memilih prodi
-        if (!$user->is_prodi_selected || !$user->kodeProdi_1) {
+        if (!$user->is_prodi_selected || !$user->pilihan_1) {
             return redirect()->route('mahasiswa.dashboard')
                 ->with('error', 'Silakan pilih program studi terlebih dahulu.');
         }
@@ -39,7 +40,7 @@ class PaymentController extends Controller
 
         // Ambil biaya PMB berdasarkan pilihan prodi 1
         $biaya = BiayaPmb::where('tahun', date('Y'))
-            ->where('kodeProdi', $user->kodeProdi_1)
+            ->where('kodeProdi', $user->pilihan_1)
             ->first();
 
         // Jika tidak ada data biaya, set default
@@ -72,7 +73,7 @@ class PaymentController extends Controller
 
         // Ambil biaya
         $biaya = BiayaPmb::where('tahun', date('Y'))
-            ->where('kodeProdi', $user->kodeProdi_1)
+            ->where('kodeProdi', $user->pilihan_1)
             ->first();
 
         $jumlah = $biaya ? $biaya->biaya_pendaftaran : 300000;
@@ -195,7 +196,7 @@ class PaymentController extends Controller
             ]);
 
             // ✅ Auto update registrasi step
-            $user = Registrasi::find($payment->id_registrasi);
+            $user = User::find($payment->id_registrasi);
             if ($user) {
                 $user->is_bayar_pendaftaran = true;
                 $user->save();

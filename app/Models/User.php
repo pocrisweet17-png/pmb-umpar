@@ -26,10 +26,21 @@ class User extends Authenticatable implements MustVerifyEmail
         'pilihan_1',
         'pilihan_2',
         'is_prodi_selected',
+        'is_bayar_pendaftaran',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+        public function payments()
+    {
+        return $this->hasMany(Payment::class, 'id_registrasi');
+    }
+
+    public function paymentPendaftaran()
+    {
+        return $this->hasOne(Payment::class, 'id_registrasi')
+                    ->where('tipe_pembayaran', 'pendaftaran');
+    }
 }

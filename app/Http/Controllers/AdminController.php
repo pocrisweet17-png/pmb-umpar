@@ -13,9 +13,19 @@ class AdminController extends Controller
     {
         $totalSoal = Soal::count();
         $totalUser = User::where('role', 'user')->count();
+        $totalAdmin = User::where('role', 'admin')->count();
+        $totalUserVerified = User::where('is_verified', true)->count();
+        
         $totalUjian = Ujian::count();
         $ujianSelesai = Ujian::where('status', 'selesai')->count();
 
-        return view('admin.dashboard', compact('totalSoal', 'totalUser', 'totalUjian', 'ujianSelesai'));
+        return view('admin.dashboard', compact(
+            'totalSoal',
+            'totalUser',
+            'totalAdmin',
+            'totalUserVerified',
+            'totalUjian',
+            'ujianSelesai'
+        ));
     }
 }

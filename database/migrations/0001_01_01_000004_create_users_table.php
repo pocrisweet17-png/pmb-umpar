@@ -33,7 +33,6 @@ return new class extends Migration
             // Role untuk akses admin / user
             $table->enum('role', ['admin', 'user'])->default('user');
 
-            // Fitur Laravel
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
