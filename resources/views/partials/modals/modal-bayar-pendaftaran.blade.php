@@ -226,7 +226,6 @@
             </div>
 
         </div>
-<<<<<<< HEAD
     </div>
 </div>
 
@@ -237,14 +236,12 @@
 <!-- Script untuk Modal -->
 <script>
 // Fungsi buka/tutup modal
-=======
 
     </div>
 </div>
 
 {{-- JS --}}
 <script>
->>>>>>> 0ccf0a7 (fix-modal)
 function openModalBayarPendaftaran() {
     document.getElementById('modalBayarPendaftaran').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -254,7 +251,6 @@ function closeModalBayarPendaftaran() {
     document.getElementById('modalBayarPendaftaran').classList.add('hidden');
     document.body.style.overflow = 'auto';
 }
-<<<<<<< HEAD
 
 // Tab switching
 document.addEventListener('DOMContentLoaded', function() {
@@ -349,7 +345,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-=======
 </script>
 
 <style>
@@ -378,4 +373,3 @@ document.addEventListener('DOMContentLoaded', function() {
     z-index: 10;
 }
 </style>
->>>>>>> 0ccf0a7 (fix-modal)
