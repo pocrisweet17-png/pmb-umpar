@@ -56,21 +56,19 @@ class MahasiswaDashboardController extends Controller
                 'route' => 'wawancara.index',
                 'enabled' => (bool) $user->is_tes_selesai,
             ],
-             
-            [
-                'name' => 'Bayar UKT',
-                'key' => 'is_ukt_paid',
-                'completed' => (bool) $user->is_ukt_paid,
-                'route' => 'ukt.index',
-                'enabled' => (bool) $user->is_wawancara_selesai,
-            ],
-            
             [
                 'name' => 'Daftar Ulang',
                 'key' => 'is_daftar_ulang',
                 'completed' => (bool) $user->is_daftar_ulang,
                 'route' => 'daftar-ulang.index',
-                'enabled' => (bool) $user->is_ukt_paid, 
+                'enabled' => (bool) $user->is_wawancara_selesai,
+            ],
+            [
+                'name' => 'Bayar UKT',
+                'key' => 'is_ukt_paid',
+                'completed' => (bool) $user->is_ukt_paid,
+                'route' => 'ukt.index',
+                'enabled' => (bool) $user->is_daftar_ulang,
             ],
         ];
 

@@ -34,7 +34,7 @@ class BayarUktController extends Controller
         // Jika sudah bayar, redirect ke dashboard
         if ($user->is_ukt_paid) {
             return redirect()->route('mahasiswa.dashboard')
-                ->with('info', 'Anda sudah menyelesaikan pembayaran UKT Semester.');
+                ->with('info', 'Anda sudah menyelesaikan pembayaran Semester.');
         }
 
         // Ambil biaya ukt
@@ -43,7 +43,7 @@ class BayarUktController extends Controller
             ->first();
 
         if (!$biaya) {
-            return back()->with('error', 'Biaya UKT belum tersedia untuk program studi Anda.');
+            return back()->with('error', 'Biaya pendaftaran belum tersedia untuk program studi Anda.');
         }
 
         $biaya_ukt = $biaya->biaya_ukt;
@@ -58,19 +58,11 @@ class BayarUktController extends Controller
     {
         $user = Auth::user();
 
-        // Validasi: Pastikan sudah bayar pendaftaran dulu
-        if (!$user->is_bayar_pendaftaran) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda harus menyelesaikan pembayaran pendaftaran terlebih dahulu.'
-            ], 400);
-        }
-
-        // Validasi: Cek apakah UKT sudah dibayar
+        // Validasi sudah bayar atau belum
         if ($user->is_ukt_paid) {
             return response()->json([
                 'success' => false,
-                'message' => 'Anda sudah menyelesaikan pembayaran UKT Semester.'
+                'message' => 'Anda sudah menyelesaikan pembayaran pendaftaran.'
             ], 400);
         }
 
@@ -82,13 +74,13 @@ class BayarUktController extends Controller
         if (!$biaya) {
             return response()->json([
                 'success' => false,
-                'message' => 'Biaya UKT semester tidak ditemukan.'
+                'message' => 'Biaya semester tidak ditemukan.'
             ], 404);
         }
 
         $jumlah = $biaya->biaya_ukt;
 
-        // Cek apakah ada payment pending/settlement untuk UKT
+        // Cek apakah ada payment pending/settlement
         $existingPayment = Payment::where('user_id', $user->id)
             ->where('tipe_pembayaran', 'ukt')
             ->whereIn('status_transaksi', ['pending', 'settlement'])
@@ -97,7 +89,7 @@ class BayarUktController extends Controller
         if ($existingPayment && $existingPayment->status_transaksi === 'settlement') {
             return response()->json([
                 'success' => false,
-                'message' => 'Pembayaran UKT Anda sudah diverifikasi.'
+                'message' => 'Pembayaran Anda sudah diverifikasi.'
             ], 400);
         }
 
@@ -105,8 +97,8 @@ class BayarUktController extends Controller
         if ($existingPayment) {
             $orderId = $existingPayment->order_id;
         } else {
-            // Generate order_id baru dengan prefix UKT
-            $orderId = 'UKT-' . $user->id . '-' . time();
+            // Generate order_id baru
+            $orderId = 'PMB-PD-' . $user->id . '-' . time();
             
             // Buat payment record
             Payment::create([
@@ -128,7 +120,7 @@ class BayarUktController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Midtrans Snap Token Error (UKT): ' . $e->getMessage());
+            Log::error('Midtrans Snap Token Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal membuat transaksi pembayaran. Silakan coba lagi.'
@@ -148,10 +140,10 @@ class BayarUktController extends Controller
             ],
             'item_details' => [
                 [
-                    'id'       => 'UKT-' . date('Y'),
+                    'id'       => 'PD-' . date('Y'),
                     'price'    => (int) $amount,
                     'quantity' => 1,
-                    'name'     => 'Biaya UKT Semester ' . date('Y'),
+                    'name'     => 'Biaya Pendaftaran PMB ' . date('Y'),
                 ]
             ],
             'customer_details' => [
@@ -185,7 +177,7 @@ class BayarUktController extends Controller
     public function webhook(Request $request)
     {
         try {
-            Log::info('Midtrans Webhook Received (UKT)', [
+            Log::info('Midtrans Webhook Received', [
                 'order_id' => $request->order_id,
                 'transaction_status' => $request->transaction_status,
                 'all_data' => $request->all()
@@ -215,11 +207,10 @@ class BayarUktController extends Controller
             $transactionStatus = $notif->transaction_status;
             $fraudStatus = $notif->fraud_status ?? '';
 
-            Log::info('Processing UKT payment', [
+            Log::info('Processing payment', [
                 'order_id' => $notif->order_id,
                 'status' => $transactionStatus,
-                'fraud' => $fraudStatus,
-                'tipe_pembayaran' => $payment->tipe_pembayaran
+                'fraud' => $fraudStatus
             ]);
 
             if ($transactionStatus == 'capture') {
@@ -243,7 +234,7 @@ class BayarUktController extends Controller
             return response()->json(['message' => 'Notification processed'], 200);
 
         } catch (\Exception $e) {
-            Log::error('Webhook Error (UKT): ' . $e->getMessage());
+            Log::error('Webhook Error: ' . $e->getMessage());
             return response()->json(['message' => 'Error processing webhook'], 500);
         }
     }
@@ -260,29 +251,14 @@ class BayarUktController extends Controller
         ]);
 
         $user = User::find($payment->user_id);
-        
-        // Update status berdasarkan tipe pembayaran
-        if ($user) {
-            if ($payment->tipe_pembayaran === 'ukt') {
-                // Update status UKT
-                $user->is_ukt_paid = true;
-                $user->save();
+        if ($user && !$user->is_bayar_pendaftaran) {
+            $user->is_bayar_pendaftaran = true;
+            $user->save();
 
-                Log::info('User UKT payment status updated', [
-                    'user_id' => $user->id,
-                    'order_id' => $payment->order_id,
-                    'is_ukt_paid' => $user->is_ukt_paid
-                ]);
-            } elseif ($payment->tipe_pembayaran === 'pendaftaran') {
-                // Update status pendaftaran (untuk backward compatibility)
-                $user->is_bayar_pendaftaran = true;
-                $user->save();
-
-                Log::info('User registration payment status updated', [
-                    'user_id' => $user->id,
-                    'order_id' => $payment->order_id
-                ]);
-            }
+            Log::info('User payment status updated', [
+                'user_id' => $user->id,
+                'order_id' => $payment->order_id
+            ]);
         }
     }
 
@@ -314,72 +290,62 @@ class BayarUktController extends Controller
 
         $user = Auth::user();
 
-        if ($user->is_ukt_paid) {
-            return back()->with('info', 'Anda sudah menyelesaikan pembayaran UKT.');
+        if ($user->is_bayar_pendaftaran) {
+            return back()->with('info', 'Anda sudah menyelesaikan pembayaran.');
         }
 
-        $path = $request->file('bukti_bayar')->store('bukti-pembayaran-ukt', 'public');
+        $path = $request->file('bukti_bayar')->store('bukti-pembayaran', 'public');
 
         Payment::create([
             'user_id'          => $user->id,
-            'order_id'         => 'MANUAL-UKT-' . $user->id . '-' . time(),
+            'order_id'         => 'MANUAL-' . $user->id . '-' . time(),
             'jumlah'           => $request->jumlah,
-            'tipe_pembayaran'  => 'ukt',
+            'tipe_pembayaran'  => 'pendaftaran',
             'status_transaksi' => 'manual-upload',
             'bukti_manual'     => $path,
         ]);
 
         return redirect()->route('mahasiswa.dashboard')
-            ->with('success', 'Bukti pembayaran UKT berhasil diupload. Menunggu verifikasi admin.');
+            ->with('success', 'Bukti pembayaran berhasil diupload. Menunggu verifikasi admin.');
     }
-
-    /**
-     * Callback dari Midtrans (alternative webhook endpoint)
-     */
     public function callback(Request $request)
-    {
-        $notif = new \Midtrans\Notification();
+{
+    $notif = new \Midtrans\Notification();
 
-        $transaction = $notif->transaction_status;
-        $type = $notif->payment_type;
-        $orderId = $notif->order_id;
-        $fraud = $notif->fraud_status;
+    $transaction = $notif->transaction_status;
+    $type = $notif->payment_type;
+    $orderId = $notif->order_id;
+    $fraud = $notif->fraud_status;
 
-        $payment = Payment::where('order_id', $orderId)->first();
+    $payment = Payment::where('order_id', $orderId)->first();
 
-        if (!$payment) {
-            return response()->json(['message' => 'Order not found'], 404);
-        }
-
-        if ($transaction == 'capture' || $transaction == 'settlement') {
-            $payment->status_transaksi = 'settlement';
-            $payment->id_transaksi = $notif->transaction_id;
-            $payment->payload = json_encode($notif->getResponse());
-
-            // UPDATE TABLE USERS BERDASARKAN TIPE PEMBAYARAN
-            $user = $payment->user;
-            if ($user) {
-                if ($payment->tipe_pembayaran === 'ukt') {
-                    $user->is_ukt_paid = true;
-                    $user->save();
-                } elseif ($payment->tipe_pembayaran === 'pendaftaran') {
-                    $user->is_bayar_pendaftaran = true;
-                    $user->save();
-                }
-            }
-
-        } elseif ($transaction == 'pending') {
-            $payment->status_transaksi = 'pending';
-        } elseif ($transaction == 'deny') {
-            $payment->status_transaksi = 'deny';
-        } elseif ($transaction == 'expire') {
-            $payment->status_transaksi = 'expire';
-        } elseif ($transaction == 'cancel') {
-            $payment->status_transaksi = 'cancel';
-        }
-
-        $payment->save();
-
-        return response()->json(['message' => 'Callback processed']);
+    if (!$payment) {
+        return response()->json(['message' => 'Order not found'], 404);
     }
+
+    if ($transaction == 'capture' || $transaction == 'settlement') {
+        $payment->status_transaksi = 'settlement';
+
+        // UPDATE TABLE USERS JIKA SETTLEMENT
+        $user = $payment->user;
+        if ($user) {
+            $user->is_bayar_pendaftaran = true;
+            $user->save();
+        }
+
+    } elseif ($transaction == 'pending') {
+        $payment->status_transaksi = 'pending';
+    } elseif ($transaction == 'deny') {
+        $payment->status_transaksi = 'deny';
+    } elseif ($transaction == 'expire') {
+        $payment->status_transaksi = 'expire';
+    } elseif ($transaction == 'cancel') {
+        $payment->status_transaksi = 'cancel';
+    }
+
+    $payment->save();
+
+    return response()->json(['message' => 'Callback processed']);
+}
+
 }

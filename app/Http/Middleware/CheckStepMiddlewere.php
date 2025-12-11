@@ -145,7 +145,7 @@ class CheckStep7
             !$user->is_dokumen_uploaded ||
             !$user->is_tes_selesai ||
             !$user->is_wawancara_selesai ||
-            !$user->is_ukt_paid
+            !$user->is_daftar_ulang
         ) {
             return redirect()->route('mahasiswa.dashboard')
                 ->with('error', 'Silakan selesaikan step sebelumnya terlebih dahulu.');
