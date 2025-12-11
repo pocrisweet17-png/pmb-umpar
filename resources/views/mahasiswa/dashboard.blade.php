@@ -419,8 +419,8 @@ function checkAndOpenNextModal() {
         else if (!data.dokumen_uploaded) openModalUploadDokumen();
         else if (!data.tes_selesai) openModalTes();
         else if (!data.wawancara_selesai) openModalWawancara();
-        else if (!data.daftar_ulang) openModalDaftarUlang();
         else if (!data.ukt_paid) openModalBayarUkt();
+        else if (!data.daftar_ulang) openModalDaftarUlang();
         else window.location.reload();
     })
     .catch(error => {
