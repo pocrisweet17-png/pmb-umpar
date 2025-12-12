@@ -11,23 +11,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-<<<<<<< HEAD
-        $middleware->alias([
-        'step.prodi'     => \App\Http\Middleware\StepPilihProdi::class,
-        'step.bayar'     => \App\Http\Middleware\StepBayarPendaftaran::class,
-        'step.data'      => \App\Http\Middleware\StepLengkapiData::class,
-        'step.dokumen'   => \App\Http\Middleware\StepUploadDokumen::class,
-        'step.tes'       => \App\Http\Middleware\StepTes::class,
-        'step.wawancara' => \App\Http\Middleware\StepWawancara::class,
-        'step.daftarulang'=> \App\Http\Middleware\StepDaftarUlang::class,
-        'step.ukt'       => \App\Http\Middleware\StepBayarUkt::class,
-    ]);
-    })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
-
-=======
         // Exclude CSRF untuk webhook Midtrans
         $middleware->validateCsrfTokens(except: [
             '/midtrans/webhook',
@@ -48,4 +31,3 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
->>>>>>> bismillah-jadi
