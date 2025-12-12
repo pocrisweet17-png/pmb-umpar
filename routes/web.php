@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-
 use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\DokumentController;
@@ -16,7 +15,7 @@ use App\Http\Controllers\TesController;
 use App\Http\Controllers\WawancaraController;
 use App\Http\Controllers\DaftarUlangController;
 use App\Http\Controllers\MahasiswaDashboardController;
-
+use App\Http\Controllers\NotificationController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Models\ProgramStudy;
 use App\Models\Registrasi;
@@ -109,7 +108,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Midtrans redirect
     Route::get('/payment/finish', [PaymentController::class, 'finish'])->name('payment.finish');
+// Route untuk polling status pembayaran
+Route::get('/payment/poll-status', [PaymentController::class, 'pollStatus'])->name('payment.poll');
+Route::get('/payment/check-status', [PaymentController::class, 'checkStatus'])->name('payment.check');
 
+// Route untuk notifikasi
+Route::post('/notification/mark-read/{id}', [NotificationController::class, 'markAsRead'])->name('notification.mark-read');
     // ======================================================================
     // 3. LENGKAPI DATA
     // ======================================================================
@@ -146,12 +150,45 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ======================================================================
     // 7. BAYAR UKT (VERSI HEAD + PARENT DIGABUNG)
     // ======================================================================
-    Route::middleware(['check.before.ukt'])->group(function () {
+    Route::middleware(['check.wawancara'])->group(function () {
         Route::get('/bayar-ukt', [BayarUktController::class, 'index'])->name('ukt.index');
         Route::post('/bayar-ukt', [BayarUktController::class, 'store'])->name('ukt.store');
         Route::post('/bayar-ukt/upload-manual', [BayarUktController::class, 'uploadBukti'])->name('ukt.upload');
     });
+// Route untuk check status UKT
+Route::get('/payment/check-ukt-status', [BayarUktController::class, 'checkStatus'])
+    ->name('ukt.check-status')
+    ->middleware('auth');
 
+// Route untuk polling status
+Route::get('/payment/poll-ukt-status', function(Request $request) {
+    $orderId = $request->query('order_id');
+    $payment = \App\Models\Payment::where('order_id', $orderId)
+        ->where('tipe_pembayaran', 'ukt')
+        ->where('user_id', Auth::id())
+        ->first();
+    
+    if (!$payment) {
+        return response()->json([
+            'status' => 'not_found',
+            'message' => 'Payment not found'
+        ], 404);
+    }
+    
+    // Jika settlement, update user
+    if ($payment->status_transaksi === 'settlement') {
+        $user = $payment->user;
+        if ($user && !$user->is_ukt_paid) {
+            $user->is_ukt_paid = true;
+            $user->save();
+        }
+    }
+    
+    return response()->json([
+        'status' => $payment->status_transaksi,
+        'is_ukt_paid' => $payment->user->is_ukt_paid ?? false
+    ]);
+})->name('ukt.poll-status')->middleware('auth');
     // ======================================================================
     // 8. DAFTAR ULANG
     // ======================================================================
