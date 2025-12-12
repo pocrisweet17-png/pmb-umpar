@@ -11,7 +11,7 @@ class TesController extends Controller
 {
     public function index()
     {
-        return view('tes.index'); // halaman instruksi tes
+        return view('mahasiswa.ujian'); // halaman instruksi tes
     }
 
     public function store(Request $request)

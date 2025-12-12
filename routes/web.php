@@ -1,29 +1,30 @@
 <?php
 
+use App\Models\User;
 use App\Models\Registrasi;
 use App\Models\ProgramStudy;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TesController;
 use App\Http\Controllers\SoalController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProdiController;
 use App\Http\Controllers\UjianController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\BayarUktController;
 use App\Http\Controllers\DokumentController;
 use App\Http\Controllers\AuthLoginController;
+use App\Http\Controllers\WawancaraController;
 use App\Http\Controllers\RegistrasiController;
+use App\Http\Controllers\DaftarUlangController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\AuthRegisterController;
+use App\Http\Controllers\VerificationController;
 use Symfony\Component\HttpKernel\HttpCache\Store;
 use App\Http\Controllers\MidtransCallbackController;
-use Illuminate\Support\Facades\Mail;
-use App\Http\Controllers\VerificationController;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\BayarUktController;
-use App\Http\Controllers\TesController;
-use App\Http\Controllers\WawancaraController;
-use App\Http\Controllers\DaftarUlangController;
 use App\Http\Controllers\MahasiswaDashboardController;
 
 
@@ -61,7 +62,18 @@ Route::post('/register', [AuthRegisterController::class, 'register'])
 // ======================================================================
 // EMAIL VERIFICATION
 // ======================================================================
-Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify']);
+Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+    ->middleware(['signed'])
+    ->name('verification.verify');
+
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Link verifikasi telah dikirim ulang!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 // ======================================================================
 // LOGIN / LOGOUT
@@ -128,10 +140,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ======================================================================
     // 5. TES
     // ======================================================================
-    Route::middleware(['check.upload'])->group(function () {
-        Route::get('/tes', [TesController::class, 'index'])->name('tes.index');
-        Route::post('/tes', [TesController::class, 'store'])->name('tes.store');
-    });
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/tes', [TesController::class, 'index'])->name('tes.index');
+    Route::post('/tes', [TesController::class, 'store'])->name('tes.store');
+    
+    Route::get('/mahasiswa/ujian', [UjianController::class, 'index'])->name('mahasiswa.ujian');
+    Route::post('/mahasiswa/ujian/submit', [UjianController::class, 'submit'])->name('mahasiswa.ujian.submit');
+    Route::get('/mahasiswa/hasil/{idUjian}', [UjianController::class, 'hasil'])->name('mahasiswa.hasil');
+});
 
     // ======================================================================
     // 6. WAWANCARA

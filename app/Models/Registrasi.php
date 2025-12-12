@@ -17,6 +17,7 @@ class Registrasi extends Model
         'user_id',
         'id',
         'nomorPendaftaran',
+        'namaLengkap',
         'jenisKelamin',
         'tempatLahir',
         'tanggalLahir',
