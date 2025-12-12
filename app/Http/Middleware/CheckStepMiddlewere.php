@@ -9,9 +9,9 @@ class CheckProdi
 {
     public function handle(Request $request, Closure $next)
     {
-        $reg = $request->user()->registrasi;
+        $user = $request->user(); // ✅ User ADALAH registrasi
 
-        if (!$reg || !$reg->is_prodi_selected) {
+        if (!$user || !$user->is_prodi_selected) {
             return redirect()->route('prodi.view')
                 ->with('error', 'Silakan pilih program studi terlebih dahulu.');
         }
@@ -24,14 +24,14 @@ class CheckBayar
 {
     public function handle(Request $request, Closure $next)
     {
-        $reg = $request->user()->registrasi;
+        $user = $request->user();
 
-        if (!$reg || !$reg->is_prodi_selected) {
+        if (!$user || !$user->is_prodi_selected) {
             return redirect()->route('prodi.view')
                 ->with('error', 'Silakan pilih program studi terlebih dahulu.');
         }
 
-        if (!$reg->is_bayar_pendaftaran) {
+        if (!$user->is_bayar_pendaftaran) {
             return redirect()->route('bayar.index')
                 ->with('error', 'Silakan selesaikan pembayaran pendaftaran terlebih dahulu.');
         }
@@ -44,19 +44,19 @@ class CheckLengkapi
 {
     public function handle(Request $request, Closure $next)
     {
-        $reg = $request->user()->registrasi;
+        $user = $request->user();
 
-        if (!$reg || !$reg->is_prodi_selected) {
+        if (!$user || !$user->is_prodi_selected) {
             return redirect()->route('prodi.view')
                 ->with('error', 'Silakan pilih program studi terlebih dahulu.');
         }
 
-        if (!$reg->is_bayar_pendaftaran) {
+        if (!$user->is_bayar_pendaftaran) {
             return redirect()->route('bayar.index')
                 ->with('error', 'Silakan selesaikan pembayaran pendaftaran terlebih dahulu.');
         }
 
-        if (!$reg->is_data_completed) {
+        if (!$user->is_data_completed) {
             return redirect()->route('pendaftaran.index')
                 ->with('error', 'Silakan lengkapi data diri terlebih dahulu.');
         }
@@ -69,14 +69,14 @@ class CheckStep4
 {
     public function handle(Request $request, Closure $next)
     {
-        $reg = $request->user()->registrasi;
+        $user = $request->user();
 
         if (
-            !$reg ||
-            !$reg->is_prodi_selected ||
-            !$reg->is_bayar_pendaftaran ||
-            !$reg->is_data_completed ||
-            !$reg->is_dokumen_uploaded
+            !$user ||
+            !$user->is_prodi_selected ||
+            !$user->is_bayar_pendaftaran ||
+            !$user->is_data_completed ||
+            !$user->is_dokumen_uploaded
         ) {
             return redirect()->route('mahasiswa.dashboard')
                 ->with('error', 'Silakan selesaikan step sebelumnya terlebih dahulu.');
@@ -90,15 +90,15 @@ class CheckStep5
 {
     public function handle(Request $request, Closure $next)
     {
-        $reg = $request->user()->registrasi;
+        $user = $request->user();
 
         if (
-            !$reg ||
-            !$reg->is_prodi_selected ||
-            !$reg->is_bayar_pendaftaran ||
-            !$reg->is_data_completed ||
-            !$reg->is_dokumen_uploaded ||
-            !$reg->is_tes_selesai
+            !$user ||
+            !$user->is_prodi_selected ||
+            !$user->is_bayar_pendaftaran ||
+            !$user->is_data_completed ||
+            !$user->is_dokumen_uploaded ||
+            !$user->is_tes_selesai
         ) {
             return redirect()->route('mahasiswa.dashboard')
                 ->with('error', 'Silakan selesaikan step sebelumnya terlebih dahulu.');
@@ -112,16 +112,16 @@ class CheckStep6
 {
     public function handle(Request $request, Closure $next)
     {
-        $reg = $request->user()->registrasi;
+        $user = $request->user();
 
         if (
-            !$reg ||
-            !$reg->is_prodi_selected ||
-            !$reg->is_bayar_pendaftaran ||
-            !$reg->is_data_completed ||
-            !$reg->is_dokumen_uploaded ||
-            !$reg->is_tes_selesai ||
-            !$reg->is_wawancara_selesai
+            !$user ||
+            !$user->is_prodi_selected ||
+            !$user->is_bayar_pendaftaran ||
+            !$user->is_data_completed ||
+            !$user->is_dokumen_uploaded ||
+            !$user->is_tes_selesai ||
+            !$user->is_wawancara_selesai
         ) {
             return redirect()->route('mahasiswa.dashboard')
                 ->with('error', 'Silakan selesaikan step sebelumnya terlebih dahulu.');
@@ -135,17 +135,41 @@ class CheckStep7
 {
     public function handle(Request $request, Closure $next)
     {
-        $reg = $request->user()->registrasi;
+        $user = $request->user();
 
         if (
-            !$reg ||
-            !$reg->is_prodi_selected ||
-            !$reg->is_bayar_pendaftaran ||
-            !$reg->is_data_completed ||
-            !$reg->is_dokumen_uploaded ||
-            !$reg->is_tes_selesai ||
-            !$reg->is_wawancara_selesai ||
-            !$reg->is_daftar_ulang
+            !$user ||
+            !$user->is_prodi_selected ||
+            !$user->is_bayar_pendaftaran ||
+            !$user->is_data_completed ||
+            !$user->is_dokumen_uploaded ||
+            !$user->is_tes_selesai ||
+            !$user->is_wawancara_selesai ||
+            !$user->is_ukt_paid 
+        ) {
+            return redirect()->route('mahasiswa.dashboard')
+                ->with('error', 'Silakan selesaikan step sebelumnya terlebih dahulu.');
+        }
+
+        return $next($request);
+    }
+}
+class CheckStep8
+{
+    public function handle(Request $request, Closure $next)
+    {
+        $user = $request->user();
+
+        if (
+            !$user ||
+            !$user->is_prodi_selected ||
+            !$user->is_bayar_pendaftaran ||
+            !$user->is_data_completed ||
+            !$user->is_dokumen_uploaded ||
+            !$user->is_tes_selesai ||
+            !$user->is_wawancara_selesai ||
+            !$user->is_ukt_paid ||
+            !$user->is_daftar_ulang
         ) {
             return redirect()->route('mahasiswa.dashboard')
                 ->with('error', 'Silakan selesaikan step sebelumnya terlebih dahulu.');

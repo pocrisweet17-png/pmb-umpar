@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ProgramStudy;
+use App\Models\BiayaPmb;
+use App\Models\FormulirPendaftaran;
 
 class MahasiswaDashboardController extends Controller
 {
@@ -11,14 +13,13 @@ class MahasiswaDashboardController extends Controller
     {
         $user = $request->user();
 
-        // Data progress dengan pengecekan yang benar
         $steps = [
             [
                 'name' => 'Pilih Prodi',
                 'key' => 'is_prodi_selected',
                 'completed' => (bool) $user->is_prodi_selected,
                 'route' => 'prodi.view',
-                'enabled' => true, // Step pertama selalu aktif
+                'enabled' => true,
             ],
             [
                 'name' => 'Bayar Pendaftaran',
@@ -26,7 +27,6 @@ class MahasiswaDashboardController extends Controller
                 'completed' => (bool) $user->is_bayar_pendaftaran,
                 'route' => 'bayar.index',
                 'enabled' => (bool) $user->is_prodi_selected,
-                'requires_modal' => false,
             ],
             [
                 'name' => 'Lengkapi Data',
@@ -57,37 +57,70 @@ class MahasiswaDashboardController extends Controller
                 'enabled' => (bool) $user->is_tes_selesai,
             ],
             [
-                'name' => 'Daftar Ulang',
-                'key' => 'is_daftar_ulang',
-                'completed' => (bool) $user->is_daftar_ulang,
-                'route' => 'daftar-ulang.index',
-                'enabled' => (bool) $user->is_wawancara_selesai,
-            ],
-            [
                 'name' => 'Bayar UKT',
                 'key' => 'is_ukt_paid',
                 'completed' => (bool) $user->is_ukt_paid,
                 'route' => 'ukt.index',
-                'enabled' => (bool) $user->is_daftar_ulang,
+                'enabled' => (bool) $user->is_wawancara_selesai,
             ],
+            [
+                'name' => 'Daftar Ulang',
+                'key' => 'is_daftar_ulang',
+                'completed' => (bool) $user->is_daftar_ulang,
+                'route' => 'daftar-ulang.index',
+                'enabled' => (bool) $user->is_ukt_paid,
+            ],           
         ];
 
-        // Hitung progress persentase
         $completedSteps = collect($steps)->filter(fn($step) => $step['completed'])->count();
         $totalSteps = count($steps);
         $percent = $totalSteps > 0 ? ($completedSteps / $totalSteps) * 100 : 0;
 
-        // Cari step berikutnya yang harus dikerjakan
-        $nextStep = collect($steps)->first(function($step) {
+        $nextStep = collect($steps)->first(function ($step) {
             return !$step['completed'] && $step['enabled'];
         });
 
-        // Data fakultas untuk modal pilih prodi
         $fakultas = ProgramStudy::select('fakultas')
             ->distinct()
             ->orderBy('fakultas')
             ->get();
 
-        return view('mahasiswa.dashboard', compact('steps', 'percent', 'nextStep', 'user', 'fakultas'));
+        $registrasi = $user->registrasi;
+
+        $formulir = FormulirPendaftaran::where('user_id', $user->id)->first();
+
+        $kodeProdi = $user->pilihan_1;
+
+        $biaya_pendaftaran = 5000;
+        if ($kodeProdi) {
+            $biaya = BiayaPmb::where('tahun', date('Y'))
+                ->where('kodeProdi', $kodeProdi)
+                ->first();
+            if ($biaya) {
+                $biaya_pendaftaran = $biaya->biaya_pendaftaran;
+            }
+        }
+
+        $biaya_ukt = 5000;
+        if ($kodeProdi) {
+            $biaya = BiayaPmb::where('tahun', date('Y'))
+                ->where('kodeProdi', $kodeProdi)
+                ->first();
+            if ($biaya) {
+                $biaya_ukt = $biaya->biaya_ukt;
+            }
+        }
+
+        return view('mahasiswa.dashboard', compact(
+            'steps',
+            'percent',
+            'nextStep',
+            'user',
+            'fakultas',
+            'registrasi',
+            'formulir',
+            'biaya_pendaftaran',
+            'biaya_ukt'
+        ));
     }
 }

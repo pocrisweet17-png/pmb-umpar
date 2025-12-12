@@ -15,6 +15,7 @@ return new class extends Migration
     $table->id('idRegistrasi');
     $table->string('nomorPendaftaran')->unique();
     $table->string('namaLengkap');
+    $table->string('jenisKelamin');
     $table->string('tempatLahir');
     $table->date('tanggalLahir');
     $table->string('agama');

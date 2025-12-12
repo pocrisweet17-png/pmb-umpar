@@ -8,24 +8,23 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('mahasiswas', function (Blueprint $table) {
-            $table->id();
+        Schema::create('formulir_pendaftarans', function (Blueprint $table) {
+            $table->id('idFormulir');
             
             // Reference ke users
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('nomorPendaftaran')->unique();
             
-            $table->string('nim')->unique();
-            $table->string('namaLengkap');
-            $table->string('kodeProdi');
-            $table->string('angkatan');
-            $table->string('statusMahasiswa')->default('aktif'); // aktif, cuti, lulus, DO
-            $table->date('tanggalDaftar');
-            $table->unsignedBigInteger('noPDDikti')->nullable();
+            $table->date('tanggalSubmit');
+            $table->string('programStudiPilihan');
+            $table->enum('statusVerifikasi', ['menunggu', 'diverifikasi', 'ditolak'])
+                  ->default('menunggu');
+            $table->string('kodeAkses', 10)->unique();
             
             $table->timestamps();
             
             // Foreign keys
-            $table->foreign('kodeProdi')
+            $table->foreign('programStudiPilihan')
                   ->references('kodeProdi')
                   ->on('program_studis')
                   ->onDelete('restrict');
@@ -34,6 +33,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('mahasiswas');
+        Schema::dropIfExists('formulir_pendaftarans');
     }
 };

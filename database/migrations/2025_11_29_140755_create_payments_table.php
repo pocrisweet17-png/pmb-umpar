@@ -6,32 +6,35 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('payments', function (Blueprint $table) {
-        $table->id('id_pembayaran');                    
-        $table->unsignedBigInteger('id_registrasi');    
-        $table->string('order_id')->unique();           
-        $table->integer('jumlah');                      
-        $table->string('tipe_pembayaran')->nullable();  
-        $table->string('status_transaksi')->nullable(); 
-        $table->string('id_transaksi')->nullable();     
-        $table->string('status_penipuan')->nullable();  
-        $table->json('payload')->nullable();            
-        $table->timestamps();
-        $table->foreign('id_registrasi')
-          ->references('idRegistrasi')
-          ->on('registrasis')
-          ->onDelete('cascade');
+            $table->id();
+            
+            // Reference ke users (bukan registrasis)
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            
+            // Midtrans data
+            $table->string('order_id', 100)->unique();
+            $table->string('id_transaksi', 100)->nullable();
+            $table->decimal('jumlah', 15, 2);
+            
+            // Tipe: pendaftaran atau ukt
+            $table->string('tipe_pembayaran', 50);
+            
+            // Status: pending, settlement, manual-upload, deny, expire, cancel
+            $table->string('status_transaksi', 50);
+            
+            // Untuk upload manual
+            $table->string('bukti_manual')->nullable();
+            
+            // Payload dari Midtrans
+            $table->text('payload')->nullable();
+            
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('payments');

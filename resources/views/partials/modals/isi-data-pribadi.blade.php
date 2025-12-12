@@ -14,6 +14,27 @@
                     </svg>
                 </button>
             </div>
+            @if(session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span class="block sm:inline">{{ session('success') }}</span>
+            </div>
+            @endif
+
+            @if(session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span class="block sm:inline">{{ session('error') }}</span>
+            </div>
+            @endif
+
+            @if($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
 
             <form method="POST" action="{{ route('pendaftaran.store') }}">
                 @csrf
@@ -85,22 +106,23 @@
                             </div>
                         </div>
 
-                        {{-- Kelamin --}}
+                        <!-- JENIS KELAMIN -->
                         <div>
-                            <label for="agama" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <label for="jenisKelamin" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Jenis Kelamin <span class="text-red-500">*</span>
                             </label>
                             <select 
-                                id="jenis_kelamin" 
-                                name="jenis_kelamin" 
+                                id="jenisKelamin" 
+                                name="jenisKelamin" 
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
                                 required>
-                                <option value="">Jenis Kelamin</option>
-                                <option value="Islam">Laki-laki</option>
-                                <option value="Kristen">Perempuan</option>
+                                <option value="">Pilih Jenis Kelamin</option>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
                             </select>
                         </div>
-                        {{-- Agama --}}
+
+                        <!-- AGAMA -->
                         <div>
                             <label for="agama" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Agama <span class="text-red-500">*</span>
@@ -119,7 +141,6 @@
                                 <option value="Konghucu">Konghucu</option>
                             </select>
                         </div>
-
                         {{-- Alamat --}}
                         <div>
                             <label for="alamat" class="block text-sm font-semibold text-gray-700 mb-2">
@@ -208,14 +229,18 @@
 </div>
 
 <script>
+    function openModalIsiDataPribadi() {
+    const modal = document.getElementById('modalIsiDataPribadi');
+    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
 function closeModalDataPribadi() {
     document.getElementById('modalIsiDataPribadi').classList.add('hidden');
-}
-
-function closeModalIfOutside(event, modalId) {
-    if (event.target.id === modalId) {
-        document.getElementById(modalId).classList.add('hidden');
-    }
+    // Lanjut ke modal berikutnya
+    setTimeout(() => {
+        checkAndOpenNextModal();
+    }, 300);
 }
 
 // Prevent modal from closing when clicking inside
@@ -225,6 +250,31 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModalDataPribadi();
+            }
+        });
+    }
+});
+</script>
+<script>
+// Tambahkan di bawah form modal
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form[action="{{ route('pendaftaran.store') }}"]');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            console.log('Form submitted');
+            
+            // Log form data
+            const formData = new FormData(this);
+            for (let [key, value] of formData.entries()) {
+                console.log(key + ': ' + value);
+            }
+            
+            // Disable button to prevent double submit
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle></svg> Menyimpan...';
             }
         });
     }

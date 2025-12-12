@@ -45,7 +45,8 @@ class AuthRegisterController extends Controller
         $user->save();
 
         // 3. Create registrasi steps row
-         Registrasi::create([
+        Registrasi::create([
+            'user_id' => $user->id,
             'nomorPendaftaran'      => $regNo,
             'namaLengkap'           => $user->nama_lengkap,
             'tanggalDaftar'         => now(),
@@ -59,6 +60,7 @@ class AuthRegisterController extends Controller
             'jurusan'               => '-',
             'tahunLulus'            => 0, // atau date('Y')
         
+
             // Step awal
             'is_prodi_selected'     => 0,
             'is_bayar_pendaftaran'  => 0,
