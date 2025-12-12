@@ -470,4 +470,4 @@ function startPaymentPolling(orderId) {
     z-index: 10;
 }
 </style>
->>>>>>> 0ccf0a7 (fix-modal)
+
