@@ -14,8 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Exclude CSRF untuk webhook Midtrans
         $middleware->validateCsrfTokens(except: [
             '/midtrans/webhook',
+            '/notification/*'
         ]);
-    // ---
+    // 
         $middleware->alias([
             'step.prodi'        => \App\Http\Middleware\StepPilihProdi::class,
             'check.bayar'       => \App\Http\Middleware\StepBayarPendaftaran::class,

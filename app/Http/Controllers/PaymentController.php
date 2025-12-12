@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Midtrans\Notification;
+use App\Models\Notif;
 
 class PaymentController extends Controller
 {
@@ -207,60 +208,108 @@ class PaymentController extends Controller
     }
 
     public function webhook(Request $request)
-    {
-        try {
-            Log::info('Midtrans Webhook Received', [
-                'order_id' => $request->order_id,
-                'transaction_status' => $request->transaction_status,
-                'all_data' => $request->all()
+{
+    try {
+        // Log semua data masuk untuk debugging
+        Log::info('📥 MIDTRANS WEBHOOK RECEIVED', [
+            'headers' => $request->headers->all(),
+            'payload' => $request->all(),
+            'ip' => $request->ip(),
+            'url' => $request->fullUrl()
+        ]);
+
+        // Validasi signature key
+        $serverKey = config('midtrans.server_key');
+        $orderId = $request->order_id;
+        $statusCode = $request->status_code;
+        $grossAmount = $request->gross_amount;
+        
+        // Generate signature
+        $signature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
+        
+        Log::info('🔑 SIGNATURE VERIFICATION', [
+            'generated' => $signature,
+            'received' => $request->signature_key,
+            'match' => hash_equals($signature, $request->signature_key)
+        ]);
+
+        if (!hash_equals($signature, $request->signature_key)) {
+            Log::error('❌ INVALID SIGNATURE', [
+                'order_id' => $orderId
             ]);
-
-            $serverKey = config('midtrans.server_key');
-            $hashed = hash('sha512', 
-                $request->order_id . 
-                $request->status_code . 
-                $request->gross_amount . 
-                $serverKey
-            );
-
-            if ($hashed !== $request->signature_key) {
-                Log::error('Invalid Midtrans Signature');
-                return response()->json(['message' => 'Invalid signature'], 403);
-            }
-
-            $notif = new Notification();
-            $payment = Payment::where('order_id', $notif->order_id)->first();
-
-            if (!$payment) {
-                return response()->json(['message' => 'Payment not found'], 404);
-            }
-
-            $transactionStatus = $notif->transaction_status;
-            $fraudStatus = $notif->fraud_status ?? '';
-
-            if ($transactionStatus == 'capture' && $fraudStatus == 'accept') {
-                $this->updatePaymentSuccess($payment, $notif);
-            } elseif ($transactionStatus == 'settlement') {
-                $this->updatePaymentSuccess($payment, $notif);
-            } elseif ($transactionStatus == 'pending') {
-                $payment->update([
-                    'status_transaksi' => 'pending',
-                    'payload' => json_encode($notif->getResponse()),
-                ]);
-            } elseif (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
-                $payment->update([
-                    'status_transaksi' => $transactionStatus,
-                    'payload' => json_encode($notif->getResponse()),
-                ]);
-            }
-
-            return response()->json(['message' => 'Notification processed'], 200);
-
-        } catch (\Exception $e) {
-            Log::error('Webhook Error: ' . $e->getMessage());
-            return response()->json(['message' => 'Error processing webhook'], 500);
+            return response()->json(['message' => 'Invalid signature'], 403);
         }
+
+        // Proses notifikasi
+        $notif = new Notification();
+        $transaction = $notif->transaction_status;
+        $type = $notif->payment_type;
+        $orderId = $notif->order_id;
+        $fraud = $notif->fraud_status ?? '';
+
+        Log::info('🔄 PROCESSING TRANSACTION', [
+            'order_id' => $orderId,
+            'status' => $transaction,
+            'type' => $type,
+            'fraud' => $fraud
+        ]);
+
+        $payment = Payment::where('order_id', $orderId)->first();
+
+        if (!$payment) {
+            Log::error('❌ PAYMENT NOT FOUND', ['order_id' => $orderId]);
+            return response()->json(['message' => 'Payment not found'], 404);
+        }
+
+        // Update berdasarkan status
+        if ($transaction == 'capture') {
+            if ($type == 'credit_card') {
+                if ($fraud == 'challenge') {
+                    $payment->status_transaksi = 'challenge';
+                } else if ($fraud == 'accept') {
+                    $this->updatePaymentSuccess($payment, $notif);
+                }
+            }
+        } else if ($transaction == 'settlement') {
+            $this->updatePaymentSuccess($payment, $notif);
+        } else if ($transaction == 'pending') {
+            $payment->update([
+                'status_transaksi' => 'pending',
+                'payload' => json_encode($notif->getResponse()),
+            ]);
+        } else if ($transaction == 'deny') {
+            $payment->update([
+                'status_transaksi' => 'deny',
+                'payload' => json_encode($notif->getResponse()),
+            ]);
+        } else if ($transaction == 'expire') {
+            $payment->update([
+                'status_transaksi' => 'expire',
+                'payload' => json_encode($notif->getResponse()),
+            ]);
+        } else if ($transaction == 'cancel') {
+            $payment->update([
+                'status_transaksi' => 'cancel',
+                'payload' => json_encode($notif->getResponse()),
+            ]);
+        }
+
+        Log::info('✅ WEBHOOK PROCESSED SUCCESSFULLY', [
+            'order_id' => $orderId,
+            'new_status' => $payment->status_transaksi,
+            'user_updated' => $payment->user->is_bayar_pendaftaran ?? false
+        ]);
+
+        return response()->json(['message' => 'Notification processed'], 200);
+
+    } catch (\Exception $e) {
+        Log::error('🔥 WEBHOOK ERROR: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+            'request' => $request->all()
+        ]);
+        return response()->json(['message' => 'Error processing webhook'], 500);
     }
+}
 
     private function updatePaymentSuccess($payment, $notif)
     {
@@ -275,6 +324,13 @@ class PaymentController extends Controller
         if ($user && !$user->is_bayar_pendaftaran) {
             $user->is_bayar_pendaftaran = true;
             $user->save();
+
+                    Log::info('User payment status updated via webhook', [
+            'user_id' => $user->id,
+            'order_id' => $payment->order_id,
+            'status' => 'settlement'
+        ]);
+             $this->sendPaymentSuccessNotification($user->id, $payment);
         }
     }
 
@@ -356,4 +412,70 @@ class PaymentController extends Controller
 
         return response()->json(['message' => 'Callback processed']);
     }
+    private function sendPaymentSuccessNotification($userId, $payment)
+{
+    try {
+        Notif::create([
+            'user_id' => $userId,
+            'title' => 'Pembayaran Berhasil!',
+            'message' => 'Pembayaran pendaftaran sebesar Rp ' . number_format($payment->jumlah, 0, ',', '.') . ' telah berhasil diverifikasi.',
+            'is_read' => false
+        ]);
+        
+        Log::info('Notifikasi pembayaran sukses dikirim untuk user_id: ' . $userId);
+    } catch (\Exception $e) {
+        Log::error('Gagal membuat notifikasi: ' . $e->getMessage());
+    }
+}
+// Tambahkan method ini di PaymentController.php
+public function pollStatus(Request $request)
+{
+    $request->validate([
+        'order_id' => 'required|string'
+    ]);
+
+    $payment = Payment::where('order_id', $request->order_id)->first();
+
+    if (!$payment) {
+        return response()->json([
+            'status' => 'not_found',
+            'message' => 'Payment not found'
+        ], 404);
+    }
+
+    // Jika status sudah settlement, update user
+    if ($payment->status_transaksi === 'settlement') {
+        $user = User::find($payment->user_id);
+        if ($user && !$user->is_bayar_pendaftaran) {
+            $user->is_bayar_pendaftaran = true;
+            $user->save();
+            
+            // Kirim notifikasi
+            $this->sendPaymentSuccessNotification($user->id, $payment);
+        }
+    }
+
+    return response()->json([
+        'status' => $payment->status_transaksi,
+        'user_status' => $payment->user->is_bayar_pendaftaran ?? false
+    ]);
+}
+
+public function checkStatus(Request $request)
+{
+    $payment = Payment::where('order_id', $request->order_id)
+        ->where('user_id', Auth::id())
+        ->first();
+
+    if (!$payment) {
+        return response()->json([
+            'status' => 'not_found'
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => $payment->status_transaksi,
+        'is_bayar_pendaftaran' => $payment->user->is_bayar_pendaftaran ?? false
+    ]);
+}
 }
