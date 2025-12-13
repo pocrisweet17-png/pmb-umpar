@@ -234,6 +234,16 @@ Route::get('/api/check-registration-status', function () {
 // ======================================================================
 // ADMIN DASHBOARD
 // ======================================================================
-Route::get('/admin/dashboard', fn() => 'Ini Dashboard Admin')
-    ->name('admin.dashboard')
-    ->middleware(['auth', AdminMiddleware::class]);
+// Dashboard Admin
+Route::middleware(['auth', AdminMiddleware::class])->group(function () {
+
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+
+    // CRUD Soal
+    Route::get('/admin/soal', [SoalController::class, 'index'])->name('admin.soal.index');
+    Route::get('/admin/soal/create', [SoalController::class, 'showSoal'])->name('admin.soal.create');
+    Route::post('/admin/soal/store', [SoalController::class, 'createSoal'])->name('admin.soal.store');
+    Route::get('/admin/soal/{id}/edit', [SoalController::class, 'edit'])->name('admin.soal.edit');
+    Route::put('/admin/soal/{id}', [SoalController::class, 'update'])->name('admin.soal.update');
+    Route::delete('/admin/soal/{id}', [SoalController::class, 'destroy'])->name('admin.soal.destroy');
+});
