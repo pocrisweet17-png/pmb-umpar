@@ -164,7 +164,7 @@ public function submit(Request $request)
     $ranking = Leaderboard::where('nilai', '>', $ujian->nilaiAkhir)->count() + 1;
 
     // Cek lulus/tidak
-    $lulus = $ujian->nilaiAkhir >= 70;
+    $lulus = $ujian->nilaiAkhir >= 10;
 
     return view('mahasiswa.hasil', compact('ujian', 'ranking', 'lulus'));
 }

@@ -34,7 +34,7 @@ class PaymentController extends Controller
         }
 
         $biaya = BiayaPmb::where('tahun', date('Y'))
-            ->where('kodeProdi', $user->kodeProdi_1)
+            ->where('kodeProdi', $user->pilihan_1)
             ->first();
 
         if (!$biaya) {
