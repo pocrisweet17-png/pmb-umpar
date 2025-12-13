@@ -145,13 +145,13 @@ Route::post('/notification/mark-read/{id}', [NotificationController::class, 'mar
     // ======================================================================
     // 5. TES
     // ======================================================================
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/tes', [TesController::class, 'index'])->name('tes.index');
-    Route::post('/tes', [TesController::class, 'store'])->name('tes.store');
-    
-    Route::get('/mahasiswa/ujian', [UjianController::class, 'index'])->name('mahasiswa.ujian');
-    Route::post('/mahasiswa/ujian/submit', [UjianController::class, 'submit'])->name('mahasiswa.ujian.submit');
-    Route::get('/mahasiswa/hasil/{idUjian}', [UjianController::class, 'hasil'])->name('mahasiswa.hasil');
+    Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('/tes', [TesController::class, 'index'])->name('tes.index');
+        Route::post('/tes', [TesController::class, 'store'])->name('tes.store');
+        
+        Route::get('/mahasiswa/ujian', [UjianController::class, 'index'])->name('mahasiswa.ujian');
+        Route::post('/mahasiswa/ujian/submit', [UjianController::class, 'submit'])->name('mahasiswa.ujian.submit');
+        Route::get('/mahasiswa/hasil/{idUjian}', [UjianController::class, 'hasil'])->name('mahasiswa.hasil');
 });
 
     // ======================================================================

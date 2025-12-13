@@ -231,8 +231,7 @@ function openModalDaftarUlang() {
     document.getElementById('modalDaftarUlang').classList.remove('hidden');
 }
 
-// Auto show modal jika ada error atau success
-@if(session('success') || session('error') || $errors->any())
+@if(session('daftar_ulang_success') || session('daftar_ulang_error'))
     document.addEventListener('DOMContentLoaded', function() {
         openModalDaftarUlang();
     });

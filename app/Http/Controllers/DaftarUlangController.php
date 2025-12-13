@@ -57,7 +57,7 @@ class DaftarUlangController extends Controller
 
         // Cek apakah sudah pernah daftar ulang
         if ($mahasiswa->is_daftar_ulang) {
-            return redirect()->back()->with('error', 'Anda sudah melakukan pendaftaran ulang sebelumnya.');
+            return redirect()->back()->with('daftar_ulang_error', 'Anda sudah melakukan pendaftaran ulang sebelumnya.');
         }
 
         // Upload file bukti pembayaran
@@ -91,7 +91,7 @@ class DaftarUlangController extends Controller
                 ->update(['is_daftar_ulang' => true]);
         }
 
-        return redirect()->route('daftar-ulang.index')
-                        ->with('success', 'Pendaftaran ulang berhasil! Data Anda sedang diverifikasi.');
+        return redirect()->route('mahasiswa.dashboard')
+                ->with('daftar_ulang_success', 'Pendaftaran ulang berhasil! Data Anda sedang diverifikasi.');
     }
 }
