@@ -14,17 +14,6 @@ use Midtrans\Notification;
 
 class BayarUktController extends Controller
 {
-    public function store(Request $request)
-{
-    // HARDCODE UNTUK TEST - Hapus nanti
-    return response()->json([
-        'success' => true,
-        'snap_token' => 'DUMMY_TOKEN_FOR_TEST',
-        'order_id' => 'TEST-UKT-' . time(),
-        'amount' => 2500000,
-        'message' => 'TEST MODE'
-    ]);
-}
     public function __construct()
     {
         // Konfigurasi Midtrans
@@ -85,208 +74,205 @@ class BayarUktController extends Controller
         return view('bayar.index', compact('user', 'biaya_ukt'));
     }
 
-    /**
-     * Generate Snap Token (dipanggil via AJAX)
-     */
-    // public function store(Request $request)
-    // {
-    //     Log::info('========== UKT STORE METHOD CALLED ==========');
+    public function store(Request $request)
+    {
+        Log::info('========== UKT STORE METHOD CALLED ==========');
         
-    //     $user = Auth::user();
+        $user = Auth::user();
         
-    //     Log::info('User data for UKT payment', [
-    //         'user_id' => $user->id,
-    //         'email' => $user->email,
-    //         'is_ukt_paid' => $user->is_ukt_paid,
-    //         'is_bayar_pendaftaran' => $user->is_bayar_pendaftaran
-    //     ]);
+        Log::info('User data for UKT payment', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'is_ukt_paid' => $user->is_ukt_paid,
+            'is_bayar_pendaftaran' => $user->is_bayar_pendaftaran
+        ]);
 
-    //     if ($user->is_ukt_paid) {
-    //         Log::warning('User already paid UKT', ['user_id' => $user->id]);
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Anda sudah menyelesaikan pembayaran UKT.'
-    //         ], 400);
-    //     }
+        if ($user->is_ukt_paid) {
+            Log::warning('User already paid UKT', ['user_id' => $user->id]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda sudah menyelesaikan pembayaran UKT.'
+            ], 400);
+        }
 
-    //     $biaya = BiayaPmb::where('tahun', date('Y'))
-    //         ->where('kodeProdi', $user->kodeProdi_1)
-    //         ->first();
+        $biaya = BiayaPmb::where('tahun', date('Y'))
+            ->where('kodeProdi', $user->kodeProdi_1)
+            ->first();
 
-    //     if (!$biaya) {
-    //         Log::error('Biaya UKT not found in store method', [
-    //             'user_id' => $user->id,
-    //             'kodeProdi' => $user->kodeProdi_1
-    //         ]);
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Biaya semester tidak ditemukan.'
-    //         ], 404);
-    //     }
+        if (!$biaya) {
+            Log::error('Biaya UKT not found in store method', [
+                'user_id' => $user->id,
+                'kodeProdi' => $user->kodeProdi_1
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Biaya semester tidak ditemukan.'
+            ], 404);
+        }
 
-    //     $jumlah = $biaya->biaya_ukt;
+        $jumlah = $biaya->biaya_ukt;
         
-    //     Log::info('UKT Amount determined', [
-    //         'jumlah' => $jumlah,
-    //         'biaya_id' => $biaya->id
-    //     ]);
+        Log::info('UKT Amount determined', [
+            'jumlah' => $jumlah,
+            'biaya_id' => $biaya->id
+        ]);
 
-    //     // Cek payment yang sudah settlement
-    //     $settledPayment = Payment::where('user_id', $user->id)
-    //         ->where('tipe_pembayaran', 'ukt')
-    //         ->where('status_transaksi', 'settlement')
-    //         ->first();
+        // Cek payment yang sudah settlement
+        $settledPayment = Payment::where('user_id', $user->id)
+            ->where('tipe_pembayaran', 'ukt')
+            ->where('status_transaksi', 'settlement')
+            ->first();
 
-    //     if ($settledPayment) {
-    //         Log::info('UKT payment already settled', [
-    //             'payment_id' => $settledPayment->id,
-    //             'order_id' => $settledPayment->order_id
-    //         ]);
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Pembayaran UKT Anda sudah diverifikasi.'
-    //         ], 400);
-    //     }
+        if ($settledPayment) {
+            Log::info('UKT payment already settled', [
+                'payment_id' => $settledPayment->id,
+                'order_id' => $settledPayment->order_id
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Pembayaran UKT Anda sudah diverifikasi.'
+            ], 400);
+        }
 
-    //     // Cek payment yang masih pending dan belum expire (< 24 jam)
-    //     $pendingPayment = Payment::where('user_id', $user->id)
-    //         ->where('tipe_pembayaran', 'ukt')
-    //         ->where('status_transaksi', 'pending')
-    //         ->where('created_at', '>', now()->subHours(24))
-    //         ->first();
+        // Cek payment yang masih pending dan belum expire (< 24 jam)
+        $pendingPayment = Payment::where('user_id', $user->id)
+            ->where('tipe_pembayaran', 'ukt')
+            ->where('status_transaksi', 'pending')
+            ->where('created_at', '>', now()->subHours(24))
+            ->first();
 
-    //     if ($pendingPayment) {
-    //         // Gunakan payment yang masih pending
-    //         $orderId = $pendingPayment->order_id;
-    //         Log::info('Using existing pending UKT payment', [
-    //             'order_id' => $orderId,
-    //             'created_at' => $pendingPayment->created_at
-    //         ]);
-    //     } else {
-    //         // PERBAIKAN PENTING: Pastikan prefix UNIK untuk UKT
-    //         $orderId = 'PMB-UKT-' . $user->id . '-' . time();
+        if ($pendingPayment) {
+            // Gunakan payment yang masih pending
+            $orderId = $pendingPayment->order_id;
+            Log::info('Using existing pending UKT payment', [
+                'order_id' => $orderId,
+                'created_at' => $pendingPayment->created_at
+            ]);
+        } else {
+            // PERBAIKAN PENTING: Pastikan prefix UNIK untuk UKT
+            $orderId = 'PMB-UKT-' . $user->id . '-' . time();
             
-    //         Log::info('Creating new UKT payment', [
-    //             'order_id' => $orderId,
-    //             'jumlah' => $jumlah,
-    //             'user_id' => $user->id
-    //         ]);
+            Log::info('Creating new UKT payment', [
+                'order_id' => $orderId,
+                'jumlah' => $jumlah,
+                'user_id' => $user->id
+            ]);
             
-    //         try {
-    //             $payment = Payment::create([
-    //                 'user_id'          => $user->id,
-    //                 'order_id'         => $orderId,
-    //                 'jumlah'           => $jumlah,
-    //                 'tipe_pembayaran'  => 'ukt', // HARUS 'ukt' bukan 'pendaftaran'
-    //                 'status_transaksi' => 'pending',
-    //             ]);
+            try {
+                $payment = Payment::create([
+                    'user_id'          => $user->id,
+                    'order_id'         => $orderId,
+                    'jumlah'           => $jumlah,
+                    'tipe_pembayaran'  => 'ukt', // HARUS 'ukt' bukan 'pendaftaran'
+                    'status_transaksi' => 'pending',
+                ]);
                 
-    //             Log::info('UKT Payment record created successfully', [
-    //                 'payment_id' => $payment->id,
-    //                 'order_id' => $payment->order_id
-    //             ]);
-    //         } catch (\Exception $e) {
-    //             Log::error('Failed to create UKT payment record', [
-    //                 'error' => $e->getMessage(),
-    //                 'trace' => $e->getTraceAsString()
-    //             ]);
+                Log::info('UKT Payment record created successfully', [
+                    'payment_id' => $payment->id,
+                    'order_id' => $payment->order_id
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to create UKT payment record', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
                 
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Gagal membuat record pembayaran: ' . $e->getMessage()
-    //             ], 500);
-    //         }
-    //     }
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal membuat record pembayaran: ' . $e->getMessage()
+                ], 500);
+            }
+        }
 
-    //     try {
-    //         Log::info('Attempting to generate Snap Token for UKT', [
-    //             'order_id' => $orderId,
-    //             'amount' => $jumlah
-    //         ]);
+        try {
+            Log::info('Attempting to generate Snap Token for UKT', [
+                'order_id' => $orderId,
+                'amount' => $jumlah
+            ]);
             
-    //         $snapToken = $this->generateSnapToken($user, $jumlah, $orderId);
+            $snapToken = $this->generateSnapToken($user, $jumlah, $orderId);
             
-    //         Log::info('Snap Token generated successfully for UKT', [
-    //             'order_id' => $orderId,
-    //             'token_exists' => !empty($snapToken)
-    //         ]);
+            Log::info('Snap Token generated successfully for UKT', [
+                'order_id' => $orderId,
+                'token_exists' => !empty($snapToken)
+            ]);
 
-    //         return response()->json([
-    //             'success' => true,
-    //             'snap_token' => $snapToken,
-    //             'order_id' => $orderId,
-    //             'amount' => $jumlah,
-    //             'message' => 'Token berhasil dibuat'
-    //         ]);
+            return response()->json([
+                'success' => true,
+                'snap_token' => $snapToken,
+                'order_id' => $orderId,
+                'amount' => $jumlah,
+                'message' => 'Token berhasil dibuat'
+            ]);
 
-    //     } catch (\Exception $e) {
-    //         Log::error('❌ UKT Midtrans Snap Token Error: ' . $e->getMessage(), [
-    //             'user_id' => $user->id,
-    //             'order_id' => $orderId,
-    //             'amount' => $jumlah,
-    //             'trace' => $e->getTraceAsString(),
-    //             'file' => $e->getFile(),
-    //             'line' => $e->getLine()
-    //         ]);
+        } catch (\Exception $e) {
+            Log::error('❌ UKT Midtrans Snap Token Error: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'order_id' => $orderId,
+                'amount' => $jumlah,
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
             
-    //         // PERBAIKAN: Handle error lebih spesifik
-    //         $errorMessage = 'Gagal membuat transaksi pembayaran UKT. ';
+            // PERBAIKAN: Handle error lebih spesifik
+            $errorMessage = 'Gagal membuat transaksi pembayaran UKT. ';
             
-    //         if (strpos($e->getMessage(), 'order_id') !== false || 
-    //             strpos($e->getMessage(), 'already exists') !== false) {
+            if (strpos($e->getMessage(), 'order_id') !== false || 
+                strpos($e->getMessage(), 'already exists') !== false) {
                 
-    //             Log::warning('Duplicate order_id detected for UKT', ['order_id' => $orderId]);
+                Log::warning('Duplicate order_id detected for UKT', ['order_id' => $orderId]);
                 
-    //             // Hapus payment yang baru dibuat jika bukan pending payment lama
-    //             if (!$pendingPayment) {
-    //                 Payment::where('order_id', $orderId)->delete();
-    //                 Log::info('Deleted duplicate UKT payment record', ['order_id' => $orderId]);
-    //             }
+                // Hapus payment yang baru dibuat jika bukan pending payment lama
+                if (!$pendingPayment) {
+                    Payment::where('order_id', $orderId)->delete();
+                    Log::info('Deleted duplicate UKT payment record', ['order_id' => $orderId]);
+                }
                 
-    //             // Generate order_id baru dengan random string
-    //             $newOrderId = 'PMB-UKT-' . $user->id . '-' . time() . '-' . substr(md5(uniqid()), 0, 8);
+                // Generate order_id baru dengan random string
+                $newOrderId = 'PMB-UKT-' . $user->id . '-' . time() . '-' . substr(md5(uniqid()), 0, 8);
                 
-    //             Log::info('Creating new UKT payment with different order_id', [
-    //                 'old_order_id' => $orderId,
-    //                 'new_order_id' => $newOrderId
-    //             ]);
+                Log::info('Creating new UKT payment with different order_id', [
+                    'old_order_id' => $orderId,
+                    'new_order_id' => $newOrderId
+                ]);
                 
-    //             try {
-    //                 // Buat payment baru
-    //                 Payment::create([
-    //                     'user_id'          => $user->id,
-    //                     'order_id'         => $newOrderId,
-    //                     'jumlah'           => $jumlah,
-    //                     'tipe_pembayaran'  => 'ukt',
-    //                     'status_transaksi' => 'pending',
-    //                 ]);
+                try {
+                    // Buat payment baru
+                    Payment::create([
+                        'user_id'          => $user->id,
+                        'order_id'         => $newOrderId,
+                        'jumlah'           => $jumlah,
+                        'tipe_pembayaran'  => 'ukt',
+                        'status_transaksi' => 'pending',
+                    ]);
                     
-    //                 // Coba generate token lagi
-    //                 $snapToken = $this->generateSnapToken($user, $jumlah, $newOrderId);
+                    // Coba generate token lagi
+                    $snapToken = $this->generateSnapToken($user, $jumlah, $newOrderId);
                     
-    //                 Log::info('Retry successful for UKT payment', ['new_order_id' => $newOrderId]);
+                    Log::info('Retry successful for UKT payment', ['new_order_id' => $newOrderId]);
                     
-    //                 return response()->json([
-    //                     'success' => true,
-    //                     'snap_token' => $snapToken,
-    //                     'order_id' => $newOrderId,
-    //                     'message' => 'Token berhasil dibuat setelah retry'
-    //                 ]);
-    //             } catch (\Exception $e2) {
-    //                 Log::error('UKT Midtrans Retry Error: ' . $e2->getMessage());
-    //                 $errorMessage .= 'Error retry: ' . $e2->getMessage();
-    //             }
-    //         } else {
-    //             $errorMessage .= 'Error: ' . $e->getMessage();
-    //         }
+                    return response()->json([
+                        'success' => true,
+                        'snap_token' => $snapToken,
+                        'order_id' => $newOrderId,
+                        'message' => 'Token berhasil dibuat setelah retry'
+                    ]);
+                } catch (\Exception $e2) {
+                    Log::error('UKT Midtrans Retry Error: ' . $e2->getMessage());
+                    $errorMessage .= 'Error retry: ' . $e2->getMessage();
+                }
+            } else {
+                $errorMessage .= 'Error: ' . $e->getMessage();
+            }
             
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => $errorMessage,
-    //             'debug' => config('app.debug') ? $e->getMessage() : null
-    //         ], 500);
-    //     }
-    // }
+            return response()->json([
+                'success' => false,
+                'message' => $errorMessage,
+                'debug' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+    }
 
     /**
      * Generate Snap Token untuk UKT

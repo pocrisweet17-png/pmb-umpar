@@ -19,6 +19,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Models\ProgramStudy;
 use App\Models\Registrasi;
+use App\Illuminate\Support\Facades\Config;
 
 // ======================================================================
 // MIDTRANS WEBHOOK
@@ -108,12 +109,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Midtrans redirect
     Route::get('/payment/finish', [PaymentController::class, 'finish'])->name('payment.finish');
-// Route untuk polling status pembayaran
-Route::get('/payment/poll-status', [PaymentController::class, 'pollStatus'])->name('payment.poll');
-Route::get('/payment/check-status', [PaymentController::class, 'checkStatus'])->name('payment.check');
+    
+    // PERBAIKAN: Pindahkan route ini ke luar middleware step.prodi
+    Route::get('/payment/poll-status', [PaymentController::class, 'pollStatus'])->name('payment.poll');
+    Route::get('/payment/check-status', [PaymentController::class, 'checkStatus'])->name('payment.check');
 
-// Route untuk notifikasi
-Route::post('/notification/mark-read/{id}', [NotificationController::class, 'markAsRead'])->name('notification.mark-read');
+    // Route untuk notifikasi
+    Route::post('/notification/mark-read/{id}', [NotificationController::class, 'markAsRead'])->name('notification.mark-read');
+    
     // ======================================================================
     // 3. LENGKAPI DATA
     // ======================================================================
@@ -155,13 +158,15 @@ Route::post('/notification/mark-read/{id}', [NotificationController::class, 'mar
         Route::post('/bayar-ukt', [BayarUktController::class, 'store'])->name('ukt.store');
         Route::post('/bayar-ukt/upload-manual', [BayarUktController::class, 'uploadBukti'])->name('ukt.upload');
     });
-// Route untuk check status UKT
-Route::get('/payment/check-ukt-status', [BayarUktController::class, 'checkStatus'])
-    ->name('ukt.check-status')
-    ->middleware('auth');
+    
+    // PERBAIKAN: Route untuk check status UKT - TIDAK perlu middleware step.prodi
+    Route::get('/payment/check-ukt-status', [BayarUktController::class, 'checkStatus'])
+        ->name('ukt.check-status')
+        ->middleware('auth');
+});
 
-// Route untuk polling status
-Route::get('/payment/poll-ukt-status', function(Request $request) {
+// Route untuk polling status - LETAKKAN DI LUAR agar bisa diakses tanpa middleware step.prodi
+Route::get('/payment/poll-ukt-status', function(\Illuminate\Http\Request $request) {
     $orderId = $request->query('order_id');
     $payment = \App\Models\Payment::where('order_id', $orderId)
         ->where('tipe_pembayaran', 'ukt')
@@ -189,14 +194,6 @@ Route::get('/payment/poll-ukt-status', function(Request $request) {
         'is_ukt_paid' => $payment->user->is_ukt_paid ?? false
     ]);
 })->name('ukt.poll-status')->middleware('auth');
-    // ======================================================================
-    // 8. DAFTAR ULANG
-    // ======================================================================
-    Route::middleware('check.ukt')->group(function () {
-        Route::get('/daftar-ulang', [DaftarUlangController::class, 'index'])->name('daftar-ulang.index');
-        Route::post('/daftar-ulang', [DaftarUlangController::class, 'store'])->name('daftar-ulang.store');
-    });
-});
 
 // ======================================================================
 // API CEK STATUS
@@ -222,3 +219,29 @@ Route::get('/api/check-registration-status', function () {
 Route::get('/admin/dashboard', fn() => 'Ini Dashboard Admin')
     ->name('admin.dashboard')
     ->middleware(['auth', AdminMiddleware::class]);
+
+// Route untuk test snap token
+Route::get('/test-snap', function() {
+    \Midtrans\Config::$serverKey = config('midtrans.server_key');
+    \Midtrans\Config::$isProduction = config('midtrans.is_production', false);
+    
+    $params = [
+        'transaction_details' => [
+            'order_id' => 'TEST-' . time(),
+            'gross_amount' => 10000,
+        ],
+    ];
+    
+    try {
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+        return response()->json([
+            'snap_token' => $snapToken,
+            'success' => true
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'success' => false
+        ]);
+    }
+})->middleware('auth');

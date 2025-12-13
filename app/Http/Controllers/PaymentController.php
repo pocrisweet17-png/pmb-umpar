@@ -48,6 +48,11 @@ class PaymentController extends Controller
 
     public function store(Request $request)
     {
+        Log::info('Store method called', [
+            'user_id' => Auth::id(),
+            'request_data' => $request->all(),
+            'headers' => $request->headers->all()
+        ]);
         $user = Auth::user();
 
         if ($user->is_bayar_pendaftaran) {
@@ -108,7 +113,11 @@ class PaymentController extends Controller
 
         try {
             $snapToken = $this->generateSnapToken($user, $jumlah, $orderId);
-
+            Log::info('Snap token generated', [
+                'order_id' => $orderId,
+                'snap_token' => $snapToken,
+                'success' => true
+            ]);
             return response()->json([
                 'success' => true,
                 'snap_token' => $snapToken,

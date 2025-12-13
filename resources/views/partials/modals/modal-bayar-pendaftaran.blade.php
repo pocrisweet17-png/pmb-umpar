@@ -143,9 +143,10 @@
                                     <span class="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">Kartu Kredit</span>
                                 </div>
 
-                                <form action="{{ route('bayar.store') }}" method="POST" id="formMidtrans">
-                                    @csrf
-                                    <button type="submit" id="btnBayarOnline"
+                                <form id="formMidtrans">
+                                @csrf
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                <button type="button" id="btnBayarOnline" 
                                         class="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 mx-auto">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
@@ -250,42 +251,26 @@
         </div>
     </div>
 </div>
+
 <!-- Midtrans Snap Script -->
 <script src="https://app.{{ config('midtrans.is_production') ? '' : 'sandbox.' }}midtrans.com/snap/snap.js" 
         data-client-key="{{ config('midtrans.client_key') }}"></script>
+        
 <script>
-// Fungsi buka/tutup modal
-<script>
-    function showSuccessPopup() {
+// ========== FUNCTIONS ==========
+function showSuccessPopup() {
     document.getElementById('paymentSuccessPopup').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
+
 function closeSuccessPopup() {
     document.getElementById('paymentSuccessPopup').classList.add('hidden');
     closeModalBayarPendaftaran();
-    // Refresh halaman setelah 1 detik
     setTimeout(() => {
         window.location.reload();
     }, 1000);
 }
-function checkPaymentStatus(orderId) {
-    fetch(`/payment/check-status?order_id=${orderId}`, {
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'settlement') {
-            showSuccessPopup();
-        } else if (data.status === 'pending') {
-            // Tetap tampilkan modal bayar, tapi dengan status pending
-            console.log('Pembayaran masih pending');
-        }
-    })
-    .catch(error => console.error('Error checking status:', error));
-}
+
 function openModalBayarPendaftaran() {
     document.getElementById('modalBayarPendaftaran').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -295,9 +280,47 @@ function closeModalBayarPendaftaran() {
     document.getElementById('modalBayarPendaftaran').classList.add('hidden');
     document.body.style.overflow = 'auto';
 }
-// Tab switching
+
+function startPaymentPolling(orderId) {
+    let attempts = 0;
+    const maxAttempts = 30;
+    
+    const poll = setInterval(() => {
+        attempts++;
+        
+        fetch(`/payment/poll-status?order_id=${orderId}`, {
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'settlement') {
+                clearInterval(poll);
+                localStorage.removeItem('pending_order_id');
+                showSuccessPopup();
+            } else if (data.status === 'pending' && attempts >= maxAttempts) {
+                clearInterval(poll);
+                alert('Pembayaran masih diproses. Status akan diperbarui secara otomatis.');
+            } else if (['cancel', 'expire', 'deny'].includes(data.status)) {
+                clearInterval(poll);
+                localStorage.removeItem('pending_order_id');
+                alert(`Pembayaran ${data.status}. Silakan coba lagi.`);
+            }
+        })
+        .catch(error => {
+            console.error('Polling error:', error);
+            if (attempts >= maxAttempts) clearInterval(poll);
+        });
+    }, 1000);
+}
+
+// ========== MAIN CODE ==========
 document.addEventListener('DOMContentLoaded', function() {
-    // Tab buttons (kode existing tetap)
+    console.log('DOM loaded, initializing payment...');
+    
+    // ===== 1. TAB SWITCHING =====
     document.querySelectorAll(".tab-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".tab-btn").forEach(b => {
@@ -309,53 +332,77 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.classList.remove("bg-gray-100", "text-gray-700");
 
             document.querySelectorAll(".tab-content").forEach(tab => tab.classList.add("hidden"));
-            document.querySelector(btn.dataset.target).classList.remove("hidden");
+            const target = document.querySelector(btn.dataset.target);
+            if (target) target.classList.remove("hidden");
         });
     });
 
-    // MIDTRANS PAYMENT HANDLER
-    const formMidtrans = document.getElementById('formMidtrans');
-    if (formMidtrans) {
-        formMidtrans.addEventListener('submit', function(e) {
+    // ===== 2. MIDTRANS PAYMENT HANDLER =====
+    const btnBayar = document.getElementById('btnBayarOnline');
+    if (btnBayar) {
+        console.log('Payment button found, attaching event listener...');
+        
+        btnBayar.addEventListener('click', function(e) {
             e.preventDefault();
+            console.log('Bayar button clicked!');
             
-            const btnBayar = document.getElementById('btnBayarOnline');
             const loadingDiv = document.getElementById('loadingPayment');
             
-            loadingDiv.classList.remove('hidden');
+            if (loadingDiv) loadingDiv.classList.remove('hidden');
             btnBayar.disabled = true;
             
+            // Ambil CSRF token
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            // Kirim request menggunakan FormData
+            const formData = new FormData();
+            formData.append('_token', csrfToken);
+            
+            console.log('Sending request to:', '{{ route("bayar.store") }}');
             
             fetch('{{ route("bayar.store") }}', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json'
-                }
+                },
+                body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
-                loadingDiv.classList.add('hidden');
+                console.log('Response data:', data);
+                
+                if (loadingDiv) loadingDiv.classList.add('hidden');
                 btnBayar.disabled = false;
                 
                 if (data.success && data.snap_token) {
-                    // Simpan order_id di localStorage untuk polling
+                    console.log('Snap token received:', data.snap_token);
+                    
+                    // Simpan order_id
                     if (data.order_id) {
                         localStorage.setItem('pending_order_id', data.order_id);
                     }
                     
+                    // Cek snap object
+                    if (typeof snap === 'undefined') {
+                        alert('Error: Sistem pembayaran belum siap. Silakan refresh halaman.');
+                        console.error('Snap object not available');
+                        return;
+                    }
+                    
+                    // Panggil Snap.js
+                    console.log('Calling snap.pay...');
                     snap.pay(data.snap_token, {
                         onSuccess: function(result) {
                             console.log('Payment success:', result);
-                            // Mulai polling untuk status
                             startPaymentPolling(data.order_id);
                         },
                         onPending: function(result) {
                             console.log('Payment pending:', result);
                             alert('Pembayaran pending. Silakan selesaikan pembayaran Anda.');
-                            // Mulai polling untuk status
                             startPaymentPolling(data.order_id);
                         },
                         onError: function(result) {
@@ -364,7 +411,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         },
                         onClose: function() {
                             console.log('Payment popup closed');
-                            // Mulai polling jika user menutup popup
                             if (data.order_id) {
                                 startPaymentPolling(data.order_id);
                             }
@@ -375,73 +421,70 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                loadingDiv.classList.add('hidden');
+                console.error('Fetch error:', error);
+                if (loadingDiv) loadingDiv.classList.add('hidden');
                 btnBayar.disabled = false;
-                alert('Terjadi kesalahan. Silakan coba lagi.');
+                alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
             });
         });
+    } else {
+        console.warn('Payment button not found!');
     }
-function startPaymentPolling(orderId) {
-        let attempts = 0;
-        const maxAttempts = 30; // 30x polling (30 detik)
-        
-        const poll = setInterval(() => {
-            attempts++;
-            
-            fetch(`/payment/poll-status?order_id=${orderId}`, {
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'settlement') {
-                    clearInterval(poll);
-                    localStorage.removeItem('pending_order_id');
-                    showSuccessPopup();
-                } else if (data.status === 'pending' && attempts >= maxAttempts) {
-                    clearInterval(poll);
-                    alert('Pembayaran masih diproses. Status akan diperbarui secara otomatis.');
-                } else if (['cancel', 'expire', 'deny'].includes(data.status)) {
-                    clearInterval(poll);
-                    localStorage.removeItem('pending_order_id');
-                    alert(`Pembayaran ${data.status}. Silakan coba lagi.`);
-                }
-            })
-            .catch(error => {
-                console.error('Polling error:', error);
-                if (attempts >= maxAttempts) {
-                    clearInterval(poll);
-                }
-            });
-        }, 1000); // Poll setiap 1 detik
-    }
-       // Check jika ada pending payment saat modal dibuka
+
+    // ===== 3. CHECK PENDING PAYMENTS =====
     const pendingOrderId = localStorage.getItem('pending_order_id');
     if (pendingOrderId) {
+        console.log('Found pending order:', pendingOrderId);
         startPaymentPolling(pendingOrderId);
     }
-    // UPLOAD MANUAL HANDLER
+
+    // ===== 4. MANUAL UPLOAD HANDLER =====
     const formUpload = document.getElementById('formUploadManual');
     if (formUpload) {
         formUpload.addEventListener('submit', function() {
             const btn = document.getElementById('btnUploadBukti');
-            btn.disabled = true;
-            btn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Mengupload...';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Mengupload...';
+            }
         });
     }
+    
+    // ===== 5. DEBUG: CHECK SNAP LOADING =====
+    // Tunggu 1 detik, lalu cek apakah snap sudah load
+    setTimeout(() => {
+        console.log('Checking snap object...', typeof snap);
+        console.log('CSRF Token:', document.querySelector('meta[name="csrf-token"]'));
+    }, 1000);
 });
-    const formUpload = document.getElementById('formUploadManual');
-    if (formUpload) {
-        formUpload.addEventListener('submit', function() {
-            const btn = document.getElementById('btnUploadBukti');
-            btn.disabled = true;
-            btn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Mengupload...';
-        });
-    }
+
+// ========== GLOBAL ERROR HANDLER ==========
+window.addEventListener('error', function(e) {
+    console.error('Global error:', e.error);
 });
+
+// Fallback jika ada error load snap
+if (typeof snap === 'undefined') {
+    console.warn('Snap not loaded yet, will retry...');
+    
+    // Coba load ulang jika modal dibuka
+    const originalOpenModal = openModalBayarPendaftaran;
+    window.openModalBayarPendaftaran = function() {
+        originalOpenModal();
+        
+        // Jika snap belum ada, coba load
+        if (typeof snap === 'undefined') {
+            console.log('Reloading snap script...');
+            const script = document.createElement('script');
+            script.src = 'https://app.{{ config("midtrans.is_production") ? "" : "sandbox." }}midtrans.com/snap/snap.js';
+            script.setAttribute('data-client-key', '{{ config("midtrans.client_key") }}');
+            script.onload = function() {
+                console.log('Snap reloaded successfully');
+            };
+            document.head.appendChild(script);
+        }
+    };
+}
 </script>
 
 <style>
@@ -470,4 +513,3 @@ function startPaymentPolling(orderId) {
     z-index: 10;
 }
 </style>
->>>>>>> 0ccf0a7 (fix-modal)
