@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\DokumentController;
@@ -20,12 +21,9 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Models\ProgramStudy;
 use App\Models\Registrasi;
 
-// ======================================================================
-// MIDTRANS WEBHOOK
-// ======================================================================
+// Midtrans Webhook - TANPA CSRF & AUTH
 Route::post('/midtrans/webhook', [PaymentController::class, 'webhook'])
     ->name('midtrans.webhook');
-
 // ======================================================================
 // LANDING PAGE
 // ======================================================================
@@ -89,31 +87,22 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // ======================================================================
-    // 2. PEMBAYARAN PENDAFTARAN (SEMUA VERSI DIGABUNG)
+    // 2. PEMBAYARAN PENDAFTARAN
     // ======================================================================
     Route::middleware('step.prodi')->group(function () {
-
-        // Route utama
         Route::get('/bayar', [PaymentController::class, 'index'])->name('bayar.index');
         Route::post('/bayar/store', [PaymentController::class, 'store'])->name('bayar.store');
         Route::post('/bayar/upload-manual', [PaymentController::class, 'uploadBukti'])->name('bayar.upload');
-
-        // Route alternatif
-        Route::get('/bayar-pendaftaran', [PaymentController::class, 'index'])->name('bayar.index.pendaftaran');
-        Route::post('/bayar-pendaftaran', [PaymentController::class, 'store'])->name('bayar.store.pendaftaran');
-
-        // Alias upload QRIS
-        Route::post('/qris/upload', [PaymentController::class, 'uploadBukti'])->name('qris.upload');
     });
 
-    // Midtrans redirect
+    // Payment finish & status routes
     Route::get('/payment/finish', [PaymentController::class, 'finish'])->name('payment.finish');
-// Route untuk polling status pembayaran
-Route::get('/payment/poll-status', [PaymentController::class, 'pollStatus'])->name('payment.poll');
-Route::get('/payment/check-status', [PaymentController::class, 'checkStatus'])->name('payment.check');
+    Route::get('/payment/poll-status', [PaymentController::class, 'pollStatus'])->name('payment.poll');
+    Route::get('/payment/check-status', [PaymentController::class, 'checkStatus'])->name('payment.check');
 
-// Route untuk notifikasi
-Route::post('/notification/mark-read/{id}', [NotificationController::class, 'markAsRead'])->name('notification.mark-read');
+    // Notification routes
+    Route::post('/notification/mark-read/{id}', [NotificationController::class, 'markAsRead'])->name('notification.mark-read');
+
     // ======================================================================
     // 3. LENGKAPI DATA
     // ======================================================================
@@ -148,47 +137,18 @@ Route::post('/notification/mark-read/{id}', [NotificationController::class, 'mar
     });
 
     // ======================================================================
-    // 7. BAYAR UKT (VERSI HEAD + PARENT DIGABUNG)
+    // 7. BAYAR UKT
     // ======================================================================
     Route::middleware(['check.wawancara'])->group(function () {
         Route::get('/bayar-ukt', [BayarUktController::class, 'index'])->name('ukt.index');
         Route::post('/bayar-ukt', [BayarUktController::class, 'store'])->name('ukt.store');
         Route::post('/bayar-ukt/upload-manual', [BayarUktController::class, 'uploadBukti'])->name('ukt.upload');
     });
-// Route untuk check status UKT
-Route::get('/payment/check-ukt-status', [BayarUktController::class, 'checkStatus'])
-    ->name('ukt.check-status')
-    ->middleware('auth');
 
-// Route untuk polling status
-Route::get('/payment/poll-ukt-status', function(Request $request) {
-    $orderId = $request->query('order_id');
-    $payment = \App\Models\Payment::where('order_id', $orderId)
-        ->where('tipe_pembayaran', 'ukt')
-        ->where('user_id', Auth::id())
-        ->first();
-    
-    if (!$payment) {
-        return response()->json([
-            'status' => 'not_found',
-            'message' => 'Payment not found'
-        ], 404);
-    }
-    
-    // Jika settlement, update user
-    if ($payment->status_transaksi === 'settlement') {
-        $user = $payment->user;
-        if ($user && !$user->is_ukt_paid) {
-            $user->is_ukt_paid = true;
-            $user->save();
-        }
-    }
-    
-    return response()->json([
-        'status' => $payment->status_transaksi,
-        'is_ukt_paid' => $payment->user->is_ukt_paid ?? false
-    ]);
-})->name('ukt.poll-status')->middleware('auth');
+    // UKT status check
+    Route::get('/payment/check-ukt-status', [BayarUktController::class, 'checkStatus'])
+        ->name('ukt.check-status');
+
     // ======================================================================
     // 8. DAFTAR ULANG
     // ======================================================================
