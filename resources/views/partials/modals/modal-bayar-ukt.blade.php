@@ -1,4 +1,6 @@
 <div id="modalBayarUkt" class="fixed inset-0 hidden z-[9999]">
+    data-ukt-store-url="{{ route('ukt.store') }}"
+     data-ukt-check-url="{{ route('ukt.check-status') }}">
     <!-- Overlay -->
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"
          onclick="closeModalBayarUkt()"></div>
@@ -143,7 +145,8 @@
 
                                 <div id="paymentButtonContainer">
                                     <button type="button" id="btnBayarUktOnline"
-                                        class="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 mx-auto">
+                                        class="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 mx-auto"
+                                        onclick="processUktPayment(); return false;">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                                         </svg>
@@ -261,8 +264,9 @@
         </div>
     </div>
 </div>
-
-<!-- ==================== SCRIPT UKT YANG SIMPLE & PASTI WORK ==================== -->
+<script src="https://app.{{ config('midtrans.is_production') ? '' : 'sandbox.' }}midtrans.com/snap/snap.js" 
+        data-client-key="{{ config('midtrans.client_key') }}"></script>
+        
 <script>
 // ========== 1. VARIABLES & ELEMENTS ==========
 let uktPaymentPolling = null;
@@ -316,11 +320,6 @@ function initUktTabs() {
     const tabButtons = document.querySelectorAll('.tab-btn-ukt');
     const tabContents = document.querySelectorAll('.tab-content-ukt');
     
-    tabButtons.forEach(button => {
-        // Remove existing listeners
-        button.replaceWith(button.cloneNode(true));
-    });
-    
     // Re-select after clone
     document.querySelectorAll('.tab-btn-ukt').forEach(button => {
         button.addEventListener('click', function() {
@@ -347,37 +346,17 @@ function initUktTabs() {
     console.log('UKT tabs initialized');
 }
 
-// ========== 4. SETUP PAYMENT BUTTON ==========
-function setupUktPaymentButton() {
-    console.log('🔄 Setting up UKT payment button...');
-    
-    const btnBayarUkt = document.getElementById('btnBayarUktOnline');
-    if (!btnBayarUkt) {
-        console.error('❌ btnBayarUktOnline not found!');
-        return;
-    }
-    
-    console.log('✅ UKT payment button found, adding event listener...');
-    
-    // Remove existing listeners
-    btnBayarUkt.replaceWith(btnBayarUkt.cloneNode(true));
-    
-    // Re-select after clone
-    const newBtn = document.getElementById('btnBayarUktOnline');
-    
-    newBtn.addEventListener('click', async function(e) {
-        e.preventDefault();
-        console.log('🤑 UKT Payment button clicked!');
-        
-        await processUktPayment();
-    });
-    
-    console.log('✅ UKT payment button setup complete');
-}
-
 // ========== 5. PROCESS PAYMENT ==========
 async function processUktPayment() {
     console.log('💰 Starting UKT payment process...');
+    const modal = document.getElementById('modalBayarUkt');
+    const uktStoreUrl = modal?.dataset?.uktStoreUrl || '/bayar-ukt';
+    console.log('UKT Store URL:', uktStoreUrl);
+    // Validasi snap
+    if (typeof window.snap === 'undefined') {
+        alert('Sistem pembayaran sedang loading. Silakan coba lagi dalam beberapa detik.');
+        return;
+    }
     
     const btn = document.getElementById('btnBayarUktOnline');
     const loading = document.getElementById('loadingPaymentUkt');
@@ -398,8 +377,8 @@ async function processUktPayment() {
         console.log('CSRF Token:', csrfToken ? 'Found' : 'Not found');
         
         // Make request
-        console.log('📤 Sending request to ukt.store...');
-        const response = await fetch('{{ route("ukt.store") }}', {
+        console.log('📤 Sending request to:', uktStoreUrl);
+        const response = await fetch('/bayar-ukt',  {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -408,18 +387,19 @@ async function processUktPayment() {
             },
             credentials: 'include'
         });
+        
         // Cek jika redirect (session habis)
-if (response.redirected) {
-    const redirectUrl = response.url;
-    console.error('⚠️ Redirected to:', redirectUrl);
-    
-    // Jika redirect ke login page
-    if (redirectUrl.includes('/login')) {
-        alert('Session habis! Silakan login ulang.');
-        window.location.href = '/login';
-        return;
-    }
-}
+        if (response.redirected) {
+            const redirectUrl = response.url;
+            console.error('⚠️ Redirected to:', redirectUrl);
+            
+            // Jika redirect ke login page
+            if (redirectUrl.includes('/login')) {
+                alert('Session habis! Silakan login ulang.');
+                window.location.href = '/login';
+                return;
+            }
+        }
         
         console.log('📥 Response status:', response.status);
         
@@ -462,6 +442,13 @@ if (response.redirected) {
                         statusDiv.classList.remove('hidden');
                     }
                     startUktPaymentPolling(data.order_id);
+                    setTimeout(() => {
+                        checkUktPaymentStatus(data.order_id).then(result => {
+                            if (result.success) {
+                                showUktSuccessPopup();
+                            }
+                        });
+                    }, 3000);
                 },
                 onPending: function(result) {
                     console.log('⏳ Payment pending:', result);
@@ -528,34 +515,39 @@ if (response.redirected) {
 // ========== 6. POLLING FUNCTIONS ==========
 async function checkUktPaymentStatus(orderId) {
     try {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        console.log('🔍 Checking UKT payment status for:', orderId);
         
-        const response = await fetch(`/payment/check-status?order_id=${orderId}&type=ukt`, {
+        const response = await fetch(`/payment/check-ukt-status?order_id=${orderId}`, {
             headers: {
-                'X-CSRF-TOKEN': csrfToken,
                 'Accept': 'application/json'
-            }
+            },
+            credentials: 'include'
         });
         
-        if (!response.ok) return { status: 'error' };
+        console.log('📊 UKT Status response:', response.status);
         
-        const data = await response.json();
-        console.log('Polling status:', data.status);
-        
-        if (data.status === 'settlement') {
-            return { status: 'settlement', success: true };
+        if (!response.ok) {
+            console.error('❌ UKT Status check failed:', response.status);
+            return { status: 'error', success: false };
         }
         
-        return { status: data.status, success: false };
+        const data = await response.json();
+        console.log('📊 UKT Payment status data:', data);
+        
+        return { 
+            status: data.status, 
+            success: data.status === 'settlement',
+            is_ukt_paid: data.is_ukt_paid || false 
+        };
         
     } catch (error) {
-        console.error('Polling error:', error);
+        console.error('🔥 UKT Polling error:', error);
         return { status: 'error', success: false };
     }
 }
 
 function startUktPaymentPolling(orderId) {
-    console.log('🔁 Starting polling for order:', orderId);
+    console.log('🔁 Starting UKT polling for order:', orderId);
     
     // Clear existing polling
     if (uktPaymentPolling) {
@@ -567,19 +559,44 @@ function startUktPaymentPolling(orderId) {
     
     uktPaymentPolling = setInterval(async () => {
         attempts++;
+        console.log(`📡 UKT Polling attempt ${attempts}/${maxAttempts} for ${orderId}`);
         
         if (attempts > maxAttempts) {
             clearInterval(uktPaymentPolling);
-            console.log('⏰ Polling timeout after', maxAttempts, 'attempts');
+            console.log('⏰ UKT Polling timeout after', maxAttempts, 'attempts');
+            
+            // Update UI
+            const statusDiv = document.getElementById('paymentStatusUkt');
+            const statusText = document.getElementById('statusTextUkt');
+            if (statusDiv && statusText) {
+                statusText.textContent = 'Polling timeout. Refresh halaman untuk cek status terbaru.';
+                statusText.className = 'text-yellow-600 font-semibold';
+                statusDiv.classList.remove('hidden');
+            }
             return;
         }
         
         const result = await checkUktPaymentStatus(orderId);
+        console.log('📊 UKT Polling result:', result);
         
-        if (result.success) {
+        if (result.success || result.is_ukt_paid) {
             clearInterval(uktPaymentPolling);
             localStorage.removeItem('pending_ukt_order_id');
-            showUktSuccessPopup();
+            console.log('✅ UKT Payment settled!');
+            
+            // Update UI
+            const statusDiv = document.getElementById('paymentStatusUkt');
+            const statusText = document.getElementById('statusTextUkt');
+            if (statusDiv && statusText) {
+                statusText.textContent = 'Pembayaran berhasil! Memuat ulang halaman...';
+                statusText.className = 'text-green-600 font-semibold';
+                statusDiv.classList.remove('hidden');
+            }
+            
+            // Show success popup
+            setTimeout(() => {
+                showUktSuccessPopup();
+            }, 1500);
         }
         
     }, 1000); // Poll setiap 1 detik
@@ -610,9 +627,6 @@ function setupUktUploadForm() {
 // ========== 8. INITIALIZE EVERYTHING ==========
 document.addEventListener('DOMContentLoaded', function() {
     console.log('📄 DOM loaded, initializing UKT system...');
-    
-    // Setup payment button
-    setupUktPaymentButton();
     
     // Setup upload form
     setupUktUploadForm();

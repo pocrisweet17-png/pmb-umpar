@@ -705,34 +705,36 @@ class BayarUktController extends Controller
     /**
      * API untuk check status UKT payment
      */
-    public function checkStatus(Request $request)
-    {
-        $orderId = $request->query('order_id');
-        $type = $request->query('type', 'ukt');
-        
-        Log::info('UKT Check status API called', [
-            'order_id' => $orderId,
-            'type' => $type
-        ]);
-        
-        $payment = Payment::where('order_id', $orderId)
-            ->where('tipe_pembayaran', 'ukt')
-            ->where('user_id', Auth::id())
-            ->first();
+    /**
+ * API untuk check status UKT payment
+ */
+public function checkStatus(Request $request)
+{
+    $orderId = $request->query('order_id');
+    
+    Log::info('UKT Check status API called', [
+        'order_id' => $orderId,
+        'user_id' => Auth::id()
+    ]);
+    
+    $payment = Payment::where('order_id', $orderId)
+        ->where('tipe_pembayaran', 'ukt')
+        ->where('user_id', Auth::id())
+        ->first();
 
-        if (!$payment) {
-            Log::warning('UKT Payment not found in checkStatus', ['order_id' => $orderId]);
-            return response()->json([
-                'status' => 'not_found',
-                'message' => 'Payment not found or not authorized'
-            ], 404);
-        }
-
+    if (!$payment) {
+        Log::warning('UKT Payment not found in checkStatus', ['order_id' => $orderId]);
         return response()->json([
-            'status' => $payment->status_transaksi,
-            'is_ukt_paid' => $payment->user->is_ukt_paid ?? false,
-            'order_id' => $payment->order_id,
-            'amount' => $payment->jumlah
-        ]);
+            'status' => 'not_found',
+            'message' => 'Payment not found or not authorized'
+        ], 404);
     }
+
+    return response()->json([
+        'status' => $payment->status_transaksi,
+        'is_ukt_paid' => $payment->user->is_ukt_paid ?? false,
+        'order_id' => $payment->order_id,
+        'amount' => $payment->jumlah
+    ]);
+}
 }
