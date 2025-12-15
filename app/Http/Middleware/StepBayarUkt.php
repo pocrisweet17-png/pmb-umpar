@@ -20,10 +20,9 @@ class StepBayarUkt
             return redirect()->route('login');
         }
 
-        // asumsikan relasi registrasi ada: $user->registrasi
-        $reg = $user->registrasi ?? null;
-        if (! $reg || ! $reg->is_ukt_paid) {
-            return redirect()->route('mahasiswa.dashboard')->with('error', 'Silakan melakukan pembayaran UKT Semester 1 terlebih dahulu.');
+        if (!$user->is_ukt_paid) {
+            return redirect()->route('mahasiswa.dashboard')
+                ->with('error', 'Silakan melakukan pembayaran UKT Semester 1 terlebih dahulu.');
         }
         return $next($request);
     }
