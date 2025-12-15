@@ -48,7 +48,7 @@
 
                     <div class="alert alert-info text-start">
                         <h6 class="fw-semibold mb-2"><i class="bi bi-info-circle me-2"></i>Langkah Selanjutnya:</h6>
-                        <p class="mb-0">Silakan kembali ke dashboard untuk melanjutkan ke langkah berikutnya yaitu <strong>Lengkapi Data</strong>.</p>
+                        <p class="mb-0">Silakan kembali ke dashboard untuk melanjutkan ke langkah berikutnya yaitu <strong>Daftar Ulang</strong>.</p>
                     </div>
 
                     <a href="{{ route('mahasiswa.dashboard') }}" class="btn btn-primary btn-lg px-5">

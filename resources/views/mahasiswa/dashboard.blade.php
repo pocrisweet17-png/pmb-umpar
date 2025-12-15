@@ -10,7 +10,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900 mb-1">Dashboard Pendaftaran Mahasiswa Baru</h1>
-                        <p class="text-gray-600">Selamat datang, <span class="font-semibold text-gray-900">{{ $user->name }}</span></p>
+                        <p class="text-gray-600">Selamat datang, <span class="font-semibold text-gray-900">{{ $user->name }}</span> NIM:<span class="font-semibold text-gray-900">{{ $user->nim }}</span></p>
                     </div>
                     <div class="hidden md:flex items-center gap-3">
                         {{-- Tombol Test Modal Isi Data --}}
