@@ -1,5 +1,4 @@
 <?php
-// 2025_12_05_140822_create_notifications_table.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

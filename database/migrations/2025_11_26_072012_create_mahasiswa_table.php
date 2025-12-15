@@ -1,5 +1,4 @@
 <?php
-// 2025_11_26_072012_create_mahasiswas_table.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

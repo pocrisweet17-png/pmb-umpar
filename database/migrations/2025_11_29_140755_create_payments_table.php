@@ -1,5 +1,4 @@
 <?php
-// 2025_11_29_140755_create_payments_table.php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

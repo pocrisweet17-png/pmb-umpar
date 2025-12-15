@@ -10,31 +10,28 @@
         </div>
 
         <div class="p-6">
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                <div class="flex items-start gap-3">
-                    <svg class="w-6 h-6 text-yellow-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                    </svg>
-                    <div>
-                        <h4 class="font-bold text-gray-900 mb-1">Informasi Tes</h4>
-                        <ul class="text-sm text-gray-700 space-y-1">
-                            <li>• Tes berlangsung 90 menit</li>
-                            <li>• Terdiri dari 50 soal pilihan ganda</li>
-                            <li>• Pastikan koneksi internet stabil</li>
-                        </ul>
+            @if($user->is_tes_selesai)
+                <div class="text-center py-10">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-4">
+                        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
                     </div>
-                </div>
-            </div>
-
-            <form action="{{ route('tes.store') }}" method="POST">
-                @csrf
-                <div class="text-center py-8">
-                    <p class="text-gray-600 mb-4">Klik tombol di bawah untuk memulai tes</p>
-                    <button type="submit" class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold">
-                        Mulai Tes Sekarang
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Tes Sudah Selesai!</h3>
+                    <p class="text-gray-600 mb-6">Anda telah menyelesaikan tes masuk.</p>
+                    
+                    <button onclick="closeModalTes()" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-semibold">
+                        Tutup
                     </button>
                 </div>
-            </form>
+            @else
+                <div class="text-center py-8">
+                    <p class="text-gray-600 mb-4">Klik tombol di bawah untuk memulai tes</p>
+                    <a href="{{ route('mahasiswa.ujian') }}" class="inline-block px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold">
+                        Mulai Tes Sekarang →
+                    </a>
+                </div>
+            @endif
         </div>
     </div>
 </div>

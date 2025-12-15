@@ -1,57 +1,49 @@
 <?php
-// database/migrations/2025_11_26_071911_create_registrasis_table.php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('registrasis', function (Blueprint $table) {
             $table->id('idRegistrasi');
-            
-            // Reference ke users
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade'); 
             $table->string('nomorPendaftaran')->unique();
+            $table->string('namaLengkap');
+            $table->string('jenisKelamin')->nullable(); 
+            $table->string('tempatLahir')->nullable(); 
+            $table->date('tanggalLahir')->nullable(); 
+            $table->string('agama')->nullable(); 
+            $table->string('alamat')->nullable(); 
+            $table->string('asalSekolah')->nullable(); 
+            $table->string('jurusan')->nullable(); 
+            $table->integer('tahunLulus')->nullable(); 
+            $table->string('programStudiPilihan')->nullable(); 
+            $table->date('tanggalDaftar');
+            $table->enum('statusRegistrasi', ['pending', 'lunas', 'diterima', 'ditolak'])->default('pending');
             
-            // Data Pribadi
-            $table->string('jenisKelamin')->nullable();
-            $table->string('tempatLahir')->nullable();
-            $table->date('tanggalLahir')->nullable();
-            $table->string('agama')->nullable();
-            $table->text('alamat')->nullable();
-            
-            // Data Sekolah
-            $table->string('asalSekolah')->nullable();
-            $table->string('jurusan')->nullable();
-            $table->integer('tahunLulus')->nullable();
-            
-            // Program Studi Pilihan
-            $table->string('programStudiPilihan')->nullable();
-            
-            // Status & Tanggal
-            $table->date('tanggalDaftar')->nullable();
-            $table->enum('statusRegistrasi', ['pending', 'lunas', 'diterima', 'ditolak'])
-                  ->default('pending');
+           
+            $table->boolean('is_prodi_selected')->default(0);
+            $table->boolean('is_bayar_pendaftaran')->default(0);
+            $table->boolean('is_data_completed')->default(0);
+            $table->boolean('is_dokumen_uploaded')->default(0);
+            $table->boolean('is_tes_selesai')->default(0);
+            $table->boolean('is_wawancara_selesai')->default(0);
+            $table->boolean('is_daftar_ulang')->default(0);
+            $table->boolean('is_ukt_paid')->default(0);
             
             $table->timestamps();
-            
-            // Index untuk performance
-            $table->index('user_id');
-            $table->index('nomorPendaftaran');
         });
-        
-        // Tambahkan foreign key setelah tabel dibuat (jika program_studis sudah ada)
-        Schema::table('registrasis', function (Blueprint $table) {
-             $table->foreign('programStudiPilihan')
-                   ->references('kodeProdi')
-                   ->on('program_studis')
-                   ->onDelete('set null');
-         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('registrasis');

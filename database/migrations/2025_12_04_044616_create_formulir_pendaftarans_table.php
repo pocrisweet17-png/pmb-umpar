@@ -14,6 +14,7 @@ return new class extends Migration
             // Reference ke users
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('nomorPendaftaran')->unique();
+            $table->boolean('is_tes_selesai')->default(false);
             
             $table->date('tanggalSubmit');
             $table->string('programStudiPilihan');

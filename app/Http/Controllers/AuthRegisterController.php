@@ -51,6 +51,15 @@ class AuthRegisterController extends Controller
             'namaLengkap'           => $user->nama_lengkap,
             'tanggalDaftar'         => now(),
             'statusRegistrasi'      => 'pending',
+            
+            'tempatLahir'           => '-',  
+            'tanggalLahir'          => now(),
+            'agama'                 => '-',
+            'alamat'                => '-',
+            'asalSekolah'           => '-',
+            'jurusan'               => '-',
+            'tahunLulus'            => 0, // atau date('Y')
+        
 
             // Step awal
             'is_prodi_selected'     => 0,

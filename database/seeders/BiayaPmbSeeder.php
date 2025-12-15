@@ -1,5 +1,4 @@
 <?php
-// database/seeders/BiayaPmbSeeder.php
 
 namespace Database\Seeders;
 

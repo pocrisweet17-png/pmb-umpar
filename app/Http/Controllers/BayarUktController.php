@@ -298,5 +298,4 @@ class BayarUktController extends Controller
             'message' => 'Payment not found or not authorized'
         ], 404);
     }
-
 }
