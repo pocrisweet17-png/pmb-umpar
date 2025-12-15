@@ -155,7 +155,7 @@
                         <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                         </svg>
-                        Role & Verifikasi
+                        Role & Sudah wawancara
                     </h4>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -175,9 +175,9 @@
                                 Status Verifikasi
                             </label>
                             <label class="flex items-center cursor-pointer bg-white border-2 border-purple-300 rounded-xl px-4 py-3 hover:bg-purple-50 transition-colors">
-                                <input type="checkbox" name="is_verified" value="1" {{ old('is_verified', $user->is_verified) ? 'checked' : '' }}
+                                <input type="checkbox" name="is_wawancara_selesai" value="1" {{ old('is_wawancara_selesai', $user->is_wawancara_selesai) ? 'checked' : '' }}
                                        class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 focus:ring-2">
-                                <span class="ml-3 text-sm font-medium text-gray-700">User sudah terverifikasi</span>
+                                <span class="ml-3 text-sm font-medium text-gray-700">User sudah wawancara</span>
                             </label>
                         </div>
                     </div>

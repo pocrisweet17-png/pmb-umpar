@@ -211,6 +211,7 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/admin/user', [UserController::class, 'index'])->name('admin.user.index');
     Route::get('/admin/user/create', [UserController::class, 'create'])->name('admin.user.create');
     Route::post('/admin/user/store', [UserController::class, 'store'])->name('admin.user.store');
+    Route::get('/admin/user/{id}', [UserController::class, 'show'])->name('admin.user.show'); 
     Route::get('/admin/user/{id}/edit', [UserController::class, 'edit'])->name('admin.user.edit');
     Route::put('/admin/user/{id}', [UserController::class, 'update'])->name('admin.user.update');
     Route::delete('/admin/user/{id}', [UserController::class, 'destroy'])->name('admin.user.destroy');
