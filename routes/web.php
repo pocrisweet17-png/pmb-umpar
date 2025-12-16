@@ -23,6 +23,7 @@ use App\Http\Controllers\DaftarUlangController;
 use App\Http\Controllers\AuthRegisterController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MahasiswaDashboardController;
+use App\Http\Controllers\MahasiswaController;
 
 // ======================================================================
 // PUBLIC ROUTES
