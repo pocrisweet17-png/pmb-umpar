@@ -24,7 +24,7 @@ use App\Http\Controllers\AuthRegisterController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MahasiswaDashboardController;
 use App\Http\Controllers\MahasiswaController;
-
+use Illuminate\Support\Facades\Http;
 // ======================================================================
 // PUBLIC ROUTES
 // ======================================================================
@@ -222,4 +222,18 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/mahasiswa/daftar-ulang', [MahasiswaController::class, 'daftarUlang'])->name('admin.user.daftar-ulang');
     Route::post('/mahasiswa/{id}/verify-daftar-ulang', [MahasiswaController::class, 'verifyDaftarUlang'])->name('admin.mahasiswa.verify-daftar-ulang');
     Route::post('/mahasiswa/{id}/reject-daftar-ulang', [MahasiswaController::class, 'rejectDaftarUlang'])->name('admin.mahasiswa.reject-daftar-ulang');
+});
+
+Route::get('/wilayah/{type}/{id?}', function ($type, $id = null) {
+    $base = 'https://emsifa.github.io/api-wilayah-indonesia/api';
+
+    $url = match ($type) {
+        'provinsi'  => "$base/provinces.json",
+        'kabupaten' => "$base/regencies/$id.json",
+        'kecamatan' => "$base/districts/$id.json",
+        'desa'      => "$base/villages/$id.json",
+        default     => abort(404),
+    };
+
+    return Http::get($url)->json();
 });
