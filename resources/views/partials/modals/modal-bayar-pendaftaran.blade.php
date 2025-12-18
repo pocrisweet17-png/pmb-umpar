@@ -141,7 +141,6 @@
                                     <span class="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">Kartu Kredit</span>
                                 </div>
 
-<<<<<<< HEAD
                                 <form id="formMidtrans">
                                 @csrf
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -153,15 +152,6 @@
                                         Bayar Rp {{ number_format($biaya_pendaftaran,0,',','.') }}
                                     </button>
                                 </form>
-=======
-                                <button type="button" id="btnBayarOnline"
-                                    class="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 mx-auto">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                                    </svg>
-                                    Bayar Rp {{ number_format($biaya_pendaftaran ?? 0, 0, ',', '.') }}
-                                </button>
->>>>>>> ee1d0e0f54908a973a8b521c9640d324bad2fb07
 
                                 <!-- Loading Indicator -->
                                 <div class="mt-4 hidden" id="loadingPayment">
@@ -302,7 +292,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Ambil CSRF token
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            
+            const formData = new FormData();
+            formData.append('_token', csrfToken);
             // Request snap token via AJAX
             fetch('{{ route("bayar.store") }}', {
                 method: 'POST',
@@ -310,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json'
                 },
-                body: formData
+                body: JSON.stringify({})
             })
             .then(response => {
                 console.log('Response status:', response.status);

@@ -306,13 +306,29 @@ class PaymentController extends Controller
                 $this->sendPaymentSuccessNotification($user->id, $payment, 'pendaftaran');
             } 
             elseif ($payment->tipe_pembayaran === 'ukt' && !$user->is_ukt_paid) {
-                $user->is_ukt_paid = true;
-                $user->save();
-
-                Log::info('✅ User payment status updated (UKT)', [
+                // ✨ PERBAIKAN: Panggil BayarUktController untuk generate NIM
+                Log::info('🎯 Calling processSettlement for UKT payment', [
                     'user_id' => $user->id,
                     'order_id' => $payment->order_id
                 ]);
+                
+                $bayarUktController = app(\App\Http\Controllers\BayarUktController::class);
+                $success = $bayarUktController->processSettlement($payment);
+                
+                if ($success) {
+                    Log::info('✅ UKT settlement processed with NIM generation', [
+                        'user_id' => $user->id,
+                        'nim' => $user->fresh()->nim
+                    ]);
+                } else {
+                    Log::error('❌ Failed to process UKT settlement', [
+                        'user_id' => $user->id
+                    ]);
+                    
+                    // Fallback: Update status saja tanpa NIM
+                    $user->is_ukt_paid = true;
+                    $user->save();
+                }
 
                 $this->sendPaymentSuccessNotification($user->id, $payment, 'ukt');
             }
@@ -348,54 +364,67 @@ class PaymentController extends Controller
     /**
      * Halaman finish setelah pembayaran
      */
-   /**
- * Halaman finish setelah pembayaran
- */
-public function finish(Request $request)
-{
-    $orderId = $request->query('order_id');
-    $transactionStatus = $request->query('transaction_status');
+    public function finish(Request $request)
+    {
+        $orderId = $request->query('order_id');
+        $transactionStatus = $request->query('transaction_status');
 
-    Log::info('Payment finish page accessed', [
-        'order_id' => $orderId,
-        'status' => $transactionStatus
-    ]);
+        Log::info('Payment finish page accessed', [
+            'order_id' => $orderId,
+            'status' => $transactionStatus
+        ]);
 
-    $payment = null;
-    if ($orderId) {
-        $payment = Payment::where('order_id', $orderId)->first();
-        
-        if ($payment) {
-            // PENTING: Update status berdasarkan transaction_status dari Midtrans redirect
-            if (in_array($transactionStatus, ['settlement', 'capture'])) {
-                // Update payment status jika belum settlement
-                if ($payment->status_transaksi !== 'settlement') {
-                    $payment->status_transaksi = 'settlement';
-                    $payment->save();
+        $payment = null;
+        if ($orderId) {
+            $payment = Payment::where('order_id', $orderId)->first();
+            
+            if ($payment) {
+                // PENTING: Update status berdasarkan transaction_status dari Midtrans redirect
+                if (in_array($transactionStatus, ['settlement', 'capture'])) {
+                    // Update payment status jika belum settlement
+                    if ($payment->status_transaksi !== 'settlement') {
+                        $payment->status_transaksi = 'settlement';
+                        $payment->save();
+                        
+                        Log::info('Payment status updated to settlement', ['order_id' => $orderId]);
+                    }
                     
-                    Log::info('Payment status updated to settlement', ['order_id' => $orderId]);
-                }
-                
-                // Update user status
-                $user = User::find($payment->user_id);
-                if ($user) {
-                    if ($payment->tipe_pembayaran === 'pendaftaran' && !$user->is_bayar_pendaftaran) {
-                        $user->is_bayar_pendaftaran = true;
-                        $user->save();
-                        Log::info('User is_bayar_pendaftaran updated to TRUE', ['user_id' => $user->id]);
-                    } 
-                    elseif ($payment->tipe_pembayaran === 'ukt' && !$user->is_ukt_paid) {
-                        $user->is_ukt_paid = true;
-                        $user->save();
-                        Log::info('User is_ukt_paid updated to TRUE', ['user_id' => $user->id]);
+                    // Update user status
+                    $user = User::find($payment->user_id);
+                    if ($user) {
+                        if ($payment->tipe_pembayaran === 'pendaftaran' && !$user->is_bayar_pendaftaran) {
+                            $user->is_bayar_pendaftaran = true;
+                            $user->save();
+                            Log::info('User is_bayar_pendaftaran updated to TRUE', ['user_id' => $user->id]);
+                        } 
+                        elseif ($payment->tipe_pembayaran === 'ukt' && !$user->is_ukt_paid) {
+                            // ✨ PERBAIKAN: Generate NIM saat finish juga
+                            Log::info('🎯 Processing UKT settlement at finish page', [
+                                'user_id' => $user->id,
+                                'order_id' => $orderId
+                            ]);
+                            
+                            $bayarUktController = app(\App\Http\Controllers\BayarUktController::class);
+                            $success = $bayarUktController->processSettlement($payment);
+                            
+                            if (!$success) {
+                                // Fallback
+                                $user->is_ukt_paid = true;
+                                $user->save();
+                            }
+                            
+                            Log::info('User is_ukt_paid updated to TRUE', [
+                                'user_id' => $user->id,
+                                'nim' => $user->fresh()->nim
+                            ]);
+                        }
                     }
                 }
             }
         }
-    }
 
-    return view('bayar.finish', compact('payment', 'transactionStatus'));
-}
+        return view('bayar.finish', compact('payment', 'transactionStatus'));
+    }
 
     /**
      * Upload bukti transfer manual
@@ -460,8 +489,9 @@ public function finish(Request $request)
                     $user->save();
                     $this->sendPaymentSuccessNotification($user->id, $payment, 'pendaftaran');
                 } elseif ($payment->tipe_pembayaran === 'ukt' && !$user->is_ukt_paid) {
-                    $user->is_ukt_paid = true;
-                    $user->save();
+                    // ✨ PERBAIKAN: Generate NIM saat polling juga
+                    $bayarUktController = app(\App\Http\Controllers\BayarUktController::class);
+                    $bayarUktController->processSettlement($payment);
                     $this->sendPaymentSuccessNotification($user->id, $payment, 'ukt');
                 }
             }
@@ -471,6 +501,7 @@ public function finish(Request $request)
             'status' => $payment->status_transaksi,
             'is_bayar_pendaftaran' => $payment->user->is_bayar_pendaftaran ?? false,
             'is_ukt_paid' => $payment->user->is_ukt_paid ?? false,
+            'nim' => $payment->user->nim ?? null,
             'tipe_pembayaran' => $payment->tipe_pembayaran
         ]);
     }
@@ -492,10 +523,21 @@ public function finish(Request $request)
             ], 404);
         }
 
+        // ✨ PERBAIKAN: Generate NIM jika UKT settlement
+        if ($payment->tipe_pembayaran === 'ukt' && 
+            $payment->status_transaksi === 'settlement') {
+            $user = $payment->user;
+            if ($user && !$user->is_ukt_paid) {
+                $bayarUktController = app(\App\Http\Controllers\BayarUktController::class);
+                $bayarUktController->processSettlement($payment);
+            }
+        }
+
         return response()->json([
             'status' => $payment->status_transaksi,
             'is_bayar_pendaftaran' => $payment->user->is_bayar_pendaftaran ?? false,
-            'is_ukt_paid' => $payment->user->is_ukt_paid ?? false
+            'is_ukt_paid' => $payment->user->is_ukt_paid ?? false,
+            'nim' => $payment->user->nim ?? null
         ]);
     }
 }

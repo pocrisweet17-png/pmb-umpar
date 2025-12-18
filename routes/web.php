@@ -199,26 +199,27 @@ Route::get('/test-snap', function() {
 // ======================================================================
 // UKT POLLING (harus di luar middleware step agar bisa diakses kapan saja)
 // ======================================================================
-Route::get('/payment/poll-ukt-status', function(\Illuminate\Http\Request $request) {
-    if (!Auth::check()) {
-        return response()->json(['status' => 'unauthorized'], 401);
-    }
-    
-    $orderId = $request->query('order_id');
-    $payment = \App\Models\Payment::where('order_id', $orderId)
-        ->where('tipe_pembayaran', 'ukt')
-        ->where('user_id', Auth::id())
-        ->first();
-    
-    if (!$payment) {
-        return response()->json([
-            'status' => 'not_found',
-            'message' => 'Payment not found'
-        ], 404);
-    }
-    
-    return response()->json([
-        'status' => $payment->status_transaksi,
-        'is_ukt_paid' => $payment->user->is_ukt_paid ?? false
-    ]);
-})->name('ukt.poll-status')->middleware('auth');
+// Dashboard Admin
+Route::middleware(['auth', AdminMiddleware::class])->group(function () {
+
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+
+    // CRUD Soal
+    Route::get('/admin/soal', [SoalController::class, 'index'])->name('admin.soal.index');
+    Route::get('/admin/soal/create', [SoalController::class, 'showSoal'])->name('admin.soal.create');
+    Route::post('/admin/soal/store', [SoalController::class, 'createSoal'])->name('admin.soal.store');
+    Route::get('/admin/soal/{id}/edit', [SoalController::class, 'edit'])->name('admin.soal.edit');
+    Route::put('/admin/soal/{id}', [SoalController::class, 'update'])->name('admin.soal.update');
+    Route::delete('/admin/soal/{id}', [SoalController::class, 'destroy'])->name('admin.soal.destroy');
+
+    // CRUD User
+    Route::get('/admin/user', [UserController::class, 'index'])->name('admin.user.index');
+    Route::get('/admin/user/create', [UserController::class, 'create'])->name('admin.user.create');
+    Route::post('/admin/user/store', [UserController::class, 'store'])->name('admin.user.store');
+    Route::get('/admin/user/{id}/edit', [UserController::class, 'edit'])->name('admin.user.edit');
+    Route::put('/admin/user/{id}', [UserController::class, 'update'])->name('admin.user.update');
+    Route::delete('/admin/user/{id}', [UserController::class, 'destroy'])->name('admin.user.destroy');
+    Route::get('/mahasiswa/daftar-ulang', [MahasiswaController::class, 'daftarUlang'])->name('admin.user.daftar-ulang');
+    Route::post('/mahasiswa/{id}/verify-daftar-ulang', [MahasiswaController::class, 'verifyDaftarUlang'])->name('admin.mahasiswa.verify-daftar-ulang');
+    Route::post('/mahasiswa/{id}/reject-daftar-ulang', [MahasiswaController::class, 'rejectDaftarUlang'])->name('admin.mahasiswa.reject-daftar-ulang');
+});

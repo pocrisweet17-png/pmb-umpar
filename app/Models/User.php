@@ -20,6 +20,7 @@ class User extends Authenticatable
         'email_verified_at',
         'verification_token',
         'nomor_registrasi',
+        'nim',
         'pilihan_1',
         'pilihan_2',
         'is_prodi_selected',
