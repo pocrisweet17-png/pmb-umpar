@@ -8,6 +8,7 @@ use App\Models\Ujian;
 use App\Models\Jawaban;
 use App\Models\Registrasi;
 use App\Models\Leaderboard;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\FormulirPendaftaran;
@@ -136,7 +137,7 @@ public function submit(Request $request)
         
         $registrasi = Registrasi::where('user_id', $user->id)->first();
         if ($registrasi) {
-            FormulirPendaftaran::where('nomorPendaftaran', $registrasi->nomorPendaftaran)
+            User::where('nomorPendaftaran', $registrasi->nomorPendaftaran)
                 ->update(['is_tes_selesai' => true]);
         }
 

@@ -95,6 +95,10 @@
                 <span>Program Studi</span>
                 <strong>{{ $registrasi->kodeProdi }}</strong>
             </div>
+            <div class="detail-row">
+                <span>NIM</span>
+                <strong>{{ $user->nim ?? 'Belum tersedia' }}</strong>
+            </div>
             
             <div class="alert alert-info mt-4">
                 <strong><i class="bi bi-info-circle"></i> Informasi:</strong>

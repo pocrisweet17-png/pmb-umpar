@@ -28,6 +28,7 @@ use App\Http\Controllers\VerificationController;
 use Symfony\Component\HttpKernel\HttpCache\Store;
 use App\Http\Controllers\MidtransCallbackController;
 use App\Http\Controllers\MahasiswaDashboardController;
+use App\Http\Controllers\MahasiswaController;
 
 // Midtrans Webhook - TANPA CSRF & AUTH
 Route::post('/midtrans/webhook', [PaymentController::class, 'webhook'])
@@ -215,4 +216,7 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/admin/user/{id}/edit', [UserController::class, 'edit'])->name('admin.user.edit');
     Route::put('/admin/user/{id}', [UserController::class, 'update'])->name('admin.user.update');
     Route::delete('/admin/user/{id}', [UserController::class, 'destroy'])->name('admin.user.destroy');
+    Route::get('/mahasiswa/daftar-ulang', [MahasiswaController::class, 'daftarUlang'])->name('admin.user.daftar-ulang');
+    Route::post('/mahasiswa/{id}/verify-daftar-ulang', [MahasiswaController::class, 'verifyDaftarUlang'])->name('admin.mahasiswa.verify-daftar-ulang');
+    Route::post('/mahasiswa/{id}/reject-daftar-ulang', [MahasiswaController::class, 'rejectDaftarUlang'])->name('admin.mahasiswa.reject-daftar-ulang');
 });

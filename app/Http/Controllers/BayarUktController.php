@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Payment;
 use App\Models\BiayaPmb;
+use App\Models\ProgramStudi;
+use App\Models\ProgramStudy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Midtrans\Notification;
@@ -76,94 +79,94 @@ class BayarUktController extends Controller
      * Generate Snap Token untuk UKT (dipanggil via AJAX)
      */
     public function store(Request $request)
-{
-    Log::info('========== UKT STORE METHOD CALLED ==========');
-    
-    $user = Auth::user();
-    
-    Log::info('User data for UKT payment', [
-        'user_id' => $user->id,
-        'pilihan_1' => $user->pilihan_1,
-        'is_ukt_paid' => $user->is_ukt_paid
-    ]);
-
-    if ($user->is_ukt_paid) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Anda sudah menyelesaikan pembayaran UKT.'
-        ], 400);
-    }
-
-    // PERBAIKAN: Gunakan pilihan_1 bukan kodeProdi_1
-    $biaya = BiayaPmb::where('tahun', date('Y'))
-        ->where('kodeProdi', $user->pilihan_1)
-        ->first();
-
-    if (!$biaya) {
-        Log::error('Biaya UKT not found', [
+    {
+        Log::info('========== UKT STORE METHOD CALLED ==========');
+        
+        $user = Auth::user();
+        
+        Log::info('User data for UKT payment', [
             'user_id' => $user->id,
             'pilihan_1' => $user->pilihan_1,
-            'tahun' => date('Y')
-        ]);
-        return response()->json([
-            'success' => false,
-            'message' => 'Biaya UKT tidak ditemukan untuk prodi: ' . $user->pilihan_1
-        ], 404);
-    }
-
-    $jumlah = $biaya->biaya_ukt;
-    
-    if (!$jumlah || $jumlah <= 0) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Biaya UKT belum diset untuk program studi Anda.'
-        ], 404);
-    }
-
-    // Generate order_id baru
-    $orderId = 'PMB-UKT-' . $user->id . '-' . time() . '-' . substr(uniqid(), -4);
-    
-    try {
-        $payment = Payment::create([
-            'user_id'          => $user->id,
-            'order_id'         => $orderId,
-            'jumlah'           => $jumlah,
-            'tipe_pembayaran'  => 'ukt',
-            'status_transaksi' => 'pending',
-        ]);
-        
-        Log::info('UKT Payment record created', ['payment_id' => $payment->id]);
-        
-    } catch (\Exception $e) {
-        Log::error('Failed to create UKT payment', ['error' => $e->getMessage()]);
-        return response()->json([
-            'success' => false,
-            'message' => 'Gagal membuat record pembayaran.'
-        ], 500);
-    }
-
-    try {
-        $snapToken = $this->generateSnapToken($user, $jumlah, $orderId);
-
-        return response()->json([
-            'success' => true,
-            'snap_token' => $snapToken,
-            'order_id' => $orderId,
-            'amount' => $jumlah
+            'is_ukt_paid' => $user->is_ukt_paid
         ]);
 
-    } catch (\Exception $e) {
-        Log::error('UKT Midtrans Error: ' . $e->getMessage());
+        if ($user->is_ukt_paid) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda sudah menyelesaikan pembayaran UKT.'
+            ], 400);
+        }
+
+        // PERBAIKAN: Gunakan pilihan_1 bukan kodeProdi_1
+        $biaya = BiayaPmb::where('tahun', date('Y'))
+            ->where('kodeProdi', $user->pilihan_1)
+            ->first();
+
+        if (!$biaya) {
+            Log::error('Biaya UKT not found', [
+                'user_id' => $user->id,
+                'pilihan_1' => $user->pilihan_1,
+                'tahun' => date('Y')
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Biaya UKT tidak ditemukan untuk prodi: ' . $user->pilihan_1
+            ], 404);
+        }
+
+        $jumlah = $biaya->biaya_ukt;
         
-        // Hapus payment yang gagal
-        Payment::where('order_id', $orderId)->delete();
+        if (!$jumlah || $jumlah <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Biaya UKT belum diset untuk program studi Anda.'
+            ], 404);
+        }
+
+        // Generate order_id baru
+        $orderId = 'PMB-UKT-' . $user->id . '-' . time() . '-' . substr(uniqid(), -4);
         
-        return response()->json([
-            'success' => false,
-            'message' => 'Gagal membuat transaksi: ' . $e->getMessage()
-        ], 500);
+        try {
+            $payment = Payment::create([
+                'user_id'          => $user->id,
+                'order_id'         => $orderId,
+                'jumlah'           => $jumlah,
+                'tipe_pembayaran'  => 'ukt',
+                'status_transaksi' => 'pending',
+            ]);
+            
+            Log::info('UKT Payment record created', ['payment_id' => $payment->id]);
+            
+        } catch (\Exception $e) {
+            Log::error('Failed to create UKT payment', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membuat record pembayaran.'
+            ], 500);
+        }
+
+        try {
+            $snapToken = $this->generateSnapToken($user, $jumlah, $orderId);
+
+            return response()->json([
+                'success' => true,
+                'snap_token' => $snapToken,
+                'order_id' => $orderId,
+                'amount' => $jumlah
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('UKT Midtrans Error: ' . $e->getMessage());
+            
+            // Hapus payment yang gagal
+            Payment::where('order_id', $orderId)->delete();
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membuat transaksi: ' . $e->getMessage()
+            ], 500);
+        }
     }
-}
 
     /**
      * Generate Snap Token untuk UKT
@@ -284,10 +287,22 @@ class BayarUktController extends Controller
             ], 404);
         }
 
-        // Jika settlement, pastikan user status terupdate
+        // Jika settlement, pastikan user status terupdate dan generate NIM
         if ($payment->status_transaksi === 'settlement') {
             $user = $payment->user;
             if ($user && !$user->is_ukt_paid) {
+                // Generate NIM jika belum ada
+                if (empty($user->nim)) {
+                    $nim = $this->generateNIM($user);
+                    if ($nim) {
+                        $user->nim = $nim;
+                        Log::info('NIM generated for user', [
+                            'user_id' => $user->id,
+                            'nim' => $nim
+                        ]);
+                    }
+                }
+                
                 $user->is_ukt_paid = true;
                 $user->save();
             }
@@ -296,8 +311,64 @@ class BayarUktController extends Controller
         return response()->json([
             'status' => $payment->status_transaksi,
             'is_ukt_paid' => $payment->user->is_ukt_paid ?? false,
+            'nim' => $payment->user->nim ?? null,
             'order_id' => $payment->order_id,
             'amount' => $payment->jumlah
         ]);
+    }
+
+    /**
+     * Generate NIM otomatis
+     * Format: 226 + kodeProdi + nomor urut (3 digit)
+     */
+    private function generateNIM($user)
+    {
+        try {
+            return DB::transaction(function () use ($user) {
+                // Ambil kode prodi dari tabel program_studis
+                $prodi = ProgramStudy::where('kodeProdi', $user->pilihan_1)->first();
+                
+                if (!$prodi) {
+                    Log::error('Program Studi tidak ditemukan', [
+                        'user_id' => $user->id,
+                        'kodeProdi' => $user->pilihan_1
+                    ]);
+                    return null;
+                }
+                
+                $kodeProdi = $prodi->kodeProdi;
+                
+                // Hitung jumlah mahasiswa yang sudah bayar UKT di prodi yang sama
+                // Gunakan lockForUpdate untuk menghindari race condition
+                $count = User::where('pilihan_1', $user->pilihan_1)
+                    ->where('is_ukt_paid', true)
+                    ->whereNotNull('nim')
+                    ->lockForUpdate()
+                    ->count();
+                
+                // Nomor urut dimulai dari 001
+                $nomorUrut = str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+                
+                // Format NIM: 226 + kodeProdi + nomor urut
+                $nim = '226' . $kodeProdi . $nomorUrut;
+                
+                Log::info('NIM generated successfully', [
+                    'user_id' => $user->id,
+                    'nim' => $nim,
+                    'kodeProdi' => $kodeProdi,
+                    'nomorUrut' => $nomorUrut,
+                    'count' => $count
+                ]);
+                
+                return $nim;
+            });
+            
+        } catch (\Exception $e) {
+            Log::error('Error generating NIM', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage()
+            ]);
+            return null;
+        }
     }
 }
