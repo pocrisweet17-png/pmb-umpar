@@ -142,19 +142,57 @@
                             </select>
                         </div>
                         {{-- Alamat --}}
-                        <div>
-                            <label for="alamat" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Alamat Lengkap <span class="text-red-500">*</span>
-                            </label>
-                            <textarea 
-                                id="alamat" 
-                                name="alamat" 
-                                rows="3" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
-                                placeholder="Masukkan alamat lengkap Anda"
-                                required></textarea>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            
+                            <!-- Provinsi -->
+                            <div>
+                                <label for="agama" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Alamat<span class="text-red-500">*</span>
+                                </label>
+                                <label class="block text-sm font-semibold mb-1">Provinsi</label>
+                                <select id="provinsi" class="w-full border rounded-lg p-2">
+                                    <option value="">Pilih Provinsi</option>
+                                </select>
+                            </div>
+
+                            <!-- Kabupaten -->
+                            <div>
+                                <label class="block text-sm font-semibold mb-1">Kabupaten/Kota</label>
+                                <select id="kabupaten" class="w-full border rounded-lg p-2" disabled>
+                                    <option value="">Pilih Kabupaten</option>
+                                </select>
+                            </div>
+
+                            <!-- Kecamatan -->
+                            <div>
+                                <label class="block text-sm font-semibold mb-1">Kecamatan</label>
+                                <select id="kecamatan" class="w-full border rounded-lg p-2" disabled>
+                                    <option value="">Pilih Kecamatan</option>
+                                </select>
+                            </div>
+
+                            <!-- Desa -->
+                            <div>
+                                <label class="block text-sm font-semibold mb-1">Desa/Kelurahan</label>
+                                <select id="desa" class="w-full border rounded-lg p-2" disabled>
+                                    <option value="">Pilih Desa</option>
+                                </select>
+                            </div>
+
                         </div>
 
+                        <!-- Alamat Jalan -->
+                        <div class="mt-4">
+                            <label class="block text-sm font-semibold mb-1">
+                                Alamat Jalan
+                            </label>
+                            <textarea id="alamat_jalan" rows="3"
+                                class="w-full border rounded-lg p-2"
+                                placeholder="Jl, No Rumah, RT/RW"></textarea>
+                        </div>
+
+                        <!-- HIDDEN INPUT (INI YANG DIKIRIM KE BACKEND) -->
+                        <input type="hidden" name="alamat" id="alamat_final">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {{-- Asal Sekolah --}}
                             <div>
@@ -221,62 +259,146 @@
                         Simpan Data
                     </button>
                 </div>
-
             </form>
-
         </div>
     </div>
 </div>
 
 <script>
-    function openModalIsiDataPribadi() {
-    const modal = document.getElementById('modalIsiDataPribadi');
-    modal.style.display = 'flex';
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-function closeModalDataPribadi() {
-    document.getElementById('modalIsiDataPribadi').classList.add('hidden');
-    // Lanjut ke modal berikutnya
-    setTimeout(() => {
-        checkAndOpenNextModal();
-    }, 300);
-}
+document.addEventListener('DOMContentLoaded', function () {
 
-// Prevent modal from closing when clicking inside
-document.addEventListener('DOMContentLoaded', function() {
+    window.openModalIsiDataPribadi = function () {
+        const modal = document.getElementById('modalIsiDataPribadi');
+        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    window.closeModalDataPribadi = function () {
+        document.getElementById('modalIsiDataPribadi').classList.add('hidden');
+        setTimeout(() => {
+            checkAndOpenNextModal();
+        }, 300);
+    }
+
     const modal = document.getElementById('modalIsiDataPribadi');
     if (modal) {
-        modal.addEventListener('click', function(e) {
+        modal.addEventListener('click', function (e) {
             if (e.target === this) {
                 closeModalDataPribadi();
             }
         });
     }
-});
-</script>
-<script>
-// Tambahkan di bawah form modal
-document.addEventListener('DOMContentLoaded', function() {
+
     const form = document.querySelector('form[action="{{ route('pendaftaran.store') }}"]');
-    
     if (form) {
-        form.addEventListener('submit', function(e) {
-            console.log('Form submitted');
-            
-            // Log form data
-            const formData = new FormData(this);
-            for (let [key, value] of formData.entries()) {
-                console.log(key + ': ' + value);
-            }
-            
-            // Disable button to prevent double submit
+        form.addEventListener('submit', function () {
             const submitBtn = this.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle></svg> Menyimpan...';
+                submitBtn.innerHTML = 'Menyimpan...';
             }
         });
     }
+
+
+    // const API = 'https://emsifa.github.io/api-wilayah-indonesia/api';
+    const API = '/wilayah';
+
+    const provinsi     = document.getElementById('provinsi');
+    const kabupaten    = document.getElementById('kabupaten');
+    const kecamatan    = document.getElementById('kecamatan');
+    const desa         = document.getElementById('desa');
+    const alamatJalan  = document.getElementById('alamat_jalan');
+    const alamatFinal  = document.getElementById('alamat_final');
+
+    if (!provinsi) {
+        console.error('Element provinsi tidak ditemukan');
+        return;
+    }
+
+    // Load Provinsi
+    fetch(`${API}/provinsi`)
+        .then(res => res.json())
+        .then(data => {
+            data.forEach(p => {
+                provinsi.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+            });
+        });
+
+    // Provinsi → Kabupaten
+    provinsi.addEventListener('change', function () {
+        kabupaten.disabled = true;
+        kecamatan.disabled = true;
+        desa.disabled = true;
+
+        kabupaten.innerHTML = '<option value="">Pilih Kabupaten</option>';
+        kecamatan.innerHTML = '<option value="">Pilih Kecamatan</option>';
+        desa.innerHTML = '<option value="">Pilih Desa</option>';
+
+        if (!this.value) return;
+
+        fetch(`${API}/kabupaten/${this.value}`)
+            .then(res => res.json())
+            .then(data => {
+                kabupaten.disabled = false;
+                data.forEach(k => {
+                    kabupaten.innerHTML += `<option value="${k.id}">${k.name}</option>`;
+                });
+            });
+    });
+
+    // Kabupaten → Kecamatan
+    kabupaten.addEventListener('change', function () {
+        kecamatan.disabled = true;
+        desa.disabled = true;
+
+        kecamatan.innerHTML = '<option value="">Pilih Kecamatan</option>';
+        desa.innerHTML = '<option value="">Pilih Desa</option>';
+
+        if (!this.value) return;
+
+        fetch(`${API}/kecamatan/${this.value}`)
+            .then(res => res.json())
+            .then(data => {
+                kecamatan.disabled = false;
+                data.forEach(k => {
+                    kecamatan.innerHTML += `<option value="${k.id}">${k.name}</option>`;
+                });
+            });
+    });
+
+    // Kecamatan → Desa
+    kecamatan.addEventListener('change', function () {
+        desa.disabled = true;
+        desa.innerHTML = '<option value="">Pilih Desa</option>';
+
+        if (!this.value) return;
+
+        fetch(`${API}/desa/${this.value}`)
+            .then(res => res.json())
+            .then(data => {
+                desa.disabled = false;
+                data.forEach(d => {
+                    desa.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+                });
+            });
+    });
+
+    // Gabungkan alamat
+    function gabungAlamat() {
+        alamatFinal.value = [
+            alamatJalan.value,
+            desa.options[desa.selectedIndex]?.text,
+            kecamatan.options[kecamatan.selectedIndex]?.text,
+            kabupaten.options[kabupaten.selectedIndex]?.text,
+            provinsi.options[provinsi.selectedIndex]?.text,
+        ].filter(Boolean).join(', ');
+    }
+
+    [provinsi, kabupaten, kecamatan, desa, alamatJalan]
+        .forEach(el => el.addEventListener('change', gabungAlamat));
+
 });
 </script>
+
