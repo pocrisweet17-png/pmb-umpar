@@ -52,8 +52,8 @@
                 <span class="text-xs font-semibold text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Soon</span>
             </div>
             <h3 class="text-gray-600 text-sm font-medium mb-1">Total Member</h3>
-            <p class="text-3xl sm:text-4xl font-bold text-gray-400 mb-2">-</p>
-            <p class="text-xs text-gray-400">Fitur segera hadir</p>
+            <p class="text-3xl sm:text-4xl font-bold text-gray-400 mb-2">{{ $totalUser }}</p>
+            <p class="text-xs text-gray-400">anda bisa kelola di panel kelola user</p>
         </div>
 
         <!-- Quick Actions Card -->
@@ -138,11 +138,11 @@
                 </div>
                 <div class="flex items-center justify-between py-3 border-b border-gray-100">
                     <span class="text-sm text-gray-600 font-medium">Admin Login</span>
-                    <span class="text-lg font-bold text-gray-900">1</span>
+                    <span class="text-lg font-bold text-gray-900">{{ $totalAdmin }}</span>
                 </div>
                 <div class="flex items-center justify-between py-3">
-                    <span class="text-sm text-gray-600 font-medium">Total Kategori</span>
-                    <span class="text-lg font-bold text-gray-400">-</span>
+                    <span class="text-sm text-gray-600 font-medium">User Login</span>
+                    <span class="text-lg font-bold text-gray-400">{{ $totalUser ?? 0 }}</span>
                 </div>
             </div>
         </div>
@@ -183,18 +183,18 @@
                 <p class="text-xs text-gray-600">Buat soal ujian baru</p>
             </a>
 
-            <div class="bg-white rounded-xl p-5 shadow border border-gray-200 opacity-60 cursor-not-allowed">
+            <a href="{{ route('admin.user.index') }}"
+               class="bg-white rounded-xl p-5 shadow hover:shadow-lg transition-all duration-200 border border-gray-200 hover:border-green-300 group">
                 <div class="flex items-center mb-3">
-                    <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center group-hover:bg-green-600 transition-colors">
+                        <svg class="w-5 h-5 text-green-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
                     </div>
-                    <span class="ml-3 font-semibold text-gray-400">Kelola Member</span>
-                    <span class="ml-auto text-xs bg-gray-200 px-2 py-1 rounded-full text-gray-500">Soon</span>
+                    <span class="ml-3 font-semibold text-gray-900 group-hover:text-green-600 transition-colors">Kelola User</span>
                 </div>
-                <p class="text-xs text-gray-400">Fitur segera tersedia</p>
-            </div>
+                <p class="text-xs text-gray-600">Kelola User</p>
+            </a>
         </div>
     </div>
 

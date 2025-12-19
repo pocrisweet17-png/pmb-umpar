@@ -39,11 +39,11 @@ class UserController extends Controller
             'nik' => 'required|string|max:16|unique:users',
             'no_whatsapp' => 'required|string|max:15',
             'role' => 'required|in:admin,user',
-            'is_verified' => 'boolean',
+            'is_wawancara_selesai' => 'boolean',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
-        $validated['is_verified'] = $request->has('is_verified');
+        $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
 
         User::create($validated);
 
@@ -54,11 +54,11 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        $user = User::findOrFail($id);
-        return view('admin.user.show', compact('user'));
-    }
+public function show(string $id)
+{
+    $user = User::with('dokumens')->findOrFail($id);
+    return view('admin.user.show', compact('user'));
+}
 
     /**
      * Show the form for editing the specified resource.
@@ -83,11 +83,11 @@ class UserController extends Controller
             'nik' => ['required', 'string', 'max:16', Rule::unique('users')->ignore($user->id)],
             'no_whatsapp' => 'required|string|max:15',
             'role' => 'required|in:admin,user',
-            'is_verified' => 'boolean',
+            'is_wawancara_selesai' => 'boolean',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
-        $validated['is_verified'] = $request->has('is_verified');
+        $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
 
         // Only update password if provided
         if (!empty($validated['password'])) {

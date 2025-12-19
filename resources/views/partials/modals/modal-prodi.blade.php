@@ -29,9 +29,9 @@
                 <label class="block font-semibold text-gray-700 mb-2">
                     Pilih Fakultas <span class="text-red-500">*</span>
                 </label>
-                <select id="selectFakultas" 
-                        required 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <select id="selectFakultas1" 
+                    required 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     <option value="">-- Pilih Fakultas --</option>
                     @foreach($fakultas as $f)
                         <option value="{{ $f->fakultas }}">{{ $f->fakultas }}</option>
@@ -52,7 +52,20 @@
                     <option value="">-- Pilih Fakultas Terlebih Dahulu --</option>
                 </select>
             </div>
-
+            {{-- Fakultas untuk Pilihan 2 --}}
+            <div class="mb-4">
+                <label class="block font-semibold text-gray-700 mb-2">
+                    Pilih Fakultas <span class="text-red-500">*</span>
+                </label>
+                <select id="selectFakultas2" 
+                        required 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Pilih Fakultas --</option>
+                    @foreach($fakultas as $f)
+                        <option value="{{ $f->fakultas }}">{{ $f->fakultas }}</option>
+                    @endforeach
+                </select>
+            </div>
             {{-- Prodi 2 --}}
             <div class="mb-4">
                 <label class="block font-semibold text-gray-700 mb-2">
@@ -130,7 +143,8 @@ function closeModalProdi(reload = false) {
 document.addEventListener("DOMContentLoaded", function () {
     console.log('🚀 Modal Prodi script initialized');
     
-    const fakultasSelect = document.getElementById("selectFakultas");
+    const fakultas1Select = document.getElementById("selectFakultas1");
+    const fakultas2Select = document.getElementById("selectFakultas2");
     const prodi1Select = document.getElementById("selectProdi1");
     const prodi2Select = document.getElementById("selectProdi2");
     const loadingDiv = document.getElementById("loadingProdi");
@@ -163,54 +177,51 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
     
-    // Handle fakultas change
-    fakultasSelect?.addEventListener("change", function () {
-        const fakultas = this.value;
-        console.log('📚 Fakultas selected:', fakultas);
-        
-        prodi1Select.innerHTML = '<option value="">-- Pilih Program Studi --</option>';
-        prodi2Select.innerHTML = '<option value="">-- Pilih Program Studi --</option>';
+
+
+// Function untuk load prodi
+    function loadProdi(fakultasValue, targetSelect) {
+        targetSelect.innerHTML = '<option value="">-- Pilih Program Studi --</option>';
         errorDiv.style.display = 'none';
         
-        if (!fakultas) return;
+        if (!fakultasValue) return;
         
         loadingDiv.style.display = 'block';
-        prodi1Select.disabled = true;
-        prodi2Select.disabled = true;
+        targetSelect.disabled = true;
         
-        fetch(`/api/prodi-by-fakultas?fakultas=${encodeURIComponent(fakultas)}`)
+        fetch(`/api/prodi-by-fakultas?fakultas=${encodeURIComponent(fakultasValue)}`)
             .then(response => {
-                console.log('📡 API Response status:', response.status);
                 if (!response.ok) throw new Error('Gagal memuat data prodi');
                 return response.json();
             })
             .then(data => {
-                console.log('📥 Prodi data received:', data.length, 'items');
-                
-                if (data.length === 0) {
-                    throw new Error('Tidak ada program studi untuk fakultas ini');
-                }
+                if (data.length === 0) throw new Error('Tidak ada program studi untuk fakultas ini');
                 
                 const options = data.map(p => 
                     `<option value="${p.kodeProdi}">${p.namaProdi}</option>`
                 ).join("");
                 
-                const html = `<option value="">-- Pilih Program Studi --</option>${options}`;
-                
-                prodi1Select.innerHTML = html;
-                prodi2Select.innerHTML = html;
-                prodi1Select.disabled = false;
-                prodi2Select.disabled = false;
+                targetSelect.innerHTML = `<option value="">-- Pilih Program Studi --</option>${options}`;
+                targetSelect.disabled = false;
                 loadingDiv.style.display = 'none';
             })
             .catch(error => {
-                console.error('❌ API Error:', error);
-                errorDiv.textContent = error.message || 'Terjadi kesalahan saat memuat data';
+                errorDiv.textContent = error.message || 'Terjadi kesalahan';
                 errorDiv.style.display = 'block';
                 loadingDiv.style.display = 'none';
             });
+    }
+
+    // Event listener untuk fakultas 1
+    fakultas1Select?.addEventListener("change", function () {
+        loadProdi(this.value, prodi1Select);
     });
-    
+
+    // Event listener untuk fakultas 2
+    fakultas2Select?.addEventListener("change", function () {
+        loadProdi(this.value, prodi2Select);
+    });
+
     // Prevent selecting same prodi
     prodi1Select?.addEventListener("change", function() {
         const val1 = this.value;
@@ -222,7 +233,7 @@ document.addEventListener("DOMContentLoaded", function () {
             errorDiv.style.display = 'none';
         }
     });
-    
+
     prodi2Select?.addEventListener("change", function() {
         const val2 = this.value;
         if (val2 && val2 === prodi1Select.value) {
@@ -233,7 +244,40 @@ document.addEventListener("DOMContentLoaded", function () {
             errorDiv.style.display = 'none';
         }
     });
-    
+
+        // Event listener untuk fakultas 1
+        fakultas1Select?.addEventListener("change", function () {
+            loadProdi(this.value, prodi1Select);
+        });
+
+        // Event listener untuk fakultas 2
+        fakultas2Select?.addEventListener("change", function () {
+            loadProdi(this.value, prodi2Select);
+        });
+
+            // Prevent selecting same prodi
+            prodi1Select?.addEventListener("change", function() {
+                const val1 = this.value;
+                if (val1 && val1 === prodi2Select.value) {
+                    errorDiv.textContent = 'Pilihan 1 dan Pilihan 2 tidak boleh sama!';
+                    errorDiv.style.display = 'block';
+                    this.value = '';
+                } else {
+                    errorDiv.style.display = 'none';
+                }
+            });
+
+            prodi2Select?.addEventListener("change", function() {
+                const val2 = this.value;
+                if (val2 && val2 === prodi1Select.value) {
+                    errorDiv.textContent = 'Pilihan 1 dan Pilihan 2 tidak boleh sama!';
+                    errorDiv.style.display = 'block';
+                    this.value = '';
+                } else {
+                    errorDiv.style.display = 'none';
+                }
+            });
+
     // Handle form submit
     formProdi?.addEventListener('submit', function(e) {
         e.preventDefault();

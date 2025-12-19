@@ -29,7 +29,7 @@ class ProdiController extends Controller
         // Cek prodi valid
         $prodi1 = ProgramStudy::where('kodeProdi', $validated['pilihan_1'])->first();
         $prodi2 = ProgramStudy::where('kodeProdi', $validated['pilihan_2'])->first();
-
+            
         if (!$prodi1) {
             return response()->json([
                 'success' => false,
