@@ -66,19 +66,20 @@
                     </div>
                     <span class="ml-3 font-medium">Kelola Soal</span>
                 </a>
-
+                {{-- nav untuk kelola calon maba --}}
                 <a href="{{ route('admin.user.index') }}"
-                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
+                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.index') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.index') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
                     </div>
                     <span class="ml-3 font-medium">Kelola Camaba</span>
                 </a>
+                {{-- nav untuk kelola calon Data Mahasiswa --}}
                 <a href="{{ route('admin.user.daftar-ulang') }}"
-                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
+                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.daftar-ulang') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.daftar-ulang') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
@@ -163,13 +164,22 @@
                 </a>
 
                 <a href="{{ route('admin.user.index') }}"
-                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.*') ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg shadow-green-500/30' : '' }}">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
+                  class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.index') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                   <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.index') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
                     </div>
                     <span class="ml-3 font-medium">Kelola User</span>
+                </a>
+                <a href="{{ route('admin.user.daftar-ulang') }}"
+                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.daftar-ulang') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.daftar-ulang') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </div>
+                    <span class="ml-3 font-medium">Data Mahasiswa</span>
                 </a>
             </nav>
 
