@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Models\Registrasi;
 use App\Models\ProgramStudy;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TesController;
@@ -13,18 +14,19 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProdiController;
 use App\Http\Controllers\UjianController;
+use App\Http\Middleware\StepUploadDokumen;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\BayarUktController;
-use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\DokumentController;
 use App\Http\Controllers\AuthLoginController;
+use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\WawancaraController;
 use App\Http\Controllers\DaftarUlangController;
+use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\AuthRegisterController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\MahasiswaDashboardController;
-use App\Http\Controllers\MahasiswaController;
-use Illuminate\Support\Facades\Http;
 // ======================================================================
 // PUBLIC ROUTES
 // ======================================================================
@@ -37,14 +39,35 @@ Route::get('/login', [AuthLoginController::class, 'showLoginForm'])->name('login
 Route::post('/login', [AuthLoginController::class, 'login'])->name('login.process');
 Route::post('/logout', [AuthLoginController::class, 'logout'])->name('logout');
 
-// Email Verification
-Route::get('/verify-email/{id}/{hash}', function ($id, $hash) {
-    $user = \App\Models\Registrasi::findOrFail($id);
-    if ($hash !== sha1($user->email)) abort(403);
-    $user->email_verified_at = now();
-    $user->save();
-    return view('emails.verified-success');
-})->name('verification.verify')->middleware('signed');
+// ======================================================================
+
+// EMAIL VERIFICATION
+
+// ======================================================================
+
+Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+
+    ->middleware(['signed'])
+
+    ->name('verification.verify');
+
+
+
+Route::get('/email/verify', function () {
+
+    return view('auth.verify-email');
+
+})->middleware('auth')->name('verification.notice');
+
+
+
+Route::post('/email/verification-notification', function (Request $request) {
+
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('message', 'Link verifikasi telah dikirim ulang!');
+
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 // API Prodi (public)
 Route::get('/api/prodi-by-fakultas/{fakultas}', function ($fakultas) {
@@ -131,7 +154,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // STEP 5: Tes
-    Route::middleware(['check.upload'])->group(function () {
+    Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/tes', [TesController::class, 'index'])->name('tes.index');
         Route::post('/tes', [TesController::class, 'store'])->name('tes.store');
         

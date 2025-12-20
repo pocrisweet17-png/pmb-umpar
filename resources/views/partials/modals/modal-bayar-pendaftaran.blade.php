@@ -141,13 +141,17 @@
                                     <span class="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">Kartu Kredit</span>
                                 </div>
 
-                                <button type="button" id="btnBayarOnline"
-                                    class="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 mx-auto">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                                    </svg>
-                                    Bayar Rp {{ number_format($biaya_pendaftaran ?? 0, 0, ',', '.') }}
-                                </button>
+                                <form id="formMidtrans">
+                                @csrf
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                <button type="button" id="btnBayarOnline" 
+                                        class="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 mx-auto">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                        </svg>
+                                        Bayar Rp {{ number_format($biaya_pendaftaran,0,',','.') }}
+                                    </button>
+                                </form>
 
                                 <!-- Loading Indicator -->
                                 <div class="mt-4 hidden" id="loadingPayment">
@@ -275,6 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnBayar) {
         btnBayar.addEventListener('click', function(e) {
             e.preventDefault();
+            console.log('Bayar button clicked!');
             
             const loadingDiv = document.getElementById('loadingPayment');
             const errorDiv = document.getElementById('errorPayment');
@@ -285,20 +290,27 @@ document.addEventListener('DOMContentLoaded', function() {
             errorDiv.classList.add('hidden');
             btnBayar.disabled = true;
             
+            // Ambil CSRF token
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            
+            const formData = new FormData();
+            formData.append('_token', csrfToken);
             // Request snap token via AJAX
             fetch('{{ route("bayar.store") }}', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json'
-                }
+                },
+                body: JSON.stringify({})
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
-                loadingDiv.classList.add('hidden');
+                console.log('Response data:', data);
+                
+                if (loadingDiv) loadingDiv.classList.add('hidden');
                 btnBayar.disabled = false;
                 
                 console.log('Response from server:', data);
@@ -345,6 +357,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 errorDiv.classList.remove('hidden');
             });
         });
+    } else {
+        console.warn('Payment button not found!');
     }
 
     // UPLOAD MANUAL HANDLER
@@ -352,8 +366,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (formUpload) {
         formUpload.addEventListener('submit', function() {
             const btn = document.getElementById('btnUploadBukti');
-            btn.disabled = true;
-            btn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Mengupload...';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Mengupload...';
+            }
         });
     }
 

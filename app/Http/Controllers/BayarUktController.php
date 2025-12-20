@@ -287,24 +287,47 @@ class BayarUktController extends Controller
             ], 404);
         }
 
-        // Jika settlement, pastikan user status terupdate dan generate NIM
+        // PERBAIKAN: Jika settlement, generate NIM dan update status
         if ($payment->status_transaksi === 'settlement') {
             $user = $payment->user;
+            
             if ($user && !$user->is_ukt_paid) {
+                Log::info('🎯 Processing settlement for user', [
+                    'user_id' => $user->id,
+                    'order_id' => $orderId
+                ]);
+                
                 // Generate NIM jika belum ada
                 if (empty($user->nim)) {
+                    Log::info('🔢 Attempting to generate NIM', ['user_id' => $user->id]);
+                    
                     $nim = $this->generateNIM($user);
+                    
                     if ($nim) {
                         $user->nim = $nim;
-                        Log::info('NIM generated for user', [
+                        Log::info('✅ NIM generated and assigned', [
                             'user_id' => $user->id,
                             'nim' => $nim
                         ]);
+                    } else {
+                        Log::error('❌ Failed to generate NIM', ['user_id' => $user->id]);
                     }
+                } else {
+                    Log::info('ℹ️ User already has NIM', [
+                        'user_id' => $user->id,
+                        'nim' => $user->nim
+                    ]);
                 }
                 
+                // Update status UKT
                 $user->is_ukt_paid = true;
                 $user->save();
+                
+                Log::info('✅ User status updated', [
+                    'user_id' => $user->id,
+                    'is_ukt_paid' => true,
+                    'nim' => $user->nim
+                ]);
             }
         }
 
@@ -318,18 +341,92 @@ class BayarUktController extends Controller
     }
 
     /**
+     * TAMBAHAN: Method untuk update status dari webhook
+     * Method ini HARUS dipanggil dari PaymentController setelah webhook settlement
+     */
+    public function processSettlement($payment)
+    {
+        Log::info('🎯 UKT processSettlement called', [
+            'payment_id' => $payment->id,
+            'order_id' => $payment->order_id,
+            'user_id' => $payment->user_id
+        ]);
+        
+        $user = $payment->user;
+        
+        if (!$user) {
+            Log::error('❌ User not found for payment', ['payment_id' => $payment->id]);
+            return false;
+        }
+        
+        // Jangan proses jika sudah lunas
+        if ($user->is_ukt_paid && !empty($user->nim)) {
+            Log::info('ℹ️ User already paid and has NIM', [
+                'user_id' => $user->id,
+                'nim' => $user->nim
+            ]);
+            return true;
+        }
+        
+        try {
+            // Generate NIM jika belum ada
+            if (empty($user->nim)) {
+                Log::info('🔢 Generating NIM for user', ['user_id' => $user->id]);
+                
+                $nim = $this->generateNIM($user);
+                
+                if ($nim) {
+                    $user->nim = $nim;
+                    Log::info('✅ NIM generated', [
+                        'user_id' => $user->id,
+                        'nim' => $nim
+                    ]);
+                } else {
+                    Log::error('❌ Failed to generate NIM', ['user_id' => $user->id]);
+                    return false;
+                }
+            }
+            
+            // Update status pembayaran
+            $user->is_ukt_paid = true;
+            $user->save();
+            
+            Log::info('✅ UKT settlement processed successfully', [
+                'user_id' => $user->id,
+                'nim' => $user->nim,
+                'is_ukt_paid' => true
+            ]);
+            
+            return true;
+            
+        } catch (\Exception $e) {
+            Log::error('❌ Error processing UKT settlement', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return false;
+        }
+    }
+
+    /**
      * Generate NIM otomatis
      * Format: 226 + kodeProdi + nomor urut (3 digit)
      */
     private function generateNIM($user)
     {
         try {
+            Log::info('🔄 Starting NIM generation', [
+                'user_id' => $user->id,
+                'pilihan_1' => $user->pilihan_1
+            ]);
+            
             return DB::transaction(function () use ($user) {
                 // Ambil kode prodi dari tabel program_studis
                 $prodi = ProgramStudy::where('kodeProdi', $user->pilihan_1)->first();
                 
                 if (!$prodi) {
-                    Log::error('Program Studi tidak ditemukan', [
+                    Log::error('❌ Program Studi tidak ditemukan', [
                         'user_id' => $user->id,
                         'kodeProdi' => $user->pilihan_1
                     ]);
@@ -337,6 +434,10 @@ class BayarUktController extends Controller
                 }
                 
                 $kodeProdi = $prodi->kodeProdi;
+                
+                Log::info('📚 Program Studi found', [
+                    'kodeProdi' => $kodeProdi
+                ]);
                 
                 // Hitung jumlah mahasiswa yang sudah bayar UKT di prodi yang sama
                 // Gunakan lockForUpdate untuk menghindari race condition
@@ -346,13 +447,18 @@ class BayarUktController extends Controller
                     ->lockForUpdate()
                     ->count();
                 
+                Log::info('🔢 Count existing students with NIM', [
+                    'count' => $count,
+                    'pilihan_1' => $user->pilihan_1
+                ]);
+                
                 // Nomor urut dimulai dari 001
                 $nomorUrut = str_pad($count + 1, 3, '0', STR_PAD_LEFT);
                 
                 // Format NIM: 226 + kodeProdi + nomor urut
                 $nim = '226' . $kodeProdi . $nomorUrut;
                 
-                Log::info('NIM generated successfully', [
+                Log::info('✅ NIM generated successfully', [
                     'user_id' => $user->id,
                     'nim' => $nim,
                     'kodeProdi' => $kodeProdi,
@@ -364,9 +470,10 @@ class BayarUktController extends Controller
             });
             
         } catch (\Exception $e) {
-            Log::error('Error generating NIM', [
+            Log::error('❌ Error generating NIM', [
                 'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
             return null;
         }
