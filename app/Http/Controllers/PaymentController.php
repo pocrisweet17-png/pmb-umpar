@@ -178,8 +178,7 @@ class PaymentController extends Controller
                 'phone'      => $user->no_whatsapp ?? '081234567890',
             ],
             'enabled_payments' => [
-                'gopay', 'shopeepay', 'qris', 'bank_transfer', 'echannel',
-                'bca_klikpay', 'bca_klikbca', 'bri_epay', 'cimb_clicks', 'credit_card',
+                'gopay', 'shopeepay', 'qris', 'bank_transfer', 
             ],
             'callbacks' => [
                 'finish' => route('payment.finish'),
