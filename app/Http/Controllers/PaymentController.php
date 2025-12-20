@@ -49,9 +49,6 @@ class PaymentController extends Controller
         return view('bayar.index', compact('user', 'biaya_pendaftaran'));
     }
 
-    /**
-     * Generate Snap Token untuk pembayaran pendaftaran (AJAX)
-     */
     public function store(Request $request)
     {
         Log::info('Store method called', [

@@ -242,6 +242,80 @@
                     </div>
                 </div>
 
+                {{-- Media Sosial --}}
+                <div class="mt-8 px-4">
+                    <div class="flex items-center gap-2 mb-4">
+                        <!-- <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 8h10M7 12h4m1 8l-5-5H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v6a2 2 0 01-2 2h-3l-5 5z" />
+                        </svg> -->
+                        <h4 class="text-lg font-bold text-gray-900">
+                            Media Sosial <span class="text-sm font-normal text-gray-500">(Minimal salah satu)</span>
+                        </h4>
+                    </div>
+
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                            {{-- Twitter --}}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Twitter
+                                </label>
+                                <input
+                                    type="url"
+                                    name="twitter"
+                                    value="{{ old('twitter', $registrasi->twitter ?? '') }}"
+                                    placeholder="https://twitter.com/username"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                                        focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                            </div>
+
+                            {{-- Facebook --}}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Facebook
+                                </label>
+                                <input
+                                    type="url"
+                                    name="facebook"
+                                    value="{{ old('facebook', $registrasi->facebook ?? '') }}"
+                                    placeholder="https://facebook.com/username"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                                        focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                            </div>
+
+                            {{-- TikTok --}}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    TikTok
+                                </label>
+                                <input
+                                    type="url"
+                                    name="tiktok"
+                                    value="{{ old('tiktok', $registrasi->tiktok ?? '') }}"
+                                    placeholder="https://tiktok.com/@username"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                                        focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                            </div>
+
+                            {{-- Instagram --}}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Instagram
+                                </label>
+                                <input
+                                    type="url"
+                                    name="instagram"
+                                    value="{{ old('instagram', $registrasi->instagram ?? '') }}"
+                                    placeholder="https://instagram.com/username"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                                        focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
                 {{-- Modal Footer --}}
                 <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
                     <button 

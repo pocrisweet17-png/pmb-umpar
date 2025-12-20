@@ -12,7 +12,8 @@
                 <div class="text-green-500 text-6xl mb-4">✓</div>
                 <h1 class="text-2xl font-bold text-gray-800 mb-2">Pembayaran Berhasil!</h1>
                 <p class="text-gray-600 mb-6">
-                    Terima kasih. Pembayaran Anda telah berhasil diverifikasi.
+                    Terima kasih. Pembayaran Anda telah berhasil diverifikasi. <br>
+                    Lihat NIM Anda di tab Data Pribadi
                 </p>
                 
                 <div class="bg-green-50 rounded-lg p-4 mb-6 text-left">

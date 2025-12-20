@@ -32,6 +32,10 @@ class User extends Authenticatable
         'is_daftar_ulang',
         'is_ukt_paid',
         'role',
+        'twitter',
+        'facebook',
+        'tiktok',
+        'instagram',
     ];
 
     protected $hidden = [
