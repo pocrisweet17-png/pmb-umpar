@@ -1,4 +1,6 @@
 <div id="modalBayarUkt" class="fixed inset-0 hidden z-[9999]">
+    data-ukt-store-url="{{ route('ukt.store') }}"
+     data-ukt-check-url="{{ route('ukt.check-status') }}">
     <!-- Overlay -->
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"
          onclick="closeModalBayarUkt()"></div>
@@ -227,7 +229,6 @@
         </div>
     </div>
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     
