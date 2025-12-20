@@ -154,11 +154,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // STEP 5: Tes
-<<<<<<< HEAD
     Route::middleware(['auth', 'verified'])->group(function () {
-=======
-    Route::middleware(['check.upload'])->group(function () {
->>>>>>> 0b9f75077cd471d3b1ccb04c516d1c091f45e066
         Route::get('/tes', [TesController::class, 'index'])->name('tes.index');
         Route::post('/tes', [TesController::class, 'store'])->name('tes.store');
         
