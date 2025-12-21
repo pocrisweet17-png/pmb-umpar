@@ -15,7 +15,11 @@ return new class extends Migration
             $table->string('password');
             $table->string('nama_lengkap');
             $table->string('nik')->unique();
+
+            // sosmed
             $table->string('no_whatsapp');
+            $table->string('akun_fb')->unique()->nullable();
+            $table->string('akun_instagram')->unique()->nullable();
             
             // Email verification
             $table->boolean('is_verified')->default(false);

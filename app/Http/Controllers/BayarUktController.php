@@ -199,11 +199,10 @@ class BayarUktController extends Controller
             'customer_details' => [
                 'first_name' => $user->nama_lengkap ?? $user->name,
                 'email'      => $user->email,
-                'phone'      => $user->no_whatsapp ?? '081234567890',
+                'phone'      => $user->no_whatsapp ?? '-',
             ],
             'enabled_payments' => [
-                'gopay', 'shopeepay', 'qris', 'bank_transfer', 'echannel',
-                'bca_klikpay', 'bca_klikbca', 'bri_epay', 'cimb_clicks', 'credit_card',
+                'gopay', 'shopeepay', 'qris',
             ],
             'callbacks' => [
                 'finish' => route('payment.finish') . '?type=ukt',

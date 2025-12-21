@@ -16,8 +16,9 @@ TUGAS :
 
 # admin
 1. tampilkan statistik asal pendaftar
-2. nav kelola camaba tampilkan document
+2. nav kelola camaba tampilkan document     
 3. lengkapi kolom nav data mahasiswa
 
 
 # VENOM BOT OPSIONAL nanti kalau udah beres semua, kalau tidak bisa 
+# kalau sudah beres semua loh

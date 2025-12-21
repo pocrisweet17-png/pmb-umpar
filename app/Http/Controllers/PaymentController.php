@@ -175,10 +175,10 @@ class PaymentController extends Controller
             'customer_details' => [
                 'first_name' => $user->nama_lengkap ?? $user->name,
                 'email'      => $user->email,
-                'phone'      => $user->no_whatsapp ?? '081234567890',
+                'phone'      => $user->no_whatsapp ?? '-',
             ],
             'enabled_payments' => [
-                'gopay', 'shopeepay', 'qris', 'bank_transfer', 
+                'gopay', 'qris', 
             ],
             'callbacks' => [
                 'finish' => route('payment.finish'),

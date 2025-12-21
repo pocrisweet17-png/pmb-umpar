@@ -16,6 +16,8 @@ class User extends Authenticatable
         'nama_lengkap',
         'nik',
         'no_whatsapp',
+        'akun_fb',
+        'akun_instagram',
         'is_verified',
         'email_verified_at',
         'verification_token',
