@@ -21,3 +21,10 @@ TUGAS :
 
 
 # VENOM BOT OPSIONAL nanti kalau udah beres semua, kalau tidak bisa 
+
+
+# install export excel
+composer require maatwebsite/excel
+
+php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider" --tag=config
+

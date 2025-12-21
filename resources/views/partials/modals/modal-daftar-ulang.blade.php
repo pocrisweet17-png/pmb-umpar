@@ -83,7 +83,7 @@
                     <div class="space-y-4 pl-11">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Nomor Induk Mahasiswa (NIM)</label>
-                            <input type="text" value="{{ $user->nim ?? '' }}" readonly
+                            <input type="text" name="nim" value="{{ $user->nim ?? '' }}" readonly
                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed text-sm">
                         </div>
                         <div>

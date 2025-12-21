@@ -260,3 +260,21 @@ Route::get('/wilayah/{type}/{id?}', function ($type, $id = null) {
 
     return Http::get($url)->json();
 });
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // Routes untuk Mahasiswa Daftar Ulang
+    Route::get('/mahasiswa/daftar-ulang', [MahasiswaController::class, 'daftarUlang'])
+        ->name('mahasiswa.daftar-ulang');
+    
+    // Export Excel
+    Route::get('/mahasiswa/export-excel', [MahasiswaController::class, 'exportExcel'])
+        ->name('mahasiswa.export-excel');
+    
+    // Verify & Reject
+    Route::post('/mahasiswa/{id}/verify', [MahasiswaController::class, 'verifyDaftarUlang'])
+        ->name('mahasiswa.verify-daftar-ulang');
+    
+    Route::post('/mahasiswa/{id}/reject', [MahasiswaController::class, 'rejectDaftarUlang'])
+        ->name('mahasiswa.reject-daftar-ulang');
+});

@@ -60,4 +60,5 @@ class Registrasi extends Model
     {
         return $this->hasMany(Dokumen::class, 'user_id', 'user_id');
     }
+    
 }
