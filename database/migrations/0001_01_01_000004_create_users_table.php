@@ -25,6 +25,7 @@ return new class extends Migration
             // Nomor registrasi (auto-generated)
             $table->string('nomor_registrasi')->unique()->nullable();
             $table->string('nomorPendaftaran')->unique()->nullable();
+            $table->string('nim')->nullable()->unique();
             
             // Pilihan Program Studi
             $table->string('pilihan_1')->nullable(); // kodeProdi pilihan 1
