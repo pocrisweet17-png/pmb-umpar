@@ -267,22 +267,29 @@
                 <form id="formUjian" action="{{ route('mahasiswa.ujian.submit') }}" method="POST">
                     @csrf
 
-                    <div class="space-y-4 md:space-y-6">
-                        @foreach($soals as $index => $soal)
-                        <div class="glass rounded-xl md:rounded-2xl p-4 md:p-6 border-2 border-gray-200 hover:border-blue-400 hover:shadow-xl transition-all">
+<div class="space-y-4 md:space-y-6">
+    @foreach($soals as $index => $soal)
+    <div class="glass rounded-xl md:rounded-2xl p-4 md:p-6 border-2 border-gray-200 hover:border-blue-400 hover:shadow-xl transition-all">
 
-                            <!-- Nomor & Pertanyaan -->
-                            <div class="mb-4">
-                                <div class="flex items-start gap-3">
-                                    <span class="inline-flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold text-sm md:text-base flex-shrink-0 shadow-lg">
-                                        {{ $index + 1 }}
-                                    </span>
-                                    <p class="text-gray-800 font-medium leading-relaxed text-sm md:text-base pt-1">
-                                        {{ $soal->textSoal }}
-                                    </p>
-                                </div>
-                            </div>
-
+        <!-- Nomor & Pertanyaan -->
+        <div class="mb-4">
+            <div class="flex items-start gap-3">
+                <span class="inline-flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white font-bold text-sm md:text-base flex-shrink-0 shadow-lg">
+                    {{ $index + 1 }}
+                </span>
+                <div class="flex-1">
+                    <p class="text-gray-800 font-medium leading-relaxed text-sm md:text-base">
+                        {{ $soal->textSoal }}
+                    </p>
+                    <!-- Gambar Soal -->
+                    @if($soal->gambar_soal)
+                        <div class="mt-3">
+                            <img src="{{ asset('storage/' . $soal->gambar_soal) }}" 
+                                 alt="Gambar Soal {{ $index + 1 }}" 
+                                 class="rounded-lg shadow-md border-2 border-gray-200 max-w-full h-auto md:max-w-sm lg:max-w-md hover:shadow-lg transition-shadow cursor-pointer"
+                                 onclick="openImageModal(this.src)">
+                        </div>
+                    @endif
                             <!-- Pilihan Jawaban -->
                             <div class="space-y-2 md:space-y-3 ml-0 md:ml-13">
                                 @foreach(['a' => $soal->opsi_a, 'b' => $soal->opsi_b, 'c' => $soal->opsi_c, 'd' => $soal->opsi_d] as $key => $opsi)
@@ -298,6 +305,9 @@
                                 </label>
                                 @endforeach
                             </div>
+                        </div>
+                    </div>
+                </div>
 
                         </div>
                         @endforeach
