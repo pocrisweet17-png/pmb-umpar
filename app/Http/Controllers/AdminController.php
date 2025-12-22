@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Soal;
 use App\Models\User;
 use App\Models\Ujian;
+use App\Models\Registrasi;
 
 class AdminController extends Controller
 {
@@ -19,32 +21,24 @@ class AdminController extends Controller
         $totalUjian = Ujian::count();
         $ujianSelesai = Ujian::where('status', 'selesai')->count();
 
-        return view('admin.dashboard', compact(
-            'totalSoal',
-            'totalUser',
-            'totalAdmin',
-            'totalUserVerified',
-            'totalUjian',
-            'ujianSelesai'
-        ));
-    }
-
-    public function dashboard()
-    {
         // Statistik Asal Daerah (mengambil Kabupaten/Kota dari alamat)
-        $registrations = Registrasi::select('alamat')->whereNotNull('alamat')->get();
+        $registrations = Registrasi::select('alamat')
+            ->whereNotNull('alamat')
+            ->where('alamat', '!=', '')
+            ->get();
         
         $regionStats = [];
+        
         foreach ($registrations as $reg) {
             // Parse alamat untuk mendapatkan Kabupaten/Kota
             // Format: Jl Keterampilan, CAPPAGALUNG, BACUKIKI BARAT, KOTA PAREPARE, SULAWESI SELATAN
             $addressParts = array_map('trim', explode(',', $reg->alamat));
             
-            // Kabupaten/Kota biasanya di posisi ke-4 (index 3) dari array
-            if (isset($addressParts[3])) {
+            // Langsung ambil dari posisi ke-4 (index 3) karena sudah pasti formatnya
+            if (isset($addressParts[3]) && !empty(trim($addressParts[3]))) {
                 $city = strtoupper(trim($addressParts[3]));
                 
-                // Bersihkan dan format nama kota
+                // Format nama kota
                 $city = $this->formatCityName($city);
                 
                 if (!empty($city)) {
@@ -61,26 +55,34 @@ class AdminController extends Controller
         arsort($regionStats);
 
         // Statistik Jenis Kelamin
-        $genderStats = Registrasi::select('jenisKelamin', DB::raw('count(*) as total'))
+        $genderStatsRaw = Registrasi::select('jenisKelamin', DB::raw('count(*) as total'))
             ->whereNotNull('jenisKelamin')
+            ->where('jenisKelamin', '!=', '')
             ->groupBy('jenisKelamin')
             ->pluck('total', 'jenisKelamin')
             ->toArray();
         
         // Format label jenis kelamin
-        $formattedGenderStats = [];
-        foreach ($genderStats as $gender => $count) {
+        $genderStats = [];
+        foreach ($genderStatsRaw as $gender => $count) {
             $label = $this->formatGenderLabel($gender);
-            $formattedGenderStats[$label] = $count;
+            if (isset($genderStats[$label])) {
+                $genderStats[$label] += $count;
+            } else {
+                $genderStats[$label] = $count;
+            }
         }
 
-        return view('admin.dashboard', [
+        return view('admin.dashboard', compact(
             'totalSoal',
-            'totalUser', 
+            'totalUser',
             'totalAdmin',
+            'totalUserVerified',
+            'totalUjian',
+            'ujianSelesai',
             'regionStats',
-            'genderStats' => $formattedGenderStats
-        ]);
+            'genderStats'
+        ));
     }
 
     /**
@@ -90,6 +92,14 @@ class AdminController extends Controller
     {
         // Hapus prefix KOTA, KABUPATEN, KAB, dll
         $cityName = preg_replace('/^(KOTA|KABUPATEN|KAB\.?)\s+/i', '', $cityName);
+        
+        // Trim whitespace
+        $cityName = trim($cityName);
+        
+        // Jika kosong setelah di-trim, return kosong
+        if (empty($cityName)) {
+            return '';
+        }
         
         // Capitalize setiap kata
         $cityName = ucwords(strtolower($cityName));
@@ -109,6 +119,7 @@ class AdminController extends Controller
             'LAKI-LAKI' => 'Laki-laki',
             'LAKI LAKI' => 'Laki-laki',
             'MALE' => 'Laki-laki',
+            'PRIA' => 'Laki-laki',
             'P' => 'Perempuan',
             'PEREMPUAN' => 'Perempuan',
             'WANITA' => 'Perempuan',

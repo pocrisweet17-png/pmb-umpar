@@ -15,27 +15,16 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class MahasiswaExport implements FromCollection, WithHeadings, WithMapping, WithStyles, WithColumnWidths
 {
-    protected $status;
-
-    public function __construct($status = null)
-    {
-        $this->status = $status;
-    }
-
     /**
      * @return \Illuminate\Support\Collection
      */
     public function collection()
     {
-        $query = Mahasiswa::with(['user', 'programStudi', 'registrasi'])
-            ->where('is_daftar_ulang', true);
-
-        // Filter berdasarkan status jika ada
-        if ($this->status && $this->status !== 'all') {
-            $query->where('status_daftar_ulang', $this->status);
-        }
-
-        return $query->orderBy('created_at', 'desc')->get();
+        // Ambil semua mahasiswa yang sudah daftar ulang
+        return Mahasiswa::with(['user', 'programStudi', 'registrasi'])
+            ->where('is_daftar_ulang', true)
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
     /**

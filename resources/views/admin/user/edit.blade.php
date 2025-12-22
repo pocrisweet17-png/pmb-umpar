@@ -9,7 +9,7 @@
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
 
         <!-- Header -->
-        <div class="bg-gradient-to-r from-amber-500 to-orange-600 px-6 sm:px-8 py-6">
+        <div class="bg-blue-500 px-6 sm:px-8 py-6">
             <h3 class="text-xl sm:text-2xl font-bold text-white flex items-center">
                 <svg class="w-7 h-7 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -328,7 +328,7 @@
                         <svg class="w-4 h-4 mr-1 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        Admin memiliki akses penuh ke sistem, sedangkan User hanya dapat mengakses fitur terbatas
+                        Admin memiliki akses penuh ke sistem
                     </p>
                 </div>
 
@@ -355,7 +355,7 @@
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-3 pt-4">
                     <button type="submit"
-                            class="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 hover:from-amber-600 hover:to-orange-700 transition-all duration-200 flex items-center justify-center group text-sm sm:text-base">
+                            class="flex-1 bg-blue-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 hover:from-amber-600 hover:to-orange-700 transition-all duration-200 flex items-center justify-center group text-sm sm:text-base">
                         <svg class="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>

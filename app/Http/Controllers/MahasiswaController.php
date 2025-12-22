@@ -31,14 +31,13 @@ class MahasiswaController extends Controller
     }
 
     /**
-     * Export data mahasiswa ke Excel
+     * Export semua data mahasiswa daftar ulang ke Excel
      */
-    public function exportExcel(Request $request)
+    public function exportExcel()
     {
-        $status = $request->get('status', 'all');
         $fileName = 'Data_Mahasiswa_Daftar_Ulang_' . date('Y-m-d_His') . '.xlsx';
         
-        return Excel::download(new MahasiswaExport($status), $fileName);
+        return Excel::download(new MahasiswaExport(), $fileName);
     }
 
     /**
