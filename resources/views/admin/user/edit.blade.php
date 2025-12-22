@@ -173,7 +173,7 @@
                             <label class="block text-gray-700 font-medium mb-2 text-sm">
                                 Pilihan 1
                             </label>
-                            <input type="text" name="pilihan_1" value="{{ old('pilihan_1', $user->pilihan_1) }}"
+                            <input type="text" name="pilihan_1" value="{{ $user->programStudiPilihan1?->namaProdi ?? '-' }}"
                                    placeholder="Kode Prodi Pilihan 1"
                                    class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all hover:border-gray-300 text-sm sm:text-base">
                         </div>
@@ -182,7 +182,7 @@
                             <label class="block text-gray-700 font-medium mb-2 text-sm">
                                 Pilihan 2
                             </label>
-                            <input type="text" name="pilihan_2" value="{{ old('pilihan_2', $user->pilihan_2) }}"
+                            <input type="text" name="pilihan_2" value="{{ $user->programStudiPilihan2?->namaProdi ?? '-' }}"
                                    placeholder="Kode Prodi Pilihan 2"
                                    class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all hover:border-gray-300 text-sm sm:text-base">
                         </div>
