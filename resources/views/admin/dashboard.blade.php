@@ -29,13 +29,8 @@
     <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-lg p-6 sm:p-8 text-white border border-blue-500/20">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-                <h2 class="text-2xl sm:text-3xl font-bold mb-2">Selamat Datang, {{ Auth::user()->name }}! 👋</h2>
-                <p class="text-blue-100 text-sm sm:text-base">Kelola soal ujian dan pantau sistem dengan mudah</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-1xl sm:text-2xl font-bold shadow-lg">
-                    {{ strtoupper(substr(Auth::user()->username, 0, 10)) }}
-                </div>
+                <h2 class="text-2xl sm:text-3xl font-bold mb-2">Selamat Datang, {{ Auth::user()->name }}!</h2>
+                <p class="text-blue-100 text-sm sm:text-base">Kelola PMB dan pantau sistem dengan mudah</p>
             </div>
         </div>
     </div>
@@ -268,6 +263,57 @@
             <div id="genderLegend" class="space-y-2"></div>
         </div>
     </div>
+    <!-- Statistik Program Studi -->
+<div class="group bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-gray-100/50 hover:shadow-3xl transition-all duration-500 hover:-translate-y-1">
+    <div class="relative overflow-hidden">
+        <div class="absolute inset-0 bg-blue-500 opacity-90"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-20"></div>
+        <div class="relative px-8 py-6">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white tracking-tight">Statistik Program Studi</h3>
+            </div>
+        </div>
+    </div>
+    <div class="p-8">
+        <div class="flex justify-center mb-8">
+            <div class="w-full max-w-sm">
+                <canvas id="prodiChart" class="max-h-72"></canvas>
+            </div>
+        </div>
+        <div id="prodiLegend" class="space-y-2 max-h-64 overflow-y-auto pr-2"></div>
+    </div>
+</div>
+
+<!-- Statistik Fakultas -->
+<div class="group bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-gray-100/50 hover:shadow-3xl transition-all duration-500 hover:-translate-y-1">
+    <div class="relative overflow-hidden">
+        <div class="absolute inset-0 bg-blue-500 opacity-90"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-20"></div>
+        <div class="relative px-8 py-6">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white tracking-tight">Statistik Fakultas</h3>
+            </div>
+        </div>
+    </div>
+    <div class="p-8">
+        <div class="flex justify-center mb-8">
+            <div class="w-full max-w-sm">
+                <canvas id="fakultasChart" class="max-h-72"></canvas>
+            </div>
+        </div>
+        <div id="fakultasLegend" class="space-y-2"></div>
+    </div>
+</div>
 </div>
 
 </div>
@@ -279,6 +325,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const regionData = @json($regionStats ?? []);
     const genderData = @json($genderStats ?? []);
+    const prodiData = @json($prodiStats ?? []);
+    const fakultasData = @json($fakultasStats ?? []);
+
 
     // Premium color palette
     const colors = [
@@ -420,6 +469,77 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p class="text-sm font-medium">No registration data available</p>
             </div>
         `;
+    }
+    if (Object.keys(prodiData).length > 0) {
+        const labels = Object.keys(prodiData);
+        const values = Object.values(prodiData);
+        const total = values.reduce((a,b)=>a+b,0);
+
+        new Chart(document.getElementById('prodiChart'), {
+            type: 'doughnut',
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: colors.slice(0, labels.length),
+                    borderWidth: 0,
+                    hoverOffset: 12
+                }]
+            },
+            options: chartOptions
+        });
+
+        const legend = document.getElementById('prodiLegend');
+        labels.forEach((label, i) => {
+            const percent = ((values[i]/total)*100).toFixed(1);
+            legend.innerHTML += `
+                <div class="flex justify-between p-4 rounded-xl hover:bg-gray-50">
+                    <div class="flex gap-3">
+                        <span class="w-3 h-3 rounded-md" style="background:${colors[i]}"></span>
+                        <span>${label}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <strong>${values[i]}</strong>
+                        <span class="text-gray-400">${percent}%</span>
+                    </div>
+                </div>`;
+        });
+    }
+
+    if (Object.keys(fakultasData).length > 0) {
+        const labels = Object.keys(fakultasData);
+        const values = Object.values(fakultasData);
+        const total = values.reduce((a,b)=>a+b,0);
+
+        new Chart(document.getElementById('fakultasChart'), {
+            type: 'doughnut',
+            data: {
+                labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: colors.slice(0, labels.length),
+                    borderWidth: 0,
+                    hoverOffset: 12
+                }]
+            },
+            options: chartOptions
+        });
+
+        const legend = document.getElementById('fakultasLegend');
+        labels.forEach((label, i) => {
+            const percent = ((values[i]/total)*100).toFixed(1);
+            legend.innerHTML += `
+                <div class="flex justify-between p-4 rounded-xl hover:bg-gray-50">
+                    <div class="flex gap-3">
+                        <span class="w-3 h-3 rounded-md" style="background:${colors[i]}"></span>
+                        <span>${label}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <strong>${values[i]}</strong>
+                        <span class="text-gray-400">${percent}%</span>
+                    </div>
+                </div>`;
+        });
     }
 });
 </script>

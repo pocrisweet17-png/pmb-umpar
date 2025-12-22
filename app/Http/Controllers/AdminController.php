@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\ProgramStudy;
 use App\Models\Soal;
 use App\Models\User;
 use App\Models\Ujian;
@@ -73,6 +74,23 @@ class AdminController extends Controller
             }
         }
 
+        $prodiStats = DB::table('users')
+        ->join('program_studis', 'users.pilihan_1', '=', 'program_studis.kodeProdi')
+        ->select('program_studis.namaProdi', DB::raw('COUNT(*) as total'))
+        ->whereNotNull('users.pilihan_1')
+        ->groupBy('program_studis.namaProdi')
+        ->orderByDesc('total')
+        ->pluck('total', 'namaProdi');
+
+        $fakultasStats = DB::table('users')
+        ->join('program_studis', 'users.pilihan_1', '=', 'program_studis.kodeProdi')
+        ->select('program_studis.fakultas', DB::raw('COUNT(*) as total'))
+        ->whereNotNull('users.pilihan_1')
+        ->groupBy('program_studis.fakultas')
+        ->orderByDesc('total')
+        ->pluck('total', 'fakultas');
+
+
         return view('admin.dashboard', compact(
             'totalSoal',
             'totalUser',
@@ -81,7 +99,9 @@ class AdminController extends Controller
             'totalUjian',
             'ujianSelesai',
             'regionStats',
-            'genderStats'
+            'genderStats',
+            'prodiStats',
+            'fakultasStats'
         ));
     }
 
