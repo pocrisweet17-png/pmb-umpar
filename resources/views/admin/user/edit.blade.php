@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Edit User')
-@section('page-title', 'Edit User')
+@section('title', 'User')
+@section('page-title', 'User')
 
 @section('content')
 <div class="max-w-6xl mx-auto">
@@ -14,7 +14,7 @@
                 <svg class="w-7 h-7 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
-                Edit Data Calon Mahasiswa
+                Data Calon Mahasiswa
             </h3>
             <p class="text-orange-100 mt-1 text-sm">ID User: <span class="font-semibold">{{ $user->id }}</span> | Username: <span class="font-semibold">{{ $user->username }}</span> | No. Registrasi: <span class="font-semibold">{{ $user->nomor_registrasi ?? 'Belum ada' }}</span></p>
         </div>
@@ -186,6 +186,107 @@
                                    placeholder="Kode Prodi Pilihan 2"
                                    class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all hover:border-gray-300 text-sm sm:text-base">
                         </div>
+                    </div>
+                </div>
+
+                <!-- Dokumen Upload -->
+                <div class="bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl p-4 sm:p-6 border-2 border-rose-200">
+                    <h4 class="font-semibold text-gray-800 mb-4 flex items-center text-sm sm:text-base">
+                        <svg class="w-5 h-5 mr-2 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                        Dokumen yang Diupload
+                    </h4>
+
+                    @if($user->dokumens && $user->dokumens->count() > 0)
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            @foreach($user->dokumens as $dokumen)
+                                <div class="bg-white border-2 {{ $dokumen->statusVerifikasi ? 'border-green-300 bg-green-50' : 'border-rose-300' }} rounded-xl p-4 hover:shadow-md transition-all">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div class="flex items-center">
+                                            @if(in_array(strtolower($dokumen->formatFile), ['jpg', 'jpeg', 'png', 'gif']))
+                                                <svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                </svg>
+                                            @else
+                                                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                                </svg>
+                                            @endif
+                                        </div>
+                                        <div class="flex items-center space-x-1">
+                                            @if($dokumen->statusVerifikasi)
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                    Verified
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    Pending
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <h5 class="font-bold text-gray-900 text-sm">{{ $dokumen->jenisDokumen }}</h5>
+                                        <p class="text-xs text-gray-600 truncate" title="{{ $dokumen->namaFile }}">{{ $dokumen->namaFile }}</p>
+                                        <div class="flex items-center justify-between text-xs text-gray-500">
+                                            <span class="uppercase font-semibold text-rose-600">{{ $dokumen->formatFile }}</span>
+                                            <span>{{ \Carbon\Carbon::parse($dokumen->tanggalUpload)->format('d M Y') }}</span>
+                                        </div>
+
+                                        @if($dokumen->catatanVerifikasi)
+                                            <div class="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg">
+                                                <p class="text-xs text-amber-800">
+                                                    <span class="font-semibold">Catatan:</span> {{ $dokumen->catatanVerifikasi }}
+                                                </p>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="mt-3 flex space-x-2">
+                                        <a href="{{ asset('storage/' . $dokumen->urlFile) }}" target="_blank"
+                                           class="flex-1 bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors flex items-center justify-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                            Lihat
+                                        </a>
+                                        <a href="{{ asset('storage/' . $dokumen->urlFile) }}" download
+                                           class="flex-1 bg-gray-500 hover:bg-gray-600 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors flex items-center justify-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                            </svg>
+                                            Unduh
+                                        </a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="bg-white border-2 border-dashed border-rose-300 rounded-xl p-8 text-center">
+                            <svg class="w-16 h-16 mx-auto text-rose-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <p class="text-gray-500 font-medium">Belum ada dokumen yang diupload</p>
+                            <p class="text-sm text-gray-400 mt-1">Calon mahasiswa belum mengunggah dokumen persyaratan</p>
+                        </div>
+                    @endif
+
+                    <div class="mt-4 p-3 bg-white rounded-lg border border-rose-300">
+                        <p class="text-xs text-rose-800 flex items-start">
+                            <svg class="w-4 h-4 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span><strong>Info:</strong> Dokumen yang diupload user akan muncul di sini. Anda dapat melihat, mengunduh, dan memverifikasi dokumen-dokumen tersebut.</span>
+                        </p>
                     </div>
                 </div>
 
