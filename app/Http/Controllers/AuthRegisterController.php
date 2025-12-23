@@ -26,6 +26,10 @@ class AuthRegisterController extends Controller
             'nama_lengkap'  => 'required',
             'nik'           => 'required|unique:users,nik',
             'no_whatsapp'   => 'required',
+            'akun_fb'       => 'nullable|unique:users,akun_fb',
+            'akun_instagram' => 'nullable|unique:users,akun_instagram',
+            'akun_tiktok' => 'nullable|unique:users,akun_tiktok',
+            'akun_twitter' => 'nullable|unique:users,akun_twitter',
         ]);
 
         // 1. Create user
@@ -36,6 +40,10 @@ class AuthRegisterController extends Controller
             'nama_lengkap'  => $request->nama_lengkap,
             'nik'           => $request->nik,
             'no_whatsapp'   => $request->no_whatsapp,
+            'akun_fb'       => $request->akun_fb,
+            'akun_instagram' => $request->akun_instagram,
+            'akun_tiktok'  => $request->akun_tiktok,
+            'akun_twitter'  => $request->akun_twitter,
             'role'          => 'user',
         ]);
 
@@ -45,8 +53,9 @@ class AuthRegisterController extends Controller
         $user->save();
 
         // 3. Create registrasi steps row
-        Registrasi::create([
+        Registrasi::updateOrCreate([
             'user_id' => $user->id,
+        ], [
             'nomorPendaftaran'      => $regNo,
             'namaLengkap'           => $user->nama_lengkap,
             'tanggalDaftar'         => now(),
