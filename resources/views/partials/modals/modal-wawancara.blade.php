@@ -1,4 +1,3 @@
-{{-- resources/views/partials/modals/modal-wawancara.blade.php --}}
 
 @php
     $user = Auth::user();
@@ -66,7 +65,7 @@
             {{-- Jika Belum Wawancara --}}
             
             <!-- Header Modal (Fixed) -->
-            <div class="bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 text-white p-4 md:p-6 rounded-t-2xl md:rounded-t-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3 md:gap-0">
+            <div class="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-700 text-white p-4 md:p-6 rounded-t-2xl md:rounded-t-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3 md:gap-0">
                 <div>
                     <h2 class="text-xl md:text-2xl font-bold flex items-center gap-2">
                         <span>💬</span>
@@ -93,7 +92,7 @@
                                 <!-- Nomor & Pertanyaan -->
                                 <div class="mb-4">
                                     <div class="flex items-start gap-3">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 text-white font-bold text-sm md:text-base flex-shrink-0 shadow-lg">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-blue-600 to-blue-600 text-white font-bold text-sm md:text-base flex-shrink-0 shadow-lg">
                                             {{ $index + 1 }}
                                         </span>
                                         <div class="flex-1">
@@ -137,7 +136,7 @@
 
                             <button type="button"
                                     onclick="submitWawancara()"
-                                    class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 md:px-8 py-3 rounded-xl font-bold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-xl hover:shadow-2xl flex items-center justify-center gap-2">
+                                    class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 md:px-8 py-3 rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-xl hover:shadow-2xl flex items-center justify-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                 </svg>
