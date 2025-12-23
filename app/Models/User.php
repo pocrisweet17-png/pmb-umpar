@@ -18,6 +18,8 @@ class User extends Authenticatable
         'no_whatsapp',
         'akun_fb',
         'akun_instagram',
+        'akun_tiktok',
+        'akun_twitter',
         'is_verified',
         'email_verified_at',
         'verification_token',
