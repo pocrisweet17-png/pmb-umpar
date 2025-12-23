@@ -161,10 +161,10 @@
                             <p class="text-xs md:text-sm text-gray-600 mb-2">Nilai Akhir</p>
                             <p class="text-3xl md:text-4xl font-bold text-blue-600">{{ number_format($ujian->nilaiAkhir, 0) }}</p>
                         </div>
-                        <div class="bg-gradient-to-br from-{{ $ujian->nilaiAkhir >= 70 ? 'green' : 'red' }}-50 to-{{ $ujian->nilaiAkhir >= 70 ? 'green' : 'red' }}-100 rounded-xl p-4 md:p-6 transform hover:scale-105 transition-transform">
+                        <div class="bg-gradient-to-br from-{{ $ujian->nilaiAkhir >= 10 ? 'green' : 'red' }}-50 to-{{ $ujian->nilaiAkhir >= 10 ? 'green' : 'red' }}-100 rounded-xl p-4 md:p-6 transform hover:scale-105 transition-transform">
                             <p class="text-xs md:text-sm text-gray-600 mb-2">Status</p>
-                            <p class="text-2xl md:text-3xl font-bold {{ $ujian->nilaiAkhir >= 70 ? 'text-green-600' : 'text-red-600' }}">
-                                {{ $ujian->nilaiAkhir >= 70 ? '✓ LULUS' : '✗ TIDAK LULUS' }}
+                            <p class="text-2xl md:text-3xl font-bold {{ $ujian->nilaiAkhir >= 10 ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $ujian->nilaiAkhir >= 10 ? '✓ LULUS' : '✗ TIDAK LULUS' }}
                             </p>
                         </div>
                         <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-4 md:p-6 transform hover:scale-105 transition-transform">
