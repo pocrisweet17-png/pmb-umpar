@@ -28,3 +28,8 @@ composer require maatwebsite/excel
 
 php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider" --tag=config
 
+# install tools laravel notification whatsapp
+composer require netflie/laravel-notification-whatsapp
+
+php artisan vendor:publish --provider="Netflie\WhatsAppCloudApi\WhatsAppCloudApiServiceProvider" --tag="whatsapp-cloud-api-config"
+
