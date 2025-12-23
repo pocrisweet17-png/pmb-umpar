@@ -12,6 +12,7 @@ class Soal extends Model
     // akses ke fild yang ada di tabel soals
     protected $fillable = [
         'textSoal',
+        'gambar_soal',
         'opsi_a',
         'opsi_b',
         'opsi_c',

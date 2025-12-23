@@ -58,6 +58,13 @@
                                 </span>
                             </div>
                             <p class="text-gray-900 font-medium text-sm leading-relaxed">{{ $soal->textSoal }}</p>
+                            
+                            {{-- untuk gambar --}}
+                                @if($soal->gambar_soal)
+                                    <img src="{{ asset('storage/' . $soal->gambar_soal) }}" 
+                                            alt="Gambar Soal" 
+                                            class="w-20 h-20 object-cover rounded-lg mt-2 border border-gray-200">
+                                @endif
                         </div>
                     </div>
 
@@ -125,7 +132,14 @@
                                 <span class="text-sm font-semibold text-gray-700 bg-gray-100 px-3 py-1 rounded-lg">{{ $soal->idSoal }}</span>
                             </td>
                             <td class="px-6 py-4">
-                                <p class="text-sm text-gray-900 max-w-xs">{{ Str::limit($soal->textSoal, 60) }}</p>
+                                <div class="flex items-start gap-3">
+                                    @if($soal->gambar_soal)
+                                        <img src="{{ asset('storage/' . $soal->gambar_soal) }}" 
+                                             alt="Gambar Soal" 
+                                             class="w-12 h-12 object-cover rounded-lg border border-gray-200 flex-shrink-0">
+                                    @endif
+                                    <p class="text-sm text-gray-900">{{ Str::limit($soal->textSoal, 60) }}</p>
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-700 max-w-xs">{{ Str::limit($soal->opsi_a, 30) }}</td>
                             <td class="px-6 py-4 text-sm text-gray-700 max-w-xs">{{ Str::limit($soal->opsi_b, 30) }}</td>

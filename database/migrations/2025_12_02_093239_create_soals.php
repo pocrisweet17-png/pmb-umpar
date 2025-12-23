@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('soals', function (Blueprint $table) {
             $table->id('idSoal');
             $table->text('textSoal');
+            $table->string('gambar_soal')->nullable();
             $table->string('opsi_a');
             $table->string('opsi_b');
             $table->string('opsi_c');
