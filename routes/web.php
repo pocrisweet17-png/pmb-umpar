@@ -27,6 +27,7 @@ use App\Http\Controllers\AuthRegisterController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\MahasiswaDashboardController;
+use App\Http\Controllers\PertanyaanWawancaraController;
 // ======================================================================
 // PUBLIC ROUTES
 // ======================================================================
@@ -163,8 +164,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/mahasiswa/hasil/{idUjian}', [UjianController::class, 'hasil'])->name('mahasiswa.hasil');
 });
 
-    // STEP 6: Wawancara
-    Route::middleware(['check.tes'])->group(function () {
+// STEP 6: Wawancara
+    Route::middleware(['auth', 'verified', 'step.prodi', 'check.bayar', 'check.lengkapi',])->group(function () {
         Route::get('/wawancara', [WawancaraController::class, 'index'])->name('wawancara.index');
         Route::post('/wawancara', [WawancaraController::class, 'store'])->name('wawancara.store');
     });
@@ -245,7 +246,18 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/mahasiswa/daftar-ulang', [MahasiswaController::class, 'daftarUlang'])->name('admin.user.daftar-ulang');
     Route::post('/mahasiswa/{id}/verify-daftar-ulang', [MahasiswaController::class, 'verifyDaftarUlang'])->name('admin.mahasiswa.verify-daftar-ulang');
     Route::post('/mahasiswa/{id}/reject-daftar-ulang', [MahasiswaController::class, 'rejectDaftarUlang'])->name('admin.mahasiswa.reject-daftar-ulang');
+
+    // CRUD Pertanyaan Wawancara
+    Route::get('/admin/wawancara', [PertanyaanWawancaraController::class, 'index'])->name('admin.wawancara.index');
+    Route::get('/admin/wawancara/create', [PertanyaanWawancaraController::class, 'create'])->name('admin.wawancara.create');
+    Route::post('/admin/wawancara/store', [PertanyaanWawancaraController::class, 'store'])->name('admin.wawancara.store');
+    Route::get('/admin/wawancara/{id}/edit', [PertanyaanWawancaraController::class, 'edit'])->name('admin.wawancara.edit');
+    Route::put('/admin/wawancara/{id}', [PertanyaanWawancaraController::class, 'update'])->name('admin.wawancara.update');
+    Route::delete('/admin/wawancara/{id}', [PertanyaanWawancaraController::class, 'destroy'])->name('admin.wawancara.destroy');
+    Route::post('/admin/wawancara/{id}/toggle', [PertanyaanWawancaraController::class, 'toggleStatus'])->name('admin.wawancara.toggle');
+        
 });
+
 
 Route::get('/wilayah/{type}/{id?}', function ($type, $id = null) {
     $base = 'https://emsifa.github.io/api-wilayah-indonesia/api';
