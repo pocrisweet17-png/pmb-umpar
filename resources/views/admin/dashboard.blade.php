@@ -195,6 +195,18 @@
                 </div>
                 <p class="text-xs text-gray-600">Kelola User</p>
             </a>
+            <a href="{{ route('admin.wawancara.index') }}"
+               class="bg-white rounded-xl p-5 shadow hover:shadow-lg transition-all duration-200 border border-gray-200 hover:border-purple-300 group">
+                <div class="flex items-center mb-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center group-hover:bg-purple-600 transition-colors">
+                        <svg class="w-5 h-5 text-purple-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                        </svg>
+                    </div>
+                    <span class="ml-3 font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">Kelola Wawancara</span>
+                </div>
+                <p class="text-xs text-gray-600">Kelola pertanyaan wawancara mahasiswa</p>
+            </a>
         </div>
     </div>
 

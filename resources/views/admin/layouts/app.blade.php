@@ -76,6 +76,17 @@
                     </div>
                     <span class="ml-3 font-medium">Kelola Camaba</span>
                 </a>
+                {{-- nav kelola pertanyaan wawancara --}}
+                <a href="{{ route('admin.wawancara.index') }}"
+                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.wawancara.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.wawancara.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                        </svg>
+                    </div>
+                    <span class="ml-3 font-medium">Kelola Wawancara</span>
+                </a>
+
                 {{-- nav untuk kelola calon Data Mahasiswa --}}
                 <a href="{{ route('admin.user.daftar-ulang') }}"
                    class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.daftar-ulang') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -171,6 +182,17 @@
                         </svg>
                     </div>
                     <span class="ml-3 font-medium">Kelola User</span>
+                {{-- kelola pertanyaan wawancara --}}
+                    <a href="{{ route('admin.wawancara.index') }}"
+                       class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.wawancara.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.wawancara.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                            </svg>
+                        </div>
+                        <span class="ml-3 font-medium">Kelola Wawancara</span>
+                    </a>
+
                 </a>
                 <a href="{{ route('admin.user.daftar-ulang') }}"
                    class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.daftar-ulang') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
