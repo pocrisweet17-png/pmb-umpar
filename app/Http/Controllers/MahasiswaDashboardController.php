@@ -57,7 +57,7 @@ class MahasiswaDashboardController extends Controller
                 'enabled' => (bool) $user->is_tes_selesai,
             ],
             [
-                'name' => 'Bayar UKT',
+                'name' => 'Bayar Daftar Ulang',
                 'key' => 'is_ukt_paid',
                 'completed' => (bool) $user->is_ukt_paid,
                 'route' => 'ukt.index',

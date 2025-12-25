@@ -47,17 +47,17 @@
 
                     @if($user->pilihan_1)
                         <div class="bg-blue-50 p-3 rounded-lg border text-sm">
-                            <p class="text-gray-500">Pilihan 1</p>
+                            <!-- <p class="text-gray-500">Pilihan 1</p> -->
                             <p class="font-semibold">{{ $user->namaProdiPilihan1 ?? $user->pilihan_1 }}</p>
                         </div>
                     @endif
 
-                    @if($user->pilihan_2)
+                    <!-- @if($user->pilihan_2)
                         <div class="bg-blue-50 p-3 rounded-lg border mt-2 text-sm">
                             <p class="text-gray-500">Pilihan 2</p>
                             <p class="font-semibold">{{ $user->namaProdiPilihan2 ?? $user->pilihan_2 }}</p>
                         </div>
-                    @endif
+                    @endif -->
                 </div>
 
                 <!-- Ringkasan biaya -->
@@ -90,7 +90,7 @@
                 <div class="bg-white border rounded-xl shadow">
 
                     <div class="border-b p-6">
-                        <h3 class="font-semibold text-blue-700">Pilih Metode Pembayaran</h3>
+                        <h3 class="font-semibold text-blue-700">Metode Pembayaran Online</h3>
                     </div>
 
                     <div class="p-6">
@@ -119,10 +119,10 @@
                                 💳 Online (Midtrans)
                             </button>
 
-                            <button class="tab-btn-bayar px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition hover:bg-gray-200"
+                            <!-- <button class="tab-btn-bayar px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition hover:bg-gray-200"
                                 data-target="#manualTab">
                                 🏦 Transfer Manual
-                            </button>
+                            </button> -->
                         </div>
 
                         <!-- TAB: MIDTRANS -->
@@ -167,7 +167,7 @@
                         </div>
 
                         <!-- TAB: MANUAL TRANSFER -->
-                        <div id="manualTab" class="tab-content-bayar hidden">
+                        <!-- <div id="manualTab" class="tab-content-bayar hidden">
 
                             <div class="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg text-sm mb-6">
                                 <p class="font-semibold text-yellow-800 mb-1">⚠️ Perhatian</p>
@@ -175,7 +175,7 @@
                             </div>
 
                             <!-- Info Rekening -->
-                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <!-- <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                                 <h4 class="font-semibold text-blue-800 mb-3">Rekening Tujuan Transfer</h4>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between">
@@ -195,13 +195,13 @@
                                         <span class="font-bold text-blue-700 text-lg">Rp {{ number_format($biaya_pendaftaran ?? 0, 0, ',', '.') }}</span>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <form action="{{ route('bayar.upload') }}" method="POST" enctype="multipart/form-data" id="formUploadManual">
                                 @csrf
                                 <input type="hidden" name="jumlah" value="{{ $biaya_pendaftaran ?? 0 }}">
 
-                                <div class="mb-4">
+                                <!-- <div class="mb-4">
                                     <label class="block font-semibold text-gray-700 mb-2">
                                         Upload Bukti Transfer <span class="text-red-500">*</span>
                                     </label>
@@ -218,7 +218,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                                     </svg>
                                     Upload Bukti Transfer
-                                </button>
+                                </button> -->
                             </form>
 
                         </div>

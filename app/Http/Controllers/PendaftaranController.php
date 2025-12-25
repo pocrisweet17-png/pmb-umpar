@@ -37,6 +37,11 @@ class PendaftaranController extends Controller
             'asalSekolah'   => 'required|string|max:200',
             'jurusan'       => 'required|string|max:100',
             'tahunLulus'    => 'required|integer|min:2000|max:' . (date('Y') + 1),
+            'twitter'       => 'nullable|url|max:255',
+            'facebook'      => 'nullable|url|max:255',
+            'tiktok'        => 'nullable|url|max:255',
+            'instagram'     => 'nullable|url|max:255',
+
         ]);
 
         $user = Auth::user();
@@ -48,7 +53,13 @@ class PendaftaranController extends Controller
 
             if ($existingRegistrasi) {
                 // UPDATE data
-                $existingRegistrasi->update($validated);
+                $existingRegistrasi->update(array_merge($validated, [
+                    'twitter'   => $request->twitter,
+                    'facebook'  => $request->facebook,
+                    'tiktok'    => $request->tiktok,
+                    'instagram' => $request->instagram,
+                ]));    
+
                 $registrasi = $existingRegistrasi;
                 $message = 'Data pribadi berhasil diperbarui.';
             } else {
@@ -68,7 +79,11 @@ class PendaftaranController extends Controller
                     'asalSekolah'          => $validated['asalSekolah'],
                     'jurusan'              => $validated['jurusan'],
                     'tahunLulus'           => $validated['tahunLulus'],
-                ]);
+                    'twitter'              => $request->twitter,
+                    'facebook'             => $request->facebook,
+                    'tiktok'               => $request->tiktok,
+                    'instagram'            => $request->instagram,
+                    ]);
 
                 $message = 'Data pribadi berhasil disimpan.';
             }
@@ -116,6 +131,10 @@ class PendaftaranController extends Controller
             'asalSekolah'   => 'required|string|max:200',
             'jurusan'       => 'required|string|max:100',
             'tahunLulus'    => 'required|integer|min:2000|max:' . (date('Y') + 1),
+            'twitter'   => 'nullable|url|max:255',
+            'facebook'  => 'nullable|url|max:255',
+            'tiktok'    => 'nullable|url|max:255',
+            'instagram' => 'nullable|url|max:255',
         ]);
 
         try {

@@ -1,4 +1,6 @@
 <div id="modalBayarUkt" class="fixed inset-0 hidden z-[9999]">
+    data-ukt-store-url="{{ route('ukt.store') }}"
+     data-ukt-check-url="{{ route('ukt.check-status') }}">
     <!-- Overlay -->
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"
          onclick="closeModalBayarUkt()"></div>
@@ -13,8 +15,8 @@
                 ✕
             </button>
             <div>
-                <h2 class="text-2xl font-semibold">Pembayaran UKT Semester 1</h2>
-                <p class="text-green-100 text-sm">Step 7 dari 8 — Selesaikan pembayaran UKT</p>
+                <h2 class="text-2xl font-semibold">Pembayaran Pendaftran Ulang</h2>
+                <p class="text-green-100 text-sm">Step 7 dari 8 — Selesaikan pembayaran Pendaftaran Ulang</p>
             </div>
         </div>
 
@@ -71,7 +73,7 @@
                 <div class="bg-white border rounded-xl shadow">
 
                     <div class="border-b p-6">
-                        <h3 class="font-semibold text-green-700">Pilih Metode Pembayaran</h3>
+                        <h3 class="font-semibold text-green-700">Metode Pembayaran Online</h3>
                     </div>
 
                     <div class="p-6">
@@ -100,17 +102,17 @@
                                 💳 Online (Midtrans)
                             </button>
 
-                            <button class="tab-btn-ukt px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition hover:bg-gray-200"
+                            <!-- <button class="tab-btn-ukt px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition hover:bg-gray-200"
                                 data-target="#manualTabUkt">
                                 🏦 Transfer Manual
-                            </button>
+                            </button> -->
                         </div>
 
                         <!-- TAB: MIDTRANS -->
                         <div id="midtransTabUkt" class="tab-content-ukt block">
                             <div class="text-center py-10">
                                 <div class="text-green-600 text-6xl mb-4">💳</div>
-                                <h3 class="text-xl font-semibold mb-2">Pembayaran UKT Online</h3>
+                                <h3 class="text-xl font-semibold mb-2">Pembayaran Pendaftaran Ulang</h3>
                                 <p class="text-gray-500 mb-2">Bayar dengan mudah menggunakan:</p>
                                 
                                 <div class="flex flex-wrap justify-center gap-2 mb-6">
@@ -143,14 +145,14 @@
                         </div>
 
                         <!-- TAB: MANUAL TRANSFER -->
-                        <div id="manualTabUkt" class="tab-content-ukt hidden">
+                        <!-- <div id="manualTabUkt" class="tab-content-ukt hidden">
 
                             <div class="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg text-sm mb-6">
                                 <p class="font-semibold text-yellow-800 mb-1">⚠️ Perhatian</p>
                                 <p class="text-yellow-700">Transfer sesuai <strong>nominal yang tertera</strong>, lalu upload bukti transfer. Admin akan memverifikasi dalam 1x24 jam.</p>
                             </div>
 
-                            <!-- Info Rekening -->
+                            Info Rekening
                             <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                                 <h4 class="font-semibold text-green-800 mb-3">Rekening Tujuan Transfer UKT</h4>
                                 <div class="space-y-2 text-sm">
@@ -197,7 +199,7 @@
                                 </button>
                             </form>
 
-                        </div>
+                        </div> -->
 
                         @endif
 
@@ -227,7 +229,6 @@
         </div>
     </div>
 </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     
