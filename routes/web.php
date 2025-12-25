@@ -272,3 +272,37 @@ Route::get('/wilayah/{type}/{id?}', function ($type, $id = null) {
 
     return Http::get($url)->json();
 });
+
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/mahasiswa/export-excel', [MahasiswaController::class, 'exportExcel'])
+        ->name('mahasiswa.export-excel');
+});
+
+// routes/web.php - Tambahkan route ini untuk debug
+Route::get('/debug-registration', function() {
+    $data = \App\Models\Registration::all();
+    
+    echo "<h2>Total Data: " . $data->count() . "</h2><hr>";
+    
+    foreach($data as $reg) {
+        echo "<div style='background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 5px;'>";
+        echo "<strong>ID:</strong> {$reg->id}<br>";
+        echo "<strong>Address:</strong> {$reg->address}<br>";
+        echo "<strong>Gender:</strong> {$reg->gender}<br><br>";
+        
+        // Pecah alamat
+        if ($reg->address) {
+            $parts = explode(',', $reg->address);
+            echo "<strong>📍 Address Parts:</strong><br>";
+            foreach($parts as $i => $part) {
+                echo "<span style='color: blue;'>[Index $i]</span> = <strong>" . trim($part) . "</strong><br>";
+            }
+            
+            // Tampilkan yang akan diambil
+            if (isset($parts[3])) {
+                echo "<br><span style='color: green; font-weight: bold;'>✓ Yang akan diambil (Index 3): " . trim($parts[3]) . "</span>";
+            }
+        }
+        echo "</div>";
+    }
+})->name('debug.registration');

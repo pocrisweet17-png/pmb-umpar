@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mahasiswa;
+use App\Exports\MahasiswaExport;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MahasiswaController extends Controller
 {
@@ -12,9 +14,9 @@ class MahasiswaController extends Controller
      */
     public function daftarUlang()
     {
-        $mahasiswas = Mahasiswa::with(['user', 'programStudi'])
+        $mahasiswas = Mahasiswa::with(['user', 'programStudi', 'registrasi'])
             ->where('is_daftar_ulang', true)
-            ->orderBy('tanggal_daftar_ulang', 'desc')
+            ->orderBy('created_at', 'desc')
             ->paginate(20);
 
         // Statistik
@@ -26,6 +28,16 @@ class MahasiswaController extends Controller
         ];
 
         return view('admin.Mahasiswa.data-mahasiswa', compact('mahasiswas', 'stats'));
+    }
+
+    /**
+     * Export semua data mahasiswa daftar ulang ke Excel
+     */
+    public function exportExcel()
+    {
+        $fileName = 'Data_Mahasiswa_Daftar_Ulang_' . date('Y-m-d_His') . '.xlsx';
+        
+        return Excel::download(new MahasiswaExport(), $fileName);
     }
 
     /**

@@ -51,4 +51,9 @@ class Mahasiswa extends Model
     {
         return $this->programStudi ? $this->programStudi->namaProdi : $this->kodeProdi;
     }
+    // relasi ke registrasi
+        public function registrasi()
+    {
+        return $this->belongsTo(Registrasi::class, 'user_id', 'user_id');
+    }
 }
