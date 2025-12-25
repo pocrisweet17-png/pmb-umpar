@@ -83,11 +83,28 @@ public function show(string $id)
             'nik' => ['required', 'string', 'max:16', Rule::unique('users')->ignore($user->id)],
             'no_whatsapp' => 'required|string|max:15',
             'role' => 'required|in:admin,user',
-            'is_wawancara_selesai' => 'boolean',
             'password' => 'nullable|string|min:8|confirmed',
+            'is_verified' => 'boolean',
+            'is_prodi_selected' => 'boolean',
+            'is_bayar_pendaftaran' => 'boolean',
+            'is_data_completed' => 'boolean',
+            'is_dokumen_uploaded' => 'boolean',
+            'is_tes_selesai' => 'boolean',
+            'is_wawancara_selesai' => 'boolean',
+            'is_daftar_ulang' => 'boolean',
+            'is_ukt_paid' => 'boolean',
         ]);
 
+        $validated['is_verified'] = $request->has('is_verified');
+        $validated['is_prodi_selected'] = $request->has('is_prodi_selected');
+        $validated['is_bayar_pendaftaran'] = $request->has('is_bayar_pendaftaran');
+        $validated['is_data_completed'] = $request->has('is_data_completed');
+        $validated['is_dokumen_uploaded'] = $request->has('is_dokumen_uploaded');
+        $validated['is_tes_selesai'] = $request->has('is_tes_selesai');
         $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
+        $validated['is_daftar_ulang'] = $request->has('is_daftar_ulang');
+        $validated['is_ukt_paid'] = $request->has('is_ukt_paid');
+
 
         // Only update password if provided
         if (!empty($validated['password'])) {

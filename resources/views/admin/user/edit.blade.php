@@ -418,9 +418,9 @@
                                 Status Verifikasi Email
                             </label>
                             <label class="flex items-center cursor-pointer bg-white border-2 border-purple-300 rounded-xl px-4 py-3 hover:bg-purple-50 transition-colors">
-                                <input type="checkbox" name="is_wawancara_selesai" value="1" {{ old('is_wawancara_selesai', $user->is_wawancara_selesai) ? 'checked' : '' }}
+                                <input type="checkbox" name="is_verified" value="1" {{ old('is_verified', $user->is_verified) ? 'checked' : '' }}
                                        class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 focus:ring-2">
-                                <span class="ml-3 text-sm font-medium text-gray-700">User sudah wawancara</span>
+                                <span class="ml-3 text-sm font-medium text-gray-700">Verifikasi Email manual</span>
                             </label>
                         </div>
                     </div>
