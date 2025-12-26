@@ -9,14 +9,38 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $users = User::orderBy('created_at', 'desc')->get();
-        return view('admin.user.index', compact('users'));
-    }
+
+        public function index(Request $request)
+        {
+            $query = User::query();
+        
+            if ($request->filled('search')) {
+                $search = trim($request->search);
+
+                $query->where(function($q) use ($search) {
+                    $q->where('nama_lengkap', 'LIKE', '%' . $search . '%')
+                      ->orWhere('username', 'LIKE', '%' . $search . '%')
+                      ->orWhere('email', 'LIKE', '%' . $search . '%')
+                      ->orWhere('nik', 'LIKE', '%' . $search . '%')
+                      ->orWhere('no_whatsapp', 'LIKE', '%' . $search . '%')
+                      ->orWhere('nomor_registrasi', 'LIKE', '%' . $search . '%');
+                });
+            }
+        
+            // Filter by role 
+            if ($request->filled('role')) {
+                $query->where('role', $request->role);
+            }
+        
+            // Filter by verifikasi status
+            if ($request->filled('verified')) {
+                $query->where('is_verified', (int)$request->verified);
+            }
+        
+            $users = $query->orderBy('created_at', 'desc')->get();
+        
+            return view('admin.user.index', compact('users'));
+        }
 
     /**
      * Show the form for creating a new resource.
