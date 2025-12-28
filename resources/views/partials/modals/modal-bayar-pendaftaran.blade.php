@@ -1,14 +1,14 @@
-<div id="modalPembayaranPendaftaran" class="fixed inset-0 hidden z-[9999]">
+<div id="modalBayarPendaftaran" class="fixed inset-0 hidden z-[9999]">
     <!-- Overlay -->
-<div class="absolute inset-0 bg-black/60 backdrop-blur-sm"
-     onclick="closeModalPembayaranPendaftaran()"></div>
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+         onclick="closeModalBayarPendaftaran()"></div>
 
     <!-- Modal Card -->
     <div class="relative mx-auto mt-10 w-[95%] max-w-6xl bg-white rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh]">
 
         <!-- HEADER -->
         <div class="flex items-center gap-4 p-6 border-b bg-blue-600 text-white rounded-t-2xl">
-            <button onclick="closeModalPembayaranPendaftaran()"
+            <button onclick="closeModalBayarPendaftaran()"
                 class="p-2 bg-white/20 rounded-full hover:bg-white/30 transition">
                 ✕
             </button>
@@ -97,7 +97,7 @@
                                 <p class="text-green-600 text-sm mb-4">
                                     Anda dapat melanjutkan ke tahap berikutnya
                                 </p>
-                                <button onclick="closeModalPembayaranPendaftaran()"
+                                <button onclick="closeModalBayarPendaftaran()"
                                     class="mt-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
                                     Tutup
                                 </button>
@@ -253,6 +253,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ Modal script loaded');
+    
     // Tab switching
     document.querySelectorAll(".tab-btn-bayar").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -333,32 +335,39 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // OFFLINE PAYMENT HANDLER
+    // ⭐ OFFLINE PAYMENT HANDLER - PERBAIKAN DI SINI
     const btnBayarOffline = document.getElementById('btnBayarOffline');
     if (btnBayarOffline) {
+        console.log('✅ Offline button found');
+        
         btnBayarOffline.addEventListener('click', function(e) {
             e.preventDefault();
+            console.log('🟠 Offline button clicked');
             
             const loadingDiv = document.getElementById('loadingOffline');
             
             if (!loadingDiv) {
-                console.error('Loading div not found');
+                console.error('❌ Loading div not found');
+                alert('Error: Element loading tidak ditemukan');
                 return;
             }
             
-            loadingDiv.classList.remove('hidden');
+            // ⭐ PERBAIKAN: Disable button SEGERA untuk cegah double click
             btnBayarOffline.disabled = true;
+            btnBayarOffline.classList.add('opacity-50', 'cursor-not-allowed');
+            loadingDiv.classList.remove('hidden');
             
             const csrfToken = document.querySelector('meta[name="csrf-token"]');
             if (!csrfToken) {
-                console.error('CSRF token not found');
+                console.error('❌ CSRF token not found');
                 alert('Error: CSRF token tidak ditemukan');
                 loadingDiv.classList.add('hidden');
                 btnBayarOffline.disabled = false;
+                btnBayarOffline.classList.remove('opacity-50', 'cursor-not-allowed');
                 return;
             }
             
-            console.log('Sending offline payment request...');
+            console.log('📤 Sending request to:', '{{ route("bayar.store.offline") }}');
             
             fetch('{{ route("bayar.store.offline") }}', {
                 method: 'POST',
@@ -370,42 +379,47 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({})
             })
             .then(response => {
-                console.log('Response status:', response.status);
-                console.log('Response ok:', response.ok);
-                
-                // Parse JSON terlebih dahulu
-                return response.json().then(data => {
-                    return {
-                        ok: response.ok,
-                        status: response.status,
-                        data: data
-                    };
-                });
+                console.log('📥 Response status:', response.status);
+                return response.text();
             })
-            .then(result => {
-                console.log('Parsed result:', result);
+            .then(text => {
+                console.log('📄 Response text:', text);
+                
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    console.error('❌ Failed to parse JSON:', e);
+                    throw new Error('Server response bukan JSON: ' + text.substring(0, 100));
+                }
                 
                 loadingDiv.classList.add('hidden');
-                btnBayarOffline.disabled = false;
                 
-                // Cek apakah response OK dan success = true
-                if (result.ok && result.data.success) {
-                    console.log('Payment successful!');
+                // ⭐ PERBAIKAN: Cek success === true (strict check)
+                if (data.success === true) {
+                    console.log('✅ Payment offline successful!');
                     showOfflineSuccessPopup();
+                    // ⭐ JANGAN enable button lagi karena sudah berhasil
                 } else {
-                    console.error('Payment failed:', result.data.message);
-                    alert(result.data.message || 'Gagal membuat transaksi offline.');
+                    console.error('❌ Payment failed:', data.message);
+                    alert(data.message || 'Gagal membuat transaksi offline.');
+                    // Enable button jika gagal supaya bisa retry
+                    btnBayarOffline.disabled = false;
+                    btnBayarOffline.classList.remove('opacity-50', 'cursor-not-allowed');
                 }
             })
             .catch(error => {
-                console.error('Fetch error:', error);
+                console.error('❌ Fetch error:', error);
                 loadingDiv.classList.add('hidden');
                 btnBayarOffline.disabled = false;
+                btnBayarOffline.classList.remove('opacity-50', 'cursor-not-allowed');
                 alert('Terjadi kesalahan: ' + error.message);
             });
         });
+    } else {
+        console.warn('⚠️ Offline button NOT found');
     }
-    
+
     // Check for pending payment on page load
     const pendingOrderId = localStorage.getItem('pending_order_id');
     const pendingType = localStorage.getItem('pending_payment_type');
@@ -455,39 +469,58 @@ function startPaymentPolling(orderId) {
 }
 
 function showSuccessPopup() {
-    document.getElementById('paymentSuccessPopup').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+    const popup = document.getElementById('paymentSuccessPopup');
+    if (popup) {
+        popup.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 }
 
 function showOfflineSuccessPopup() {
-    document.getElementById('offlineSuccessPopup').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    
-    // Auto close after 5 seconds
-    setTimeout(() => {
-        closeOfflinePopupAndReload();
-    }, 5000);
+    const popup = document.getElementById('offlineSuccessPopup');
+    if (popup) {
+        popup.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        // Auto close after 3 seconds
+        setTimeout(() => {
+            closeOfflinePopupAndReload();
+        }, 3000);
+    } else {
+        console.error('❌ Popup not found, using fallback');
+        alert('Pembayaran offline berhasil didaftarkan!');
+        closeModalBayarPendaftaran();
+        window.location.reload();
+    }
 }
 
 function closeSuccessPopupAndReload() {
-    document.getElementById('paymentSuccessPopup').classList.add('hidden');
-    closeModalPembayaranPendaftaran();
+    const popup = document.getElementById('paymentSuccessPopup');
+    if (popup) popup.classList.add('hidden');
+    closeModalBayarPendaftaran();
     window.location.reload();
 }
 
 function closeOfflinePopupAndReload() {
-    document.getElementById('offlineSuccessPopup').classList.add('hidden');
-    closeModalPembayaranPendaftaran();
+    const popup = document.getElementById('offlineSuccessPopup');
+    if (popup) popup.classList.add('hidden');
+    closeModalBayarPendaftaran();
     window.location.reload();
 }
 
-function openModalPembayaranPendaftaran() {
-    document.getElementById('modalPembayaranPendaftaran').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+function openModalBayarPendaftaran() {
+    const modal = document.getElementById('modalBayarPendaftaran');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 }
 
-function closeModalPembayaranPendaftaran() {
-    document.getElementById('modalPembayaranPendaftaran').classList.add('hidden');
-    document.body.style.overflow = 'auto';
+function closeModalBayarPendaftaran() {
+    const modal = document.getElementById('modalBayarPendaftaran');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
 }
 </script>

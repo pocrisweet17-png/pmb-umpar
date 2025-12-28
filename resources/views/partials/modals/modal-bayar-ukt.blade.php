@@ -1,30 +1,30 @@
-<div id="modalBayarPendaftaran" class="fixed inset-0 hidden z-[9999]">
+<div id="modalBayarUkt" class="fixed inset-0 hidden z-[9999]">
     <!-- Overlay -->
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"
-         onclick="closeModalBayarPendaftaran()"></div>
+         onclick="closeModalBayarUkt()"></div>
 
     <!-- Modal Card -->
     <div class="relative mx-auto mt-10 w-[95%] max-w-6xl bg-white rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh]">
 
         <!-- HEADER -->
         <div class="flex items-center gap-4 p-6 border-b bg-blue-600 text-white rounded-t-2xl">
-            <button onclick="closeModalBayarPendaftaran()"
+            <button onclick="closeModalBayarUkt()"
                 class="p-2 bg-white/20 rounded-full hover:bg-white/30 transition">
                 ✕
             </button>
             <div>
-                <h2 class="text-2xl font-semibold">Pembayaran Pendaftaran</h2>
-                <p class="text-blue-100 text-sm">Step 2 dari 8 — Selesaikan pembayaran untuk melanjutkan</p>
+                <h2 class="text-2xl font-semibold">Pembayaran UKT Semester 1</h2>
+                <p class="text-blue-100 text-sm">Step 7 dari 8 — Selesaikan pembayaran UKT untuk melanjutkan</p>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
 
-            <!-- INFORMASI PENDAFTAR -->
+            <!-- INFORMASI MAHASISWA -->
             <div class="space-y-6">
                 <!-- Info -->
                 <div class="bg-white border rounded-xl shadow p-6">
-                    <h3 class="font-semibold text-blue-700 mb-4">Informasi Pendaftar</h3>
+                    <h3 class="font-semibold text-blue-700 mb-4">Informasi Mahasiswa</h3>
 
                     <table class="w-full text-sm">
                         <tr>
@@ -39,11 +39,17 @@
                             <td class="text-gray-500 py-1">No HP</td>
                             <td class="font-medium">{{ $user->no_whatsapp ?? '-' }}</td>
                         </tr>
+                        @if($user->nim)
+                        <tr>
+                            <td class="text-gray-500 py-1">NIM</td>
+                            <td class="font-medium text-blue-600">{{ $user->nim }}</td>
+                        </tr>
+                        @endif
                     </table>
 
                     <hr class="my-4">
 
-                    <h4 class="font-semibold mb-2 text-blue-700">Pilihan Prodi</h4>
+                    <h4 class="font-semibold mb-2 text-blue-700">Program Studi</h4>
 
                     @if($user->pilihan_1)
                         <div class="bg-blue-50 p-3 rounded-lg border text-sm">
@@ -57,8 +63,8 @@
                     <h3 class="font-semibold text-green-700 mb-4">Ringkasan Biaya</h3>
 
                     <div class="flex justify-between text-sm mb-2">
-                        <span class="text-gray-600">Biaya Pendaftaran</span>
-                        <span class="font-semibold">Rp {{ number_format($biaya_pendaftaran ?? 0, 0, ',', '.') }}</span>
+                        <span class="text-gray-600">Biaya UKT Semester 1</span>
+                        <span class="font-semibold">Rp {{ number_format($biaya_ukt ?? 0, 0, ',', '.') }}</span>
                     </div>
 
                     <div class="flex justify-between text-sm mb-4">
@@ -70,8 +76,8 @@
 
                     <div class="flex justify-between">
                         <span class="font-semibold text-lg">Total</span>
-                        <span class="text-blue-700 font-bold text-2xl" id="totalBiaya">
-                            Rp {{ number_format($biaya_pendaftaran ?? 0, 0, ',', '.') }}
+                        <span class="text-blue-700 font-bold text-2xl" id="totalBiayaUkt">
+                            Rp {{ number_format($biaya_ukt ?? 0, 0, ',', '.') }}
                         </span>
                     </div>
                 </div>
@@ -87,17 +93,17 @@
 
                     <div class="p-6">
 
-                        @if($user->is_bayar_pendaftaran)
+                        @if($user->is_ukt_paid)
                             <!-- SUDAH BAYAR -->
                             <div class="p-6 bg-green-100 border border-green-300 rounded-xl text-center">
                                 <div class="text-green-600 text-5xl mb-3">✓</div>
                                 <p class="font-semibold text-green-700 text-lg mb-2">
-                                    Pembayaran Sudah Diverifikasi
+                                    Pembayaran UKT Sudah Diverifikasi
                                 </p>
                                 <p class="text-green-600 text-sm mb-4">
-                                    Anda dapat melanjutkan ke tahap berikutnya
+                                    Anda dapat melanjutkan ke tahap daftar ulang
                                 </p>
-                                <button onclick="closeModalBayarPendaftaran()"
+                                <button onclick="closeModalBayarUkt()"
                                     class="mt-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
                                     Tutup
                                 </button>
@@ -106,19 +112,19 @@
                         
                         <!-- Tabs -->
                         <div class="flex gap-3 mb-6">
-                            <button class="tab-btn-bayar active px-4 py-2 bg-blue-600 text-white rounded-lg font-medium transition"
-                                data-target="#onlineTab">
+                            <button class="tab-btn-bayar-ukt active px-4 py-2 bg-blue-600 text-white rounded-lg font-medium transition"
+                                data-target="#onlineTabUkt">
                                 💳 Pembayaran Online
                             </button>
 
-                            <button class="tab-btn-bayar px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition hover:bg-gray-200"
-                                data-target="#offlineTab">
+                            <button class="tab-btn-bayar-ukt px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition hover:bg-gray-200"
+                                data-target="#offlineTabUkt">
                                 🏢 Pembayaran Tunai
                             </button>
                         </div>
 
                         <!-- TAB: ONLINE PAYMENT -->
-                        <div id="onlineTab" class="tab-content-bayar block">
+                        <div id="onlineTabUkt" class="tab-content-bayar-ukt block">
                             <div class="text-center py-10">
                                 <div class="text-blue-600 text-6xl mb-4">💳</div>
                                 <h3 class="text-xl font-semibold mb-2">Pembayaran Online Otomatis</h3>
@@ -130,36 +136,35 @@
                                     <span class="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">GoPay</span>
                                     <span class="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">ShopeePay</span>
                                     <span class="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">QRIS</span>
-                                    <span class="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">Kartu Kredit</span>
                                 </div>
 
-                                <form id="formMidtrans">
+                                <form id="formMidtransUkt">
                                 @csrf
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                <button type="button" id="btnBayarOnline" 
+                                <button type="button" id="btnBayarOnlineUkt" 
                                         class="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 mx-auto">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                                         </svg>
-                                        Bayar Rp {{ number_format($biaya_pendaftaran,0,',','.') }}
+                                        Bayar Rp {{ number_format($biaya_ukt ?? 0, 0, ',', '.') }}
                                     </button>
                                 </form>
 
                                 <!-- Loading Indicator -->
-                                <div class="mt-4 hidden" id="loadingPayment">
+                                <div class="mt-4 hidden" id="loadingPaymentUkt">
                                     <div class="inline-block animate-spin border-4 border-blue-600 border-t-transparent rounded-full w-10 h-10"></div>
                                     <p class="text-gray-600 mt-2 text-sm">Memproses pembayaran...</p>
                                 </div>
                                 
                                 <!-- Error Message -->
-                                <div class="mt-4 hidden p-4 bg-red-50 border border-red-200 rounded-lg" id="errorPayment">
-                                    <p class="text-red-600 text-sm" id="errorMessage"></p>
+                                <div class="mt-4 hidden p-4 bg-red-50 border border-red-200 rounded-lg" id="errorPaymentUkt">
+                                    <p class="text-red-600 text-sm" id="errorMessageUkt"></p>
                                 </div>
                             </div>
                         </div>
 
                         <!-- TAB: OFFLINE PAYMENT -->
-                        <div id="offlineTab" class="tab-content-bayar hidden">
+                        <div id="offlineTabUkt" class="tab-content-bayar-ukt hidden">
                             <div class="text-center py-10">
                                 <div class="text-orange-600 text-6xl mb-4">🏢</div>
                                 <h3 class="text-xl font-semibold mb-2">Pembayaran Tunai di Kampus</h3>
@@ -167,23 +172,23 @@
                                 
                                 <!-- Info Box -->
                                 <div class="bg-orange-50 border-l-4 border-orange-400 rounded-lg p-4 mb-6 text-left">
-                                    <p class="font-semibold text-orange-800 mb-2">📍 Informasi Pembayaran:</p>
+                                    <p class="font-semibold text-orange-800 mb-2">📍 Informasi Pembayaran UKT:</p>
                                     <ul class="text-sm text-orange-700 space-y-1">
                                         <li>• Datang ke Kantor Kampus</li>
-                                        <li>• Tunjukkan Nomor Registrasi Anda</li>
-                                        <li>• Lakukan pembayaran di Kasir</li>
+                                        <li>• Tunjukkan NIM atau Nomor Registrasi Anda</li>
+                                        <li>• Lakukan pembayaran UKT di Kasir</li>
                                         <li>• Status akan diverifikasi oleh Admin</li>
                                     </ul>
                                 </div>
 
                                 <div class="bg-blue-50 rounded-lg p-4 mb-6">
-                                    <div class="text-sm text-gray-600 mb-2">Total Pembayaran:</div>
+                                    <div class="text-sm text-gray-600 mb-2">Total Pembayaran UKT:</div>
                                     <div class="text-2xl font-bold text-blue-700">
-                                        Rp {{ number_format($biaya_pendaftaran, 0, ',', '.') }}
+                                        Rp {{ number_format($biaya_ukt ?? 0, 0, ',', '.') }}
                                     </div>
                                 </div>
 
-                                <button type="button" id="btnBayarOffline" 
+                                <button type="button" id="btnBayarOfflineUkt" 
                                         class="px-8 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition font-semibold flex items-center justify-center gap-2 mx-auto">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -192,7 +197,7 @@
                                 </button>
 
                                 <!-- Loading Offline -->
-                                <div class="mt-4 hidden" id="loadingOffline">
+                                <div class="mt-4 hidden" id="loadingOfflineUkt">
                                     <div class="inline-block animate-spin border-4 border-orange-600 border-t-transparent rounded-full w-10 h-10"></div>
                                     <p class="text-gray-600 mt-2 text-sm">Memproses...</p>
                                 </div>
@@ -209,8 +214,8 @@
     </div>
 </div>
 
-<!-- Success Popup -->
-<div id="paymentSuccessPopup" class="hidden fixed inset-0 z-[10000]">
+<!-- Success Popup UKT -->
+<div id="paymentSuccessPopupUkt" class="hidden fixed inset-0 z-[10000]">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
     <div class="relative mx-auto mt-10 w-[95%] max-w-md bg-white rounded-2xl shadow-2xl p-6">
         <div class="text-center">
@@ -219,17 +224,17 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Pembayaran Berhasil!</h3>
-            <p class="text-gray-600 mb-4">Pembayaran pendaftaran Anda telah berhasil diverifikasi.</p>
-            <button onclick="closeSuccessPopupAndReload()" class="w-full py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-semibold">
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Pembayaran UKT Berhasil!</h3>
+            <p class="text-gray-600 mb-4">Pembayaran UKT Anda telah berhasil diverifikasi. Silakan lanjut ke daftar ulang.</p>
+            <button onclick="closeSuccessPopupUktAndReload()" class="w-full py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-semibold">
                 Tutup dan Lanjutkan
             </button>
         </div>
     </div>
 </div>
 
-<!-- Offline Success Popup -->
-<div id="offlineSuccessPopup" class="hidden fixed inset-0 z-[10000]">
+<!-- Offline Success Popup UKT -->
+<div id="offlineSuccessPopupUkt" class="hidden fixed inset-0 z-[10000]">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
     <div class="relative mx-auto mt-10 w-[95%] max-w-md bg-white rounded-2xl shadow-2xl p-6">
         <div class="text-center">
@@ -239,8 +244,8 @@
                 </svg>
             </div>
             <h3 class="text-xl font-bold text-gray-900 mb-2">Pembayaran Tunai Terdaftar!</h3>
-            <p class="text-gray-600 mb-4">Silakan datang ke kampus untuk melakukan pembayaran. Status akan diverifikasi setelah pembayaran diterima.</p>
-            <button onclick="closeOfflinePopupAndReload()" class="w-full py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition font-semibold">
+            <p class="text-gray-600 mb-4">Silakan datang ke kampus untuk melakukan pembayaran UKT. Status akan diverifikasi setelah pembayaran diterima.</p>
+            <button onclick="closeOfflinePopupUktAndReload()" class="w-full py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition font-semibold">
                 Mengerti
             </button>
         </div>
@@ -253,10 +258,12 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Tab switching
-    document.querySelectorAll(".tab-btn-bayar").forEach(btn => {
+    console.log('✅ Modal bayar UKT loaded');
+    
+    // Tab switching untuk UKT
+    document.querySelectorAll(".tab-btn-bayar-ukt").forEach(btn => {
         btn.addEventListener("click", () => {
-            document.querySelectorAll(".tab-btn-bayar").forEach(b => {
+            document.querySelectorAll(".tab-btn-bayar-ukt").forEach(b => {
                 b.classList.remove("bg-blue-600", "text-white");
                 b.classList.add("bg-gray-100", "text-gray-700");
             });
@@ -264,52 +271,65 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.classList.add("bg-blue-600", "text-white");
             btn.classList.remove("bg-gray-100", "text-gray-700");
 
-            document.querySelectorAll(".tab-content-bayar").forEach(tab => tab.classList.add("hidden"));
-            document.querySelector(btn.dataset.target).classList.remove("hidden");
+            document.querySelectorAll(".tab-content-bayar-ukt").forEach(tab => tab.classList.add("hidden"));
+            const targetTab = document.querySelector(btn.dataset.target);
+            if (targetTab) targetTab.classList.remove("hidden");
         });
     });
 
-    // ONLINE PAYMENT HANDLER
-    const btnBayar = document.getElementById('btnBayarOnline');
-    if (btnBayar) {
-        btnBayar.addEventListener('click', function(e) {
+    // ONLINE PAYMENT HANDLER (UKT)
+    const btnBayarUkt = document.getElementById('btnBayarOnlineUkt');
+    if (btnBayarUkt) {
+        btnBayarUkt.addEventListener('click', function(e) {
             e.preventDefault();
             
-            const loadingDiv = document.getElementById('loadingPayment');
-            const errorDiv = document.getElementById('errorPayment');
-            const errorMsg = document.getElementById('errorMessage');
+            const loadingDiv = document.getElementById('loadingPaymentUkt');
+            const errorDiv = document.getElementById('errorPaymentUkt');
+            const errorMsg = document.getElementById('errorMessageUkt');
             
-            loadingDiv.classList.remove('hidden');
-            errorDiv.classList.add('hidden');
-            btnBayar.disabled = true;
+            if (loadingDiv) loadingDiv.classList.remove('hidden');
+            if (errorDiv) errorDiv.classList.add('hidden');
+            btnBayarUkt.disabled = true;
+            btnBayarUkt.classList.add('opacity-50', 'cursor-not-allowed');
             
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) {
+                console.error('❌ CSRF token not found');
+                if (errorMsg) errorMsg.textContent = 'Error: CSRF token tidak ditemukan';
+                if (errorDiv) errorDiv.classList.remove('hidden');
+                if (loadingDiv) loadingDiv.classList.add('hidden');
+                btnBayarUkt.disabled = false;
+                btnBayarUkt.classList.remove('opacity-50', 'cursor-not-allowed');
+                return;
+            }
             
-            fetch('{{ route("bayar.store") }}', {
+            fetch('{{ route("ukt.store") }}', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json'
+                    'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({})
             })
             .then(response => response.json())
             .then(data => {
                 if (loadingDiv) loadingDiv.classList.add('hidden');
-                btnBayar.disabled = false;
+                btnBayarUkt.disabled = false;
+                btnBayarUkt.classList.remove('opacity-50', 'cursor-not-allowed');
                 
                 if (data.success && data.snap_token) {
                     if (data.order_id) {
-                        localStorage.setItem('pending_order_id', data.order_id);
-                        localStorage.setItem('pending_payment_type', 'pendaftaran');
+                        localStorage.setItem('pending_order_id_ukt', data.order_id);
+                        localStorage.setItem('pending_payment_type', 'ukt');
                     }
                     
                     snap.pay(data.snap_token, {
                         onSuccess: function(result) {
-                            window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=settlement';
+                            window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=settlement&type=ukt';
                         },
                         onPending: function(result) {
-                            window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=pending';
+                            window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=pending&type=ukt';
                         },
                         onError: function(result) {
                             alert('Pembayaran gagal. Silakan coba lagi.');
@@ -319,79 +339,123 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     });
                 } else {
-                    errorMsg.textContent = data.message || 'Gagal membuat transaksi. Silakan coba lagi.';
-                    errorDiv.classList.remove('hidden');
+                    if (errorMsg) errorMsg.textContent = data.message || 'Gagal membuat transaksi. Silakan coba lagi.';
+                    if (errorDiv) errorDiv.classList.remove('hidden');
                 }
             })
             .catch(error => {
-                console.error('Fetch error:', error);
-                loadingDiv.classList.add('hidden');
-                btnBayar.disabled = false;
-                errorMsg.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
-                errorDiv.classList.remove('hidden');
+                console.error('❌ Fetch error:', error);
+                if (loadingDiv) loadingDiv.classList.add('hidden');
+                btnBayarUkt.disabled = false;
+                btnBayarUkt.classList.remove('opacity-50', 'cursor-not-allowed');
+                if (errorMsg) errorMsg.textContent = 'Terjadi kesalahan: ' + error.message;
+                if (errorDiv) errorDiv.classList.remove('hidden');
             });
         });
     }
 
-    // OFFLINE PAYMENT HANDLER
-    const btnBayarOffline = document.getElementById('btnBayarOffline');
-    if (btnBayarOffline) {
-        btnBayarOffline.addEventListener('click', function(e) {
+    // ⭐ OFFLINE PAYMENT HANDLER UKT - DENGAN PROTEKSI DOUBLE CLICK
+    const btnBayarOfflineUkt = document.getElementById('btnBayarOfflineUkt');
+    if (btnBayarOfflineUkt) {
+        console.log('✅ Offline UKT button found');
+        
+        btnBayarOfflineUkt.addEventListener('click', function(e) {
             e.preventDefault();
+            console.log('🟠 Offline UKT button clicked');
             
-            const loadingDiv = document.getElementById('loadingOffline');
+            const loadingDiv = document.getElementById('loadingOfflineUkt');
             
+            if (!loadingDiv) {
+                console.error('❌ Loading div not found');
+                alert('Error: Element loading tidak ditemukan');
+                return;
+            }
+            
+            // ⭐ PROTEKSI: Disable button segera untuk cegah double click
+            btnBayarOfflineUkt.disabled = true;
+            btnBayarOfflineUkt.classList.add('opacity-50', 'cursor-not-allowed');
             loadingDiv.classList.remove('hidden');
-            btnBayarOffline.disabled = true;
             
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) {
+                console.error('❌ CSRF token not found');
+                alert('Error: CSRF token tidak ditemukan');
+                loadingDiv.classList.add('hidden');
+                btnBayarOfflineUkt.disabled = false;
+                btnBayarOfflineUkt.classList.remove('opacity-50', 'cursor-not-allowed');
+                return;
+            }
             
-            fetch('{{ route("bayar.store.offline") }}', {
+            console.log('📤 Sending request to:', '{{ route("ukt.store.offline") }}');
+            
+            fetch('{{ route("ukt.store.offline") }}', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({})
             })
-            .then(response => response.json())
-            .then(data => {
-                loadingDiv.classList.add('hidden');
-                btnBayarOffline.disabled = false;
+            .then(response => {
+                console.log('📥 Response status:', response.status);
+                return response.text();
+            })
+            .then(text => {
+                console.log('📄 Response text:', text.substring(0, 200));
                 
-                if (data.success) {
-                    showOfflineSuccessPopup();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    console.error('❌ Failed to parse JSON:', e);
+                    throw new Error('Server response bukan JSON: ' + text.substring(0, 100));
+                }
+                
+                loadingDiv.classList.add('hidden');
+                
+                // ⭐ STRICT CHECK: success === true
+                if (data.success === true) {
+                    console.log('✅ Payment offline UKT successful!');
+                    showOfflineSuccessPopupUkt();
+                    // ⭐ Button tetap disabled karena sudah berhasil
                 } else {
+                    console.error('❌ Payment failed:', data.message);
                     alert(data.message || 'Gagal membuat transaksi offline.');
+                    // Enable button hanya jika gagal (untuk retry)
+                    btnBayarOfflineUkt.disabled = false;
+                    btnBayarOfflineUkt.classList.remove('opacity-50', 'cursor-not-allowed');
                 }
             })
             .catch(error => {
-                console.error('Fetch error:', error);
+                console.error('❌ Fetch error:', error);
                 loadingDiv.classList.add('hidden');
-                btnBayarOffline.disabled = false;
-                alert('Terjadi kesalahan. Silakan coba lagi.');
+                btnBayarOfflineUkt.disabled = false;
+                btnBayarOfflineUkt.classList.remove('opacity-50', 'cursor-not-allowed');
+                alert('Terjadi kesalahan: ' + error.message);
             });
         });
+    } else {
+        console.warn('⚠️ Offline UKT button NOT found');
     }
 
-    // Check for pending payment on page load
-    const pendingOrderId = localStorage.getItem('pending_order_id');
+    // Check for pending payment on page load (UKT)
+    const pendingOrderIdUkt = localStorage.getItem('pending_order_id_ukt');
     const pendingType = localStorage.getItem('pending_payment_type');
-    if (pendingOrderId && pendingType === 'pendaftaran') {
-        startPaymentPolling(pendingOrderId);
+    if (pendingOrderIdUkt && pendingType === 'ukt') {
+        startPaymentPollingUkt(pendingOrderIdUkt);
     }
 });
 
-// Polling function
-function startPaymentPolling(orderId) {
+// Polling function for UKT
+function startPaymentPollingUkt(orderId) {
     let attempts = 0;
     const maxAttempts = 30;
     
     const poll = setInterval(() => {
         attempts++;
         
-        fetch(`/payment/poll-status?order_id=${orderId}`, {
+        fetch(`/payment/check-ukt-status?order_id=${orderId}`, {
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 'Accept': 'application/json'
@@ -401,15 +465,15 @@ function startPaymentPolling(orderId) {
         .then(data => {
             if (data.status === 'settlement') {
                 clearInterval(poll);
-                localStorage.removeItem('pending_order_id');
+                localStorage.removeItem('pending_order_id_ukt');
                 localStorage.removeItem('pending_payment_type');
-                showSuccessPopup();
+                showSuccessPopupUkt();
             } else if (data.status === 'pending' && attempts >= maxAttempts) {
                 clearInterval(poll);
                 alert('Pembayaran masih diproses. Status akan diperbarui secara otomatis.');
             } else if (['cancel', 'expire', 'deny'].includes(data.status)) {
                 clearInterval(poll);
-                localStorage.removeItem('pending_order_id');
+                localStorage.removeItem('pending_order_id_ukt');
                 localStorage.removeItem('pending_payment_type');
                 alert(`Pembayaran ${data.status}. Silakan coba lagi.`);
             }
@@ -423,40 +487,43 @@ function startPaymentPolling(orderId) {
     }, 2000);
 }
 
-function showSuccessPopup() {
-    document.getElementById('paymentSuccessPopup').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+function showSuccessPopupUkt() {
+    const popup = document.getElementById('paymentSuccessPopupUkt');
+    if (popup) {
+        popup.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 }
 
-function showOfflineSuccessPopup() {
-    document.getElementById('offlineSuccessPopup').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    
-    // Auto close after 5 seconds
-    setTimeout(() => {
-        closeOfflinePopupAndReload();
-    }, 5000);
+function showOfflineSuccessPopupUkt() {
+    const popup = document.getElementById('offlineSuccessPopupUkt');
+    if (popup) {
+        popup.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        // Auto close after 3 seconds
+        setTimeout(() => {
+            closeOfflinePopupUktAndReload();
+        }, 3000);
+    } else {
+        console.error('❌ Popup not found, using fallback');
+        alert('Pembayaran offline UKT berhasil didaftarkan!');
+        closeModalBayarUkt();
+        window.location.reload();
+    }
 }
 
-function closeSuccessPopupAndReload() {
-    document.getElementById('paymentSuccessPopup').classList.add('hidden');
-    closeModalBayarPendaftaran();
+function closeSuccessPopupUktAndReload() {
+    const popup = document.getElementById('paymentSuccessPopupUkt');
+    if (popup) popup.classList.add('hidden');
+    closeModalBayarUkt();
     window.location.reload();
 }
 
-function closeOfflinePopupAndReload() {
-    document.getElementById('offlineSuccessPopup').classList.add('hidden');
-    closeModalBayarPendaftaran();
+function closeOfflinePopupUktAndReload() {
+    const popup = document.getElementById('offlineSuccessPopupUkt');
+    if (popup) popup.classList.add('hidden');
+    closeModalBayarUkt();
     window.location.reload();
-}
-
-function openModalBayarPendaftaran() {
-    document.getElementById('modalBayarPendaftaran').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeModalBayarPendaftaran() {
-    document.getElementById('modalBayarPendaftaran').classList.add('hidden');
-    document.body.style.overflow = 'auto';
 }
 </script>
