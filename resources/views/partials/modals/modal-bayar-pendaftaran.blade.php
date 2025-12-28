@@ -47,17 +47,9 @@
 
                     @if($user->pilihan_1)
                         <div class="bg-blue-50 p-3 rounded-lg border text-sm">
-                            <!-- <p class="text-gray-500">Pilihan 1</p> -->
                             <p class="font-semibold">{{ $user->namaProdiPilihan1 ?? $user->pilihan_1 }}</p>
                         </div>
                     @endif
-
-                    <!-- @if($user->pilihan_2)
-                        <div class="bg-blue-50 p-3 rounded-lg border mt-2 text-sm">
-                            <p class="text-gray-500">Pilihan 2</p>
-                            <p class="font-semibold">{{ $user->namaProdiPilihan2 ?? $user->pilihan_2 }}</p>
-                        </div>
-                    @endif -->
                 </div>
 
                 <!-- Ringkasan biaya -->
@@ -90,7 +82,7 @@
                 <div class="bg-white border rounded-xl shadow">
 
                     <div class="border-b p-6">
-                        <h3 class="font-semibold text-blue-700">Metode Pembayaran Online</h3>
+                        <h3 class="font-semibold text-blue-700">Pilih Metode Pembayaran</h3>
                     </div>
 
                     <div class="p-6">
@@ -115,18 +107,18 @@
                         <!-- Tabs -->
                         <div class="flex gap-3 mb-6">
                             <button class="tab-btn-bayar active px-4 py-2 bg-blue-600 text-white rounded-lg font-medium transition"
-                                data-target="#midtransTab">
-                                💳 Online (Midtrans)
+                                data-target="#onlineTab">
+                                💳 Pembayaran Online
                             </button>
 
-                            <!-- <button class="tab-btn-bayar px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition hover:bg-gray-200"
-                                data-target="#manualTab">
-                                🏦 Transfer Manual
-                            </button> -->
+                            <button class="tab-btn-bayar px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium transition hover:bg-gray-200"
+                                data-target="#offlineTab">
+                                🏢 Pembayaran Tunai
+                            </button>
                         </div>
 
-                        <!-- TAB: MIDTRANS -->
-                        <div id="midtransTab" class="tab-content-bayar block">
+                        <!-- TAB: ONLINE PAYMENT -->
+                        <div id="onlineTab" class="tab-content-bayar block">
                             <div class="text-center py-10">
                                 <div class="text-blue-600 text-6xl mb-4">💳</div>
                                 <h3 class="text-xl font-semibold mb-2">Pembayaran Online Otomatis</h3>
@@ -166,61 +158,45 @@
                             </div>
                         </div>
 
-                        <!-- TAB: MANUAL TRANSFER -->
-                        <!-- <div id="manualTab" class="tab-content-bayar hidden">
-
-                            <div class="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg text-sm mb-6">
-                                <p class="font-semibold text-yellow-800 mb-1">⚠️ Perhatian</p>
-                                <p class="text-yellow-700">Transfer sesuai <strong>nominal yang tertera</strong>, lalu upload bukti transfer. Admin akan memverifikasi dalam 1x24 jam.</p>
-                            </div>
-
-                            <!-- Info Rekening -->
-                            <!-- <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                                <h4 class="font-semibold text-blue-800 mb-3">Rekening Tujuan Transfer</h4>
-                                <div class="space-y-2 text-sm">
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Bank</span>
-                                        <span class="font-semibold">BNI</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">No. Rekening</span>
-                                        <span class="font-semibold">1234567890</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Atas Nama</span>
-                                        <span class="font-semibold">UNIVERSITAS XYZ</span>
-                                    </div>
-                                    <div class="flex justify-between border-t border-blue-300 pt-2 mt-2">
-                                        <span class="text-gray-600">Nominal Transfer</span>
-                                        <span class="font-bold text-blue-700 text-lg">Rp {{ number_format($biaya_pendaftaran ?? 0, 0, ',', '.') }}</span>
-                                    </div>
-                                </div>
-                            </div> -->
-
-                            <form action="{{ route('bayar.upload') }}" method="POST" enctype="multipart/form-data" id="formUploadManual">
-                                @csrf
-                                <input type="hidden" name="jumlah" value="{{ $biaya_pendaftaran ?? 0 }}">
-
-                                <!-- <div class="mb-4">
-                                    <label class="block font-semibold text-gray-700 mb-2">
-                                        Upload Bukti Transfer <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="file" name="bukti_bayar"
-                                        class="block w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        accept="image/jpeg,image/png,image/jpg,application/pdf"
-                                        required>
-                                    <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG, atau PDF. Max 2MB</p>
+                        <!-- TAB: OFFLINE PAYMENT -->
+                        <div id="offlineTab" class="tab-content-bayar hidden">
+                            <div class="text-center py-10">
+                                <div class="text-orange-600 text-6xl mb-4">🏢</div>
+                                <h3 class="text-xl font-semibold mb-2">Pembayaran Tunai di Kampus</h3>
+                                <p class="text-gray-500 mb-6">Lakukan pembayaran langsung di Kantor Kampus</p>
+                                
+                                <!-- Info Box -->
+                                <div class="bg-orange-50 border-l-4 border-orange-400 rounded-lg p-4 mb-6 text-left">
+                                    <p class="font-semibold text-orange-800 mb-2">📍 Informasi Pembayaran:</p>
+                                    <ul class="text-sm text-orange-700 space-y-1">
+                                        <li>• Datang ke Kantor Kampus</li>
+                                        <li>• Tunjukkan Nomor Registrasi Anda</li>
+                                        <li>• Lakukan pembayaran di Kasir</li>
+                                        <li>• Status akan diverifikasi oleh Admin</li>
+                                    </ul>
                                 </div>
 
-                                <button type="submit" id="btnUploadBukti"
-                                    class="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2">
+                                <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                                    <div class="text-sm text-gray-600 mb-2">Total Pembayaran:</div>
+                                    <div class="text-2xl font-bold text-blue-700">
+                                        Rp {{ number_format($biaya_pendaftaran, 0, ',', '.') }}
+                                    </div>
+                                </div>
+
+                                <button type="button" id="btnBayarOffline" 
+                                        class="px-8 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition font-semibold flex items-center justify-center gap-2 mx-auto">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    Upload Bukti Transfer
-                                </button> -->
-                            </form>
+                                    Pilih Pembayaran Tunai
+                                </button>
 
+                                <!-- Loading Offline -->
+                                <div class="mt-4 hidden" id="loadingOffline">
+                                    <div class="inline-block animate-spin border-4 border-orange-600 border-t-transparent rounded-full w-10 h-10"></div>
+                                    <p class="text-gray-600 mt-2 text-sm">Memproses...</p>
+                                </div>
+                            </div>
                         </div>
 
                         @endif
@@ -252,12 +228,33 @@
     </div>
 </div>
 
+<!-- Offline Success Popup -->
+<div id="offlineSuccessPopup" class="hidden fixed inset-0 z-[10000]">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="relative mx-auto mt-10 w-[95%] max-w-md bg-white rounded-2xl shadow-2xl p-6">
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-orange-100 rounded-full mb-4">
+                <svg class="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Pembayaran Tunai Terdaftar!</h3>
+            <p class="text-gray-600 mb-4">Silakan datang ke kampus untuk melakukan pembayaran. Status akan diverifikasi setelah pembayaran diterima.</p>
+            <button onclick="closeOfflinePopupAndReload()" class="w-full py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition font-semibold">
+                Mengerti
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Midtrans Snap Script -->
 <script src="https://app.{{ config('midtrans.is_production') ? '' : 'sandbox.' }}midtrans.com/snap/snap.js" 
         data-client-key="{{ config('midtrans.client_key') }}"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ Modal script loaded');
+    
     // Tab switching
     document.querySelectorAll(".tab-btn-bayar").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -274,27 +271,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // MIDTRANS PAYMENT HANDLER
+    // ONLINE PAYMENT HANDLER
     const btnBayar = document.getElementById('btnBayarOnline');
     if (btnBayar) {
         btnBayar.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Bayar button clicked!');
             
             const loadingDiv = document.getElementById('loadingPayment');
             const errorDiv = document.getElementById('errorPayment');
             const errorMsg = document.getElementById('errorMessage');
             
-            // Show loading, hide error
             loadingDiv.classList.remove('hidden');
             errorDiv.classList.add('hidden');
             btnBayar.disabled = true;
             
-            // Ambil CSRF token
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            const formData = new FormData();
-            formData.append('_token', csrfToken);
-            // Request snap token via AJAX
+            
             fetch('{{ route("bayar.store") }}', {
                 method: 'POST',
                 headers: {
@@ -303,48 +295,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({})
             })
-            .then(response => {
-                console.log('Response status:', response.status);
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Response data:', data);
-                
                 if (loadingDiv) loadingDiv.classList.add('hidden');
                 btnBayar.disabled = false;
                 
-                console.log('Response from server:', data);
-                
                 if (data.success && data.snap_token) {
-                    // Store order_id for polling
                     if (data.order_id) {
                         localStorage.setItem('pending_order_id', data.order_id);
                         localStorage.setItem('pending_payment_type', 'pendaftaran');
                     }
                     
-                // Open Midtrans Snap
-                snap.pay(data.snap_token, {
-                onSuccess: function(result) {
-                    console.log('Payment success:', result);
-                    // Redirect ke finish dengan status settlement
-                    window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=settlement';
-                },
-                onPending: function(result) {
-                    console.log('Payment pending:', result);
-                    window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=pending';
-                },
-                onError: function(result) {
-                    console.error('Payment error:', result);
-                    alert('Pembayaran gagal. Silakan coba lagi.');
-                },
-                onClose: function() {
-                    console.log('Payment popup closed');
-                    // Optional: reload halaman untuk cek status terbaru
-                    window.location.reload();
-                }
-                });
+                    snap.pay(data.snap_token, {
+                        onSuccess: function(result) {
+                            window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=settlement';
+                        },
+                        onPending: function(result) {
+                            window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=pending';
+                        },
+                        onError: function(result) {
+                            alert('Pembayaran gagal. Silakan coba lagi.');
+                        },
+                        onClose: function() {
+                            window.location.reload();
+                        }
+                    });
                 } else {
-                    // Show error
                     errorMsg.textContent = data.message || 'Gagal membuat transaksi. Silakan coba lagi.';
                     errorDiv.classList.remove('hidden');
                 }
@@ -357,20 +333,91 @@ document.addEventListener('DOMContentLoaded', function() {
                 errorDiv.classList.remove('hidden');
             });
         });
-    } else {
-        console.warn('Payment button not found!');
     }
 
-    // UPLOAD MANUAL HANDLER
-    const formUpload = document.getElementById('formUploadManual');
-    if (formUpload) {
-        formUpload.addEventListener('submit', function() {
-            const btn = document.getElementById('btnUploadBukti');
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Mengupload...';
+    // ⭐ OFFLINE PAYMENT HANDLER - PERBAIKAN DI SINI
+    const btnBayarOffline = document.getElementById('btnBayarOffline');
+    if (btnBayarOffline) {
+        console.log('✅ Offline button found');
+        
+        btnBayarOffline.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('🟠 Offline button clicked');
+            
+            const loadingDiv = document.getElementById('loadingOffline');
+            
+            if (!loadingDiv) {
+                console.error('❌ Loading div not found');
+                alert('Error: Element loading tidak ditemukan');
+                return;
             }
+            
+            // ⭐ PERBAIKAN: Disable button SEGERA untuk cegah double click
+            btnBayarOffline.disabled = true;
+            btnBayarOffline.classList.add('opacity-50', 'cursor-not-allowed');
+            loadingDiv.classList.remove('hidden');
+            
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) {
+                console.error('❌ CSRF token not found');
+                alert('Error: CSRF token tidak ditemukan');
+                loadingDiv.classList.add('hidden');
+                btnBayarOffline.disabled = false;
+                btnBayarOffline.classList.remove('opacity-50', 'cursor-not-allowed');
+                return;
+            }
+            
+            console.log('📤 Sending request to:', '{{ route("bayar.store.offline") }}');
+            
+            fetch('{{ route("bayar.store.offline") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => {
+                console.log('📥 Response status:', response.status);
+                return response.text();
+            })
+            .then(text => {
+                console.log('📄 Response text:', text);
+                
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    console.error('❌ Failed to parse JSON:', e);
+                    throw new Error('Server response bukan JSON: ' + text.substring(0, 100));
+                }
+                
+                loadingDiv.classList.add('hidden');
+                
+                // ⭐ PERBAIKAN: Cek success === true (strict check)
+                if (data.success === true) {
+                    console.log('✅ Payment offline successful!');
+                    showOfflineSuccessPopup();
+                    // ⭐ JANGAN enable button lagi karena sudah berhasil
+                } else {
+                    console.error('❌ Payment failed:', data.message);
+                    alert(data.message || 'Gagal membuat transaksi offline.');
+                    // Enable button jika gagal supaya bisa retry
+                    btnBayarOffline.disabled = false;
+                    btnBayarOffline.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Fetch error:', error);
+                loadingDiv.classList.add('hidden');
+                btnBayarOffline.disabled = false;
+                btnBayarOffline.classList.remove('opacity-50', 'cursor-not-allowed');
+                alert('Terjadi kesalahan: ' + error.message);
+            });
         });
+    } else {
+        console.warn('⚠️ Offline button NOT found');
     }
 
     // Check for pending payment on page load
@@ -397,8 +444,6 @@ function startPaymentPolling(orderId) {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Poll response:', data);
-            
             if (data.status === 'settlement') {
                 clearInterval(poll);
                 localStorage.removeItem('pending_order_id');
@@ -420,27 +465,62 @@ function startPaymentPolling(orderId) {
                 clearInterval(poll);
             }
         });
-    }, 2000); // Poll every 2 seconds
+    }, 2000);
 }
 
 function showSuccessPopup() {
-    document.getElementById('paymentSuccessPopup').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+    const popup = document.getElementById('paymentSuccessPopup');
+    if (popup) {
+        popup.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function showOfflineSuccessPopup() {
+    const popup = document.getElementById('offlineSuccessPopup');
+    if (popup) {
+        popup.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        // Auto close after 3 seconds
+        setTimeout(() => {
+            closeOfflinePopupAndReload();
+        }, 3000);
+    } else {
+        console.error('❌ Popup not found, using fallback');
+        alert('Pembayaran offline berhasil didaftarkan!');
+        closeModalBayarPendaftaran();
+        window.location.reload();
+    }
 }
 
 function closeSuccessPopupAndReload() {
-    document.getElementById('paymentSuccessPopup').classList.add('hidden');
+    const popup = document.getElementById('paymentSuccessPopup');
+    if (popup) popup.classList.add('hidden');
+    closeModalBayarPendaftaran();
+    window.location.reload();
+}
+
+function closeOfflinePopupAndReload() {
+    const popup = document.getElementById('offlineSuccessPopup');
+    if (popup) popup.classList.add('hidden');
     closeModalBayarPendaftaran();
     window.location.reload();
 }
 
 function openModalBayarPendaftaran() {
-    document.getElementById('modalBayarPendaftaran').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+    const modal = document.getElementById('modalBayarPendaftaran');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 }
 
 function closeModalBayarPendaftaran() {
-    document.getElementById('modalBayarPendaftaran').classList.add('hidden');
-    document.body.style.overflow = 'auto';
+    const modal = document.getElementById('modalBayarPendaftaran');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
 }
 </script>
