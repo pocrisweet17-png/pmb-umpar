@@ -279,50 +279,52 @@ class BayarUktController extends Controller
     /**
      * Upload bukti transfer manual UKT
      */
-    public function uploadBukti(Request $request)
-    {
-        Log::info('UKT Manual upload started');
+    //ku comment saja i, kaa siapa tau berubah pikiran lagi pak dosen
+    
+    // public function uploadBukti(Request $request)
+    // {
+    //     Log::info('UKT Manual upload started');
         
-        $request->validate([
-            'bukti_bayar' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'jumlah' => 'required|numeric',
-        ]);
+    //     $request->validate([
+    //         'bukti_bayar' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+    //         'jumlah' => 'required|numeric',
+    //     ]);
 
-        $user = Auth::user();
+    //     $user = Auth::user();
 
-        if ($user->is_ukt_paid) {
-            return back()->with('info', 'Anda sudah menyelesaikan pembayaran UKT.');
-        }
+    //     if ($user->is_ukt_paid) {
+    //         return back()->with('info', 'Anda sudah menyelesaikan pembayaran UKT.');
+    //     }
 
-        try {
-            $path = $request->file('bukti_bayar')->store('bukti-pembayaran-ukt', 'public');
+    //     try {
+    //         $path = $request->file('bukti_bayar')->store('bukti-pembayaran-ukt', 'public');
             
-            Payment::create([
-                'user_id'          => $user->id,
-                'order_id'         => 'MANUAL-UKT-' . $user->id . '-' . time(),
-                'jumlah'           => $request->jumlah,
-                'tipe_pembayaran'  => 'ukt',
-                'status_transaksi' => 'manual-upload',
-                'bukti_manual'     => $path,
-            ]);
+    //         Payment::create([
+    //             'user_id'          => $user->id,
+    //             'order_id'         => 'MANUAL-UKT-' . $user->id . '-' . time(),
+    //             'jumlah'           => $request->jumlah,
+    //             'tipe_pembayaran'  => 'ukt',
+    //             'status_transaksi' => 'manual-upload',
+    //             'bukti_manual'     => $path,
+    //         ]);
             
-            Log::info('UKT Manual upload successful', [
-                'user_id' => $user->id,
-                'path' => $path
-            ]);
+    //         Log::info('UKT Manual upload successful', [
+    //             'user_id' => $user->id,
+    //             'path' => $path
+    //         ]);
 
-            return redirect()->route('mahasiswa.dashboard')
-                ->with('success', 'Bukti pembayaran UKT berhasil diupload. Menunggu verifikasi admin.');
+    //         return redirect()->route('mahasiswa.dashboard')
+    //             ->with('success', 'Bukti pembayaran UKT berhasil diupload. Menunggu verifikasi admin.');
                 
-        } catch (\Exception $e) {
-            Log::error('UKT Manual upload failed', [
-                'error' => $e->getMessage(),
-                'user_id' => $user->id
-            ]);
+    //     } catch (\Exception $e) {
+    //         Log::error('UKT Manual upload failed', [
+    //             'error' => $e->getMessage(),
+    //             'user_id' => $user->id
+    //         ]);
             
-            return back()->with('error', 'Gagal upload bukti pembayaran: ' . $e->getMessage());
-        }
-    }
+    //         return back()->with('error', 'Gagal upload bukti pembayaran: ' . $e->getMessage());
+    //     }
+    // }
     
     /**
      * API untuk check status UKT payment

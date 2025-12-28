@@ -53,10 +53,30 @@
                         </div>
                     </div>
                 
-                    <!-- Status Pembayaran Cards - Positioned to the Right -->
+                    <!-- Status Pembayaran Cards -->
                     @php
-                        $paymentPendaftaran = $user->payments()->where('tipe_pembayaran', 'pendaftaran')->latest()->first();
-                        $paymentUKT = $user->payments()->where('tipe_pembayaran', 'ukt')->latest()->first();
+                    // ku pake tampilkan status pembayaran di dalam card edit mahasiswa
+                        $paymentPendaftaran = $user->payments()
+                            ->where('tipe_pembayaran', 'pendaftaran')
+                            ->orderByRaw("CASE 
+                                WHEN status_transaksi = 'settlement' THEN 1
+                                WHEN status_transaksi = 'pending-offline' THEN 2
+                                WHEN status_transaksi = 'pending' THEN 3
+                                ELSE 4  
+                            END")
+                            ->latest()
+                            ->first();
+
+                        $paymentUKT = $user->payments()
+                            ->where('tipe_pembayaran', 'ukt')
+                            ->orderByRaw("CASE 
+                                WHEN status_transaksi = 'settlement' THEN 1
+                                WHEN status_transaksi = 'pending-offline' THEN 2
+                                WHEN status_transaksi = 'pending' THEN 3
+                                ELSE 4
+                            END")
+                            ->latest()
+                            ->first();
                     @endphp
 
                         <div class="flex flex-col sm:flex-row gap-3 lg:min-w-fit">
@@ -133,11 +153,11 @@
                             <div class="flex items-center gap-2 mb-2">
                                 <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                     </svg>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-xs text-white/70 font-medium">Daftar ulang</p>
+                                    <p class="text-xs text-white/70 font-medium">Biaya Pendaftaran Ulang</p>
                                 </div>
                                 @if($paymentUKT && $paymentUKT->status_transaksi === 'settlement')
                                     <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -552,13 +572,13 @@
                             </div>
                         </label>
 
-                        <!-- Step 8: Bayar UKT -->
+                        <!-- Step 8: Bayar bayar pendataran ulang  -->
                         <label class="flex items-start cursor-pointer bg-white border-2 border-purple-200 rounded-lg px-4 py-3 hover:bg-purple-50 transition-colors {{ old('is_ukt_paid', $user->is_ukt_paid) ? 'bg-purple-100 border-purple-400' : '' }}">
                             <input type="checkbox" name="is_ukt_paid" value="1" {{ old('is_ukt_paid', $user->is_ukt_paid) ? 'checked' : '' }}
                                    class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
-                                <span class="block text-sm font-semibold text-gray-900">8. Bayar UKT</span>
-                                <span class="text-xs text-gray-600">Lunas pembayaran UKT</span>
+                                <span class="block text-sm font-semibold text-gray-900">8. Bayar Pendaftaran Ulang</span>
+                                <span class="text-xs text-gray-600">Lunas pembayaran Daftar ulang</span>
                             </div>
                         </label>
                     </div>

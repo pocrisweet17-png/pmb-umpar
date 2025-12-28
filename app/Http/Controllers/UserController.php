@@ -154,6 +154,44 @@ public function show(string $id)
                 ]);
 
                 $user->update($validated);
+                //payment UKT jadi pending-offline di status_transaksi jika di uncheck di admin panel
+                try {
+                    $paymentUkt = \App\Models\Payment::where('user_id', $user->id)
+                        ->where('tipe_pembayaran', 'ukt')
+                        ->first();
+
+                    if ($paymentUkt) {
+                        $paymentUkt->update(['status_transaksi' => 'pending-offline']);
+                        Log::info('✅ Updated UKT payment to pending-offline', [
+                            'payment_id' => $paymentUkt->id
+                        ]);
+                    } else {
+                        // Jika belum ada payment, buat dengan status pending-offline
+                        $biaya = \App\Models\BiayaPmb::where('tahun', date('Y'))
+                            ->where('kodeProdi', $user->pilihan_1)
+                            ->first();
+
+                        $jumlahUkt = $biaya ? $biaya->biaya_ukt : 0;
+
+                        \App\Models\Payment::create([
+                            'user_id' => $user->id,
+                            'order_id' => 'ADMIN-UKT-UNCHECK-' . $user->id . '-' . time(),
+                            'jumlah' => $jumlahUkt,
+                            'tipe_pembayaran' => 'ukt',
+                            'status_transaksi' => 'pending-offline',
+                            'metode_pembayaran' => 'offline',
+                        ]);
+
+                        Log::info('✅ Created pending-offline UKT payment', [
+                            'user_id' => $user->id
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error('❌ Failed to update UKT payment status', [
+                        'error' => $e->getMessage()
+                    ]);
+                }
+                // ⭐ AKHIR TAMBAHAN
 
                 return redirect()->route('admin.user.index')
                     ->with('warning', "User berhasil diupdate. NIM ($oldNim) telah dihapus karena status UKT dibatalkan.");
@@ -182,6 +220,43 @@ public function show(string $id)
                         'nim' => $nim,
                         'admin_id' => auth()->id()
                     ]);
+                        try {
+                            $biaya = \App\Models\BiayaPmb::where('tahun', date('Y'))
+                                ->where('kodeProdi', $user->pilihan_1)
+                                ->first();
+
+                            $jumlahUkt = $biaya ? $biaya->biaya_ukt : 0;
+
+                            // Cek apakah sudah ada payment UKT
+                            $existingPayment = \App\Models\Payment::where('user_id', $user->id)
+                                ->where('tipe_pembayaran', 'ukt')
+                                ->first();
+
+                            if ($existingPayment) {
+                                // Update existing payment jadi settlement
+                                $existingPayment->update(['status_transaksi' => 'settlement']);
+                                Log::info('✅ Updated existing UKT payment to settlement', [
+                                    'payment_id' => $existingPayment->id
+                                ]);
+                            } else {
+                                // Buat payment baru
+                                \App\Models\Payment::create([
+                                    'user_id' => $user->id,
+                                    'order_id' => 'ADMIN-UKT-' . $user->id . '-' . time(),
+                                    'jumlah' => $jumlahUkt,
+                                    'tipe_pembayaran' => 'ukt',
+                                    'status_transaksi' => 'settlement',
+                                    'metode_pembayaran' => 'offline',
+                                ]);
+                                Log::info('✅ Created new UKT payment record', [
+                                    'user_id' => $user->id
+                                ]);
+                            }
+                        } catch (\Exception $e) {
+                            Log::error('❌ Failed to create UKT payment record', [
+                                'error' => $e->getMessage()
+                            ]);
+                        }
                 
                     return redirect()->route('admin.user.index')
                         ->with('success', 'User berhasil diupdate! NIM: ' . $nim);
