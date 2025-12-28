@@ -133,6 +133,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('step.prodi')->group(function () {
         Route::get('/bayar', [PaymentController::class, 'index'])->name('bayar.index');
         Route::post('/bayar/store', [PaymentController::class, 'store'])->name('bayar.store');
+        Route::post('/bayar/store-offline', [PaymentController::class, 'storeOffline'])->name('bayar.store.offline'); 
         Route::post('/bayar/upload-manual', [PaymentController::class, 'uploadBukti'])->name('bayar.upload');
         
         // Aliases
@@ -174,6 +175,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['check.wawancara'])->group(function () {
         Route::get('/bayar-ukt', [BayarUktController::class, 'index'])->name('ukt.index');
         Route::post('/bayar-ukt', [BayarUktController::class, 'store'])->name('ukt.store');
+        Route::post('/bayar-ukt/store-offline', [BayarUktController::class, 'storeOffline'])->name('ukt.store.offline');
         Route::post('/bayar-ukt/upload-manual', [BayarUktController::class, 'uploadBukti'])->name('ukt.upload');
     });
 
