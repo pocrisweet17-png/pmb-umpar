@@ -217,6 +217,65 @@ class BayarUktController extends Controller
         return Snap::getSnapToken($params);
     }
 
+    
+    public function storeOffline(Request $request)
+    {
+        Log::info('========== UKT OFFLINE PAYMENT STARTED ==========');
+
+        try {
+            $user = Auth::user();
+
+            if ($user->is_ukt_paid) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda sudah menyelesaikan pembayaran UKT.'
+                ], 400);
+            }
+
+            $biaya = BiayaPmb::where('tahun', date('Y'))
+                ->where('kodeProdi', $user->pilihan_1)
+                ->first();
+
+            if (!$biaya) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Biaya UKT tidak ditemukan.'
+                ], 404);
+            }
+
+            $jumlah = $biaya->biaya_ukt;
+            $orderId = 'OFFLINE-UKT-' . $user->id . '-' . time();
+
+            $payment = Payment::create([
+                'user_id'           => $user->id,
+                'order_id'          => $orderId,
+                'jumlah'            => $jumlah,
+                'tipe_pembayaran'   => 'ukt',
+                'metode_pembayaran' => 'offline',
+                'status_transaksi'  => 'pending-offline',
+            ]);
+
+            Log::info('✅ UKT Offline payment created', [
+                'payment_id' => $payment->id,
+                'order_id' => $orderId
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Silakan datang ke kampus untuk melakukan pembayaran UKT.',
+                'order_id' => $orderId
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('❌ UKT Offline payment error: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membuat transaksi offline: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     /**
      * Upload bukti transfer manual UKT
      */
@@ -412,7 +471,7 @@ class BayarUktController extends Controller
      * Generate NIM otomatis
      * Format: 226 + kodeProdi + nomor urut (3 digit)
      */
-    private function generateNIM($user)
+    public function generateNIM($user)
     {
         try {
             Log::info('🔄 Starting NIM generation', [

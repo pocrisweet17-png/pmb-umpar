@@ -505,6 +505,82 @@ class PaymentController extends Controller
         ]);
     }
 
+ 
+    // pembayaran offline
+    // Di PaymentController.php
+public function storeOffline(Request $request)
+{
+    Log::info('========== OFFLINE PAYMENT STARTED ==========');
+    Log::info('Request data:', $request->all());
+    Log::info('User ID:', [Auth::id()]);
+    
+    try {
+        $user = Auth::user();
+
+        if ($user->is_bayar_pendaftaran) {
+            Log::warning('User already paid', ['user_id' => $user->id]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda sudah menyelesaikan pembayaran pendaftaran.'
+            ], 400);
+        }
+
+        $biaya = BiayaPmb::where('tahun', date('Y'))
+            ->where('kodeProdi', $user->pilihan_1)
+            ->first();
+
+        if (!$biaya) {
+            Log::error('Biaya not found', [
+                'user_id' => $user->id,
+                'kodeProdi' => $user->pilihan_1
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Biaya pendaftaran tidak ditemukan.'
+            ], 404);
+        }
+
+        $jumlah = $biaya->biaya_pendaftaran;
+        $orderId = 'OFFLINE-PD-' . $user->id . '-' . time();
+
+        // Create payment record
+        $payment = Payment::create([
+            'user_id'           => $user->id,
+            'order_id'          => $orderId,
+            'jumlah'            => $jumlah,
+            'tipe_pembayaran'   => 'pendaftaran',
+            'metode_pembayaran' => 'offline',
+            'status_transaksi'  => 'pending-offline',
+        ]);
+
+        Log::info('✅ Offline payment created successfully', [
+            'payment_id' => $payment->id,
+            'user_id' => $user->id,
+            'order_id' => $orderId,
+            'jumlah' => $jumlah
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Silakan datang ke kampus untuk melakukan pembayaran.',
+            'order_id' => $orderId,
+            'payment_id' => $payment->id
+        ], 200); // Explicit 200 status
+
+    } catch (\Exception $e) {
+        Log::error('❌ Offline payment error', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'user_id' => Auth::id()
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal membuat transaksi offline: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
     /**
      * Check status pembayaran
      */

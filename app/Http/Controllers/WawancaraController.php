@@ -22,9 +22,7 @@ class WawancaraController extends Controller
             $wawancara = Wawancara::where('user_id', $user->id)->first();
         }
         
-        // FIX: Variable name consistency
         $pertanyaans = PertanyaanWawancara::where('is_active', true)
-            ->orderBy('urutan')
             ->get();
 
         return view('wawancara.index', compact('sudahWawancara', 'wawancara', 'pertanyaans'));
