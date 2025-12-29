@@ -1172,7 +1172,7 @@
         <!-- Timeline -->
         <div class="reveal delay-3 relative">
           <div class="overflow-x-auto pb-4 -mx-4 px-4">
-            <div class="min-w-[900px] flex items-start gap-0">
+            <div class="min-w-[900px] flex items-start gap-0 pt-10">
 
               <!-- Step 1 -->
               <div class="flex-1 flex flex-col items-center text-center px-4 group">
