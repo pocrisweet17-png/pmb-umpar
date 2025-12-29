@@ -429,7 +429,7 @@ function checkAndOpenNextModal() {
 document.addEventListener('DOMContentLoaded', function() {
     console.group('🔍 Modal Check');
     ['modalProdi', 'modalBayarPendaftaran', 'modalIsiDataPribadi', 'modalLihatDataPribadi', 
-     'modalUploadDokumen', 'modalTes', 'modalWawancara', 'modalDaftarUlang', 'modalBayarUkt'].forEach(id => {
+     'modalUploadDokumen', 'modalTes', 'modalWawancara', 'modalDaftarUlang', 'modalBayarPendaftaranUlang'].forEach(id => {
         console.log(document.getElementById(id) ? `✅ ${id}` : `❌ ${id}`);
     });
     console.groupEnd();

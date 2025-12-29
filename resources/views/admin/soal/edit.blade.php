@@ -45,7 +45,7 @@
             @endif
 
             <!-- Form -->
-            <form action="{{ route('admin.soal.update', $soal->idSoal) }}" method="POST" class="space-y-6">
+            <form action="{{ route('admin.soal.update', $soal->idSoal) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 @method('PUT')
 
@@ -62,6 +62,36 @@
                               placeholder="Masukkan pertanyaan soal di sini..."
                               class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all hover:border-gray-300 resize-none text-sm sm:text-base">{{ old('textSoal', $soal->textSoal) }}</textarea>
                     <p class="text-xs text-gray-500 mt-2">Tuliskan pertanyaan dengan jelas dan mudah dipahami</p>
+                </div>
+
+                <!-- Image Upload -->
+                <div class="bg-blue-50 rounded-xl p-4 sm:p-6 border-2 border-blue-200">
+                    <label class="flex items-center text-gray-800 font-semibold mb-3 text-sm sm:text-base">
+                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Gambar Soal (Opsional)
+                    </label>
+                    
+                    @if($soal->gambar_soal)
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-2">Gambar saat ini:</p>
+                            <img src="{{ asset('storage/' . $soal->gambar_soal) }}" 
+                                 alt="Gambar Soal" 
+                                 class="max-w-xs rounded-lg shadow-md border-2 border-gray-200">
+                        </div>
+                    @endif
+                    
+                    <input type="file" name="gambar_soal" accept="image/*"
+                           class="w-full border-2 border-blue-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                           onchange="previewImage(event)">
+                    <p class="text-xs text-blue-700 mt-2">Format: JPG, PNG, GIF (Max: 2MB) - Upload gambar baru untuk mengganti yang lama</p>
+                    
+                    <!-- Preview New Image -->
+                    <div id="imagePreview" class="mt-3 hidden">
+                        <p class="text-sm text-gray-600 mb-2">Preview gambar baru:</p>
+                        <img id="preview" class="max-w-xs rounded-lg shadow-md" alt="Preview">
+                    </div>
                 </div>
 
                 <!-- Options Grid -->
@@ -174,4 +204,24 @@
     </div>
 
 </div>
+    @push('scripts')
+    <script>
+    function previewImage(event) {
+        const preview = document.getElementById('preview');
+        const previewContainer = document.getElementById('imagePreview');
+        const file = event.target.files[0];
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                previewContainer.classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.classList.add('hidden');
+        }
+    }
+    </script>
+    @endpush
 @endsection

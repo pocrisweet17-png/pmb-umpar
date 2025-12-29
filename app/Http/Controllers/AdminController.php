@@ -8,7 +8,9 @@ use App\Models\ProgramStudy;
 use App\Models\Soal;
 use App\Models\User;
 use App\Models\Ujian;
+use App\Models\PertanyaanWawancara;
 use App\Models\Registrasi;
+
 
 class AdminController extends Controller
 {
@@ -18,9 +20,78 @@ class AdminController extends Controller
         $totalUser = User::where('role', 'user')->count();
         $totalAdmin = User::where('role', 'admin')->count();
         $totalUserVerified = User::where('is_verified', true)->count();
-        
         $totalUjian = Ujian::count();
         $ujianSelesai = Ujian::where('status', 'selesai')->count();
+        $totalPertanyaanWawancara = PertanyaanWawancara::where('is_active', true)->count();
+
+        // Statistik Asal Daerah (mengambil Kabupaten/Kota dari alamat)
+        $registrations = Registrasi::select('alamat')
+            ->whereNotNull('alamat')
+            ->where('alamat', '!=', '')
+            ->get();
+        
+        $regionStats = [];
+        
+        foreach ($registrations as $reg) {
+            // Parse alamat untuk mendapatkan Kabupaten/Kota
+            // Format: Jl Keterampilan, CAPPAGALUNG, BACUKIKI BARAT, KOTA PAREPARE, SULAWESI SELATAN
+            $addressParts = array_map('trim', explode(',', $reg->alamat));
+            
+            // Langsung ambil dari posisi ke-4 (index 3) karena sudah pasti formatnya
+            if (isset($addressParts[3]) && !empty(trim($addressParts[3]))) {
+                $city = strtoupper(trim($addressParts[3]));
+                
+                // Format nama kota
+                $city = $this->formatCityName($city);
+                
+                if (!empty($city)) {
+                    if (isset($regionStats[$city])) {
+                        $regionStats[$city]++;
+                    } else {
+                        $regionStats[$city] = 1;
+                    }
+                }
+            }
+        }
+        
+        // Sort berdasarkan jumlah terbanyak
+        arsort($regionStats);
+
+        // Statistik Jenis Kelamin
+        $genderStatsRaw = Registrasi::select('jenisKelamin', DB::raw('count(*) as total'))
+            ->whereNotNull('jenisKelamin')
+            ->where('jenisKelamin', '!=', '')
+            ->groupBy('jenisKelamin')
+            ->pluck('total', 'jenisKelamin')
+            ->toArray();
+        
+        // Format label jenis kelamin
+        $genderStats = [];
+        foreach ($genderStatsRaw as $gender => $count) {
+            $label = $this->formatGenderLabel($gender);
+            if (isset($genderStats[$label])) {
+                $genderStats[$label] += $count;
+            } else {
+                $genderStats[$label] = $count;
+            }
+        }
+
+        $prodiStats = DB::table('users')
+        ->join('program_studis', 'users.pilihan_1', '=', 'program_studis.kodeProdi')
+        ->select('program_studis.namaProdi', DB::raw('COUNT(*) as total'))
+        ->whereNotNull('users.pilihan_1')
+        ->groupBy('program_studis.namaProdi')
+        ->orderByDesc('total')
+        ->pluck('total', 'namaProdi');
+
+        $fakultasStats = DB::table('users')
+        ->join('program_studis', 'users.pilihan_1', '=', 'program_studis.kodeProdi')
+        ->select('program_studis.fakultas', DB::raw('COUNT(*) as total'))
+        ->whereNotNull('users.pilihan_1')
+        ->groupBy('program_studis.fakultas')
+        ->orderByDesc('total')
+        ->pluck('total', 'fakultas');
+
 
         // Statistik Asal Daerah (mengambil Kabupaten/Kota dari alamat)
         $registrations = Registrasi::select('alamat')
@@ -101,7 +172,8 @@ class AdminController extends Controller
             'regionStats',
             'genderStats',
             'prodiStats',
-            'fakultasStats'
+            'fakultasStats',
+            'totalPertanyaanWawancara',
         ));
     }
 

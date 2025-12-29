@@ -643,12 +643,14 @@
             <!-- Header -->
             <div class="text-center mb-8 sm:mb-10">
                 <div class="animate-in delay-1">
-                    <div class="logo-container inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-white/90 backdrop-blur-xl shadow-2xl mb-5 relative">
+                    <div class="logo-container inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-blue-600/90 backdrop-blur-xl shadow-2xl mb-5 relative">
                         <div class="logo-ring"></div>
                         <div class="logo-ring logo-ring-2"></div>
                         <div class="logo-ring logo-ring-3"></div>
                         <!-- GANTI DENGAN LOGO KAMPUS -->
-                        <span class="font-display text-2xl sm:text-3xl text-gradient-animate">UM</span>
+                        <span class="font-display text-2xl sm:text-3xl text-gradient-animate">
+                            <img src="{{ asset("img/umpar.png") }}" alt="Logo UMPAR" class="w-20 h-20">
+                        </span>
                     </div>
                 </div>
 
@@ -966,6 +968,59 @@
                                                 <input type="text" name="no_whatsapp" required placeholder=" "
                                                     class="input-cyber block w-full pl-12 pr-4 py-3.5 rounded-xl text-gray-900 placeholder-transparent focus:outline-none focus:border-cyan-500">
                                                 <label class="floating-label">No. WhatsApp</label>
+                                            </div>
+                                        </div>
+
+                                        
+                                        <div class="animate-in delay-3 input-group">
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-cyan-500">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                                    </svg>
+                                                </div>
+                                                <input type="text" name="akun_fb"  placeholder=" "
+                                                    class="input-cyber block w-full pl-12 pr-4 py-3.5 rounded-xl text-gray-900 placeholder-transparent focus:outline-none focus:border-cyan-500">
+                                                <label class="floating-label">akun facebook</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="animate-in delay-3 input-group">
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-cyan-500">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                                    </svg>
+                                                </div>
+                                                <input type="text" name="akun_instagram"  placeholder=" "
+                                                    class="input-cyber block w-full pl-12 pr-4 py-3.5 rounded-xl text-gray-900 placeholder-transparent focus:outline-none focus:border-cyan-500">
+                                                <label class="floating-label">akun instagram</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="animate-in delay-3 input-group">
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-cyan-500">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                                    </svg>
+                                                </div>
+                                                <input type="text" name="akun_tiktok" placeholder=" "
+                                                    class="input-cyber block w-full pl-12 pr-4 py-3.5 rounded-xl text-gray-900 placeholder-transparent focus:outline-none focus:border-cyan-500">
+                                                <label class="floating-label">akun tiktok</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="animate-in delay-3 input-group">
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-cyan-500">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                                    </svg>
+                                                </div>
+                                                <input type="text" name="akun_twitter" placeholder=" "
+                                                    class="input-cyber block w-full pl-12 pr-4 py-3.5 rounded-xl text-gray-900 placeholder-transparent focus:outline-none focus:border-cyan-500">
+                                                <label class="floating-label">akun twitter</label>
                                             </div>
                                         </div>
 

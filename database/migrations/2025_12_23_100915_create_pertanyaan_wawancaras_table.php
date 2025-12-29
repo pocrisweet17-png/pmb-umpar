@@ -6,29 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
-        Schema::create('soals', function (Blueprint $table) {
-            $table->id('idSoal');
-            $table->text('textSoal');
-            $table->string('gambar_soal')->nullable();
+        Schema::create('pertanyaan_wawancaras', function (Blueprint $table) {
+            $table->id();
+            $table->text('pertanyaan');
             $table->string('opsi_a');
             $table->string('opsi_b');
             $table->string('opsi_c');
             $table->string('opsi_d');
-            $table->string('jawabanBenar');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
-        Schema::dropIfExists('soals');
+        Schema::dropIfExists('pertanyaan_wawancaras');
     }
 };

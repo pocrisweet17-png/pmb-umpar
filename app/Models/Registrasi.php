@@ -1,5 +1,4 @@
 <?php
-// app/Models/Registrasi.php
 
 namespace App\Models;
 

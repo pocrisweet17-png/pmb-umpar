@@ -11,6 +11,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ProgramStudiSeeder::class,  // Seeder yang sudah ada
             BiayaPmbSeeder::class,      // Seeder baru untuk biaya
+            SoalSeeder::class,
+            PertanyaanWawancaraSeeder::class,
         ]);
     }
 }

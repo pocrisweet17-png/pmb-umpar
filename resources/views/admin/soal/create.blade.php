@@ -20,13 +20,26 @@
         @endif
 
         <!-- Form tambah soal -->
-        <form action="{{ route('admin.soal.store') }}" method="POST" class="space-y-6">
+        <form action="{{ route('admin.soal.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             <div>
                 <label class="block text-gray-700 font-medium mb-2">Soal <span class="text-red-500">*</span></label>
                 <textarea name="textSoal" required rows="4"
                           class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">{{ old('textSoal') }}</textarea>
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Gambar Soal (Opsional)</label>
+                <input type="file" name="gambar_soal" accept="image/*"
+                       class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                       onchange="previewImage(event)">
+                <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG, GIF (Max: 2MB)</p>
+                
+                <!-- Preview Image -->
+                <div id="imagePreview" class="mt-3 hidden">
+                    <img id="preview" class="max-w-xs rounded-lg shadow-md" alt="Preview">
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -81,4 +94,24 @@
     </div>
 
 </div>
+    @push('scripts')
+    <script>
+    function previewImage(event) {
+        const preview = document.getElementById('preview');
+        const previewContainer = document.getElementById('imagePreview');
+        const file = event.target.files[0];
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                previewContainer.classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.classList.add('hidden');
+        }
+    }
+    </script>
+    @endpush
 @endsection

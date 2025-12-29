@@ -16,6 +16,7 @@ class Payment extends Model
         'jumlah',
         'tipe_pembayaran',
         'status_transaksi',
+        'metode_pembayaran',
         'bukti_manual',
         'payload',
         'biaya_ukt',
@@ -59,5 +60,6 @@ class Payment extends Model
     {
         return $query->where('status_transaksi', 'pending');
     }
+    
     
 }

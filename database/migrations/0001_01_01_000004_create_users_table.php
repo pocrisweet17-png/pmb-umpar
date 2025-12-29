@@ -15,7 +15,13 @@ return new class extends Migration
             $table->string('password');
             $table->string('nama_lengkap');
             $table->string('nik')->unique();
+
+            // sosmed
             $table->string('no_whatsapp');
+            $table->string('akun_fb')->unique()->nullable();
+            $table->string('akun_instagram')->unique()->nullable();
+            $table->string('akun_tiktok')->unique()->nullable();
+            $table->string('akun_twitter')->unique()->nullable();
             
             // Email verification
             $table->boolean('is_verified')->default(false);
@@ -25,6 +31,7 @@ return new class extends Migration
             // Nomor registrasi (auto-generated)
             $table->string('nomor_registrasi')->unique()->nullable();
             $table->string('nomorPendaftaran')->unique()->nullable();
+            $table->string('nim')->nullable()->unique();
             
             // Pilihan Program Studi
             $table->string('pilihan_1')->nullable(); // kodeProdi pilihan 1
