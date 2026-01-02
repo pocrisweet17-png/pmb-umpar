@@ -165,16 +165,79 @@
           <h2 class="section-title">Langkah Mudah Bergabung</h2>
           <p class="section-subtitle">Proses online cepat, transparan, dan mudah diikuti.</p>
         </div>
-        <div class="flex flex-col md:flex-row justify-between items-start gap-8 relative">
-          @foreach([1 => 'Buat Akun', 2 => 'Isi Formulir', 3 => 'Unggah Dokumen', 4 => 'Pembayaran', 5 => 'Pengumuman'] as $step => $label)
-            <div class="text-center flex flex-col items-center">
-              <div class="w-12 h-12 rounded-full bg-[#0f3460] text-white flex items-center justify-center font-bold mb-3">{{ $step == 5 ? '✓' : $step }}</div>
-              <h4 class="font-semibold text-gray-800">{{ $label }}</h4>
+
+        <!-- Timeline -->
+        <div class="reveal delay-3 relative">
+          <div class="overflow-x-auto pb-4 -mx-4 px-4">
+            <div class="min-w-[900px] flex items-start gap-0 pt-10">
+
+              <!-- Step 1 -->
+              <div class="flex-1 flex flex-col items-center text-center px-4 group">
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] to-[#008c44] text-white text-xl font-bold shadow-lg shadow-[#00a651]/30 mb-4 group-hover:scale-110 transition-transform">
+                  1
+                </div>
+                <h6 class="font-bold text-[#0c2340] mb-2">Buat Akun</h6>
+                <p class="text-sm text-gray-500">Daftar dengan email aktif Anda.</p>
+              </div>
+
+              <!-- Connector -->
+              <div class="w-20 flex items-center justify-center pt-7">
+                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="flex-1 flex flex-col items-center text-center px-4 group">
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#4da8da] to-[#0f3460] text-white text-xl font-bold shadow-lg shadow-[#4da8da]/30 mb-4 group-hover:scale-110 transition-transform" style="--delay: 0.4s;">
+                  2
+                </div>
+                <h6 class="font-bold text-[#0c2340] mb-2">Isi Formulir</h6>
+                <p class="text-sm text-gray-500">Lengkapi data akademik dan pribadi.</p>
+              </div>
+
+              <!-- Connector -->
+              <div class="w-20 flex items-center justify-center pt-7">
+                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="flex-1 flex flex-col items-center text-center px-4 group">
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#f4d03f] to-[#d4ac0d] text-[#0c2340] text-xl font-bold shadow-lg shadow-[#f4d03f]/30 mb-4 group-hover:scale-110 transition-transform" style="--delay: 0.8s;">
+                  3
+                </div>
+                <h6 class="font-bold text-[#0c2340] mb-2">Unggah Dokumen</h6>
+                <p class="text-sm text-gray-500">Ijazah, transkrip, pas foto, dsb.</p>
+              </div>
+
+              <!-- Connector -->
+              <div class="w-20 flex items-center justify-center pt-7">
+                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
+              </div>
+
+              <!-- Step 4 -->
+              <div class="flex-1 flex flex-col items-center text-center px-4 group">
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#0f3460] to-[#0c2340] text-white text-xl font-bold shadow-lg shadow-[#0f3460]/30 mb-4 group-hover:scale-110 transition-transform" style="--delay: 1.2s;">
+                  4
+                </div>
+                <h6 class="font-bold text-[#0c2340] mb-2">Pembayaran</h6>
+                <p class="text-sm text-gray-500">Bayar via metode yang tersedia.</p>
+              </div>
+
+              <!-- Connector -->
+              <div class="w-20 flex items-center justify-center pt-7">
+                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
+              </div>
+
+              <!-- Step 5 -->
+              <div class="flex-1 flex flex-col items-center text-center px-4 group">
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] via-[#4da8da] to-[#f4d03f] text-white text-xl font-bold shadow-lg mb-4 group-hover:scale-110 transition-transform" style="--delay: 1.6s;">
+                  ✓
+                </div>
+                <h6 class="font-bold text-[#0c2340] mb-2">Pengumuman</h6>
+                <p class="text-sm text-gray-500">Cek hasil seleksi via akun.</p>
+              </div>
+
             </div>
-            @if($step < 5)
-              <div class="hidden md:block w-16 h-px bg-gray-200"></div>
-            @endif
-          @endforeach
+          
         </div>
         <div class="text-center mt-12">
           <a href="{{ route('register.form') }}" class="btn-primary inline-flex items-center gap-2">

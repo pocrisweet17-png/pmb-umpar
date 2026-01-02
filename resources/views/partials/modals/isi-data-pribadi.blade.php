@@ -14,6 +14,7 @@
                     </svg>
                 </button>
             </div>
+            
             @if(session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
                 <span class="block sm:inline">{{ session('success') }}</span>
@@ -106,7 +107,7 @@
                             </div>
                         </div>
 
-                        <!-- JENIS KELAMIN -->
+                        {{-- JENIS KELAMIN --}}
                         <div>
                             <label for="jenisKelamin" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Jenis Kelamin <span class="text-red-500">*</span>
@@ -122,7 +123,7 @@
                             </select>
                         </div>
 
-                        <!-- AGAMA -->
+                        {{-- AGAMA --}}
                         <div>
                             <label for="agama" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Agama <span class="text-red-500">*</span>
@@ -141,86 +142,117 @@
                                 <option value="Konghucu">Konghucu</option>
                             </select>
                         </div>
-                        {{-- Alamat --}}
+
+                        {{-- ALAMAT SECTION --}}
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Tipe Alamat<span class="text-red-500">*</span>
+                            </label>
+                            <div class="flex gap-4 mb-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="tipe_alamat" value="indonesia" class="mr-2" checked>
+                                    <span class="text-sm">Indonesia</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="tipe_alamat" value="luar_negeri" class="mr-2">
+                                    <span class="text-sm">Luar Negeri</span>
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             
-                            <!-- Provinsi -->
+                            {{-- Provinsi / Negara --}}
                             <div>
-                                <label for="agama" class="block text-sm font-semibold text-gray-700 mb-2">
+                                <label for="provinsi_label" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Alamat<span class="text-red-500">*</span>
                                 </label>
-                                <label class="block text-sm font-semibold mb-1">Provinsi</label>
-                                <select id="provinsi" class="w-full border rounded-lg p-2">
+                                <label id="provinsi_label" class="block text-sm font-semibold mb-1">Provinsi</label>
+                                
+                                {{-- Dropdown untuk Indonesia --}}
+                                <select id="provinsi" name="provinsi" class="w-full border rounded-lg p-2 alamat-indonesia">
                                     <option value="">Pilih Provinsi</option>
                                 </select>
+                                
+                                {{-- Input Manual untuk Luar Negeri --}}
+                                <input type="text" id="provinsi_manual" name="provinsi" 
+                                    class="w-full border rounded-lg p-2 alamat-luar-negeri hidden" 
+                                    placeholder="Masukkan Negara">
                             </div>
 
-                            <!-- Kabupaten -->
+                            {{-- Kabupaten / Kota --}}
                             <div>
-                                <label class="block text-sm font-semibold mb-1">Kabupaten/Kota</label>
-                                <select id="kabupaten" class="w-full border rounded-lg p-2" disabled>
+                                <label id="kabupaten_label" class="block text-sm font-semibold mb-1">Kabupaten/Kota</label>
+                                
+                                {{-- Dropdown untuk Indonesia --}}
+                                <select id="kabupaten" name="kabupaten" class="w-full border rounded-lg p-2 alamat-indonesia" disabled>
                                     <option value="">Pilih Kabupaten</option>
                                 </select>
+                                
+                                {{-- Input Manual untuk Luar Negeri --}}
+                                <input type="text" id="kabupaten_manual" name="kabupaten" 
+                                    class="w-full border rounded-lg p-2 alamat-luar-negeri hidden" 
+                                    placeholder="Masukkan Kota">
                             </div>
 
-                            <!-- Kecamatan -->
+                            {{-- Kecamatan / Wilayah --}}
                             <div>
-                                <label class="block text-sm font-semibold mb-1">Kecamatan</label>
-                                <select id="kecamatan" class="w-full border rounded-lg p-2" disabled>
+                                <label id="kecamatan_label" class="block text-sm font-semibold mb-1">Kecamatan</label>
+                                
+                                {{-- Dropdown untuk Indonesia --}}
+                                <select id="kecamatan" name="kecamatan" class="w-full border rounded-lg p-2 alamat-indonesia" disabled>
                                     <option value="">Pilih Kecamatan</option>
                                 </select>
+                                
+                                {{-- Input Manual untuk Luar Negeri --}}
+                                <input type="text" id="kecamatan_manual" name="kecamatan" 
+                                    class="w-full border rounded-lg p-2 alamat-luar-negeri hidden" 
+                                    placeholder="Masukkan Wilayah/District">
                             </div>
 
-                            <!-- Desa -->
+                            {{-- Desa / Alamat Lengkap --}}
                             <div>
-                                <label class="block text-sm font-semibold mb-1">Desa/Kelurahan</label>
-                                <select id="desa" class="w-full border rounded-lg p-2" disabled>
+                                <label id="desa_label" class="block text-sm font-semibold mb-1">Desa/Kelurahan</label>
+                                
+                                {{-- Dropdown untuk Indonesia --}}
+                                <select id="desa" name="desa" class="w-full border rounded-lg p-2 alamat-indonesia" disabled>
                                     <option value="">Pilih Desa</option>
                                 </select>
+                                
+                                {{-- Input Manual untuk Luar Negeri --}}
+                                <input type="text" id="desa_manual" name="desa" 
+                                    class="w-full border rounded-lg p-2 alamat-luar-negeri hidden" 
+                                    placeholder="Masukkan Alamat Lengkap">
                             </div>
 
                         </div>
 
-                        <!-- Alamat Jalan -->
-                        <div class="mt-4">
-                            <label class="block text-sm font-semibold mb-1">
-                                Alamat Jalan
+                        {{-- Asal Sekolah --}}
+                        <div>
+                            <label for="asalSekolah" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Asal Sekolah <span class="text-red-500">*</span>
                             </label>
-                            <textarea id="alamat_jalan" rows="3"
-                                class="w-full border rounded-lg p-2"
-                                placeholder="Jl, No Rumah, RT/RW"></textarea>
+                            <input 
+                                type="text" 
+                                id="asalSekolah" 
+                                name="asalSekolah" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
+                                placeholder="Contoh: SMA Negeri 1 Jakarta"
+                                required>
                         </div>
 
-                        <!-- HIDDEN INPUT (INI YANG DIKIRIM KE BACKEND) -->
-                        <input type="hidden" name="alamat" id="alamat_final">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {{-- Asal Sekolah --}}
-                            <div>
-                                <label for="asalSekolah" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Asal Sekolah <span class="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="asalSekolah" 
-                                    name="asalSekolah" 
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
-                                    placeholder="Contoh: SMA Negeri 1 Jakarta"
-                                    required>
-                            </div>
-
-                            {{-- Jurusan --}}
-                            <div>
-                                <label for="jurusan" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Jurusan <span class="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    id="jurusan" 
-                                    name="jurusan" 
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
-                                    placeholder="Contoh: IPA"
-                                    required>
-                            </div>
+                        {{-- Jurusan --}}
+                        <div>
+                            <label for="jurusan" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Jurusan <span class="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                id="jurusan" 
+                                name="jurusan" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
+                                placeholder="Contoh: IPA"
+                                required>
                         </div>
 
                         {{-- Tahun Lulus --}}
@@ -239,83 +271,80 @@
                                 required>
                         </div>
 
-                    </div>
-                </div>
-
-                {{-- Media Sosial --}}
-                <div class="mt-8 px-4">
-                    <div class="flex items-center gap-2 mb-4">
-                        <!-- <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 8h10M7 12h4m1 8l-5-5H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v6a2 2 0 01-2 2h-3l-5 5z" />
-                        </svg> -->
-                        <h4 class="text-lg font-bold text-gray-900">
-                            Media Sosial <span class="text-sm font-normal text-gray-500">(Minimal salah satu)</span>
-                        </h4>
-                    </div>
-
-                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                            {{-- Twitter --}}
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Twitter
-                                </label>
-                                <input
-                                    type="url"
-                                    name="twitter"
-                                    value="{{ old('twitter', $registrasi->twitter ?? '') }}"
-                                    placeholder="https://twitter.com/username"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg
-                                        focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                        {{-- MEDIA SOSIAL --}}
+                        <div class="mt-6">
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 8h10M7 12h4m1 8l-5-5H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v6a2 2 0 01-2 2h-3l-5 5z" />
+                                </svg>
+                                <h4 class="text-lg font-bold text-gray-900">
+                                    Media Sosial <span class="text-sm font-normal text-gray-500">(Opsional)</span>
+                                </h4>
                             </div>
 
-                            {{-- Facebook --}}
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Facebook
-                                </label>
-                                <input
-                                    type="url"
-                                    name="facebook"
-                                    value="{{ old('facebook', $registrasi->facebook ?? '') }}"
-                                    placeholder="https://facebook.com/username"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg
-                                        focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
-                            </div>
+                            <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                            {{-- TikTok --}}
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                    TikTok
-                                </label>
-                                <input
-                                    type="url"
-                                    name="tiktok"
-                                    value="{{ old('tiktok', $registrasi->tiktok ?? '') }}"
-                                    placeholder="https://tiktok.com/@username"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg
-                                        focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
-                            </div>
+                                    {{-- Twitter --}}
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Twitter
+                                        </label>
+                                        <input
+                                            type="url"
+                                            name="twitter"
+                                            placeholder="https://twitter.com/username"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                                                focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                                    </div>
 
-                            {{-- Instagram --}}
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                    Instagram
-                                </label>
-                                <input
-                                    type="url"
-                                    name="instagram"
-                                    value="{{ old('instagram', $registrasi->instagram ?? '') }}"
-                                    placeholder="https://instagram.com/username"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg
-                                        focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
-                            </div>
+                                    {{-- Facebook --}}
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Facebook
+                                        </label>
+                                        <input
+                                            type="url"
+                                            name="facebook"
+                                            placeholder="https://facebook.com/username"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                                                focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                                    </div>
 
+                                    {{-- TikTok --}}
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                            TikTok
+                                        </label>
+                                        <input
+                                            type="url"
+                                            name="tiktok"
+                                            placeholder="https://tiktok.com/@username"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                                                focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                                    </div>
+
+                                    {{-- Instagram --}}
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                            Instagram
+                                        </label>
+                                        <input
+                                            type="url"
+                                            name="instagram"
+                                            placeholder="https://instagram.com/username"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg
+                                                focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
+
                 {{-- Modal Footer --}}
                 <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
                     <button 
@@ -341,20 +370,57 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
+    // ========== MODAL FUNCTIONS ==========
     window.openModalIsiDataPribadi = function () {
         const modal = document.getElementById('modalIsiDataPribadi');
-        modal.style.display = 'flex';
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
     }
 
     window.closeModalDataPribadi = function () {
-        document.getElementById('modalIsiDataPribadi').classList.add('hidden');
-        setTimeout(() => {
-            checkAndOpenNextModal();
-        }, 300);
+        const modal = document.getElementById('modalIsiDataPribadi');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            
+            // Reset form jika ada
+            const form = modal.querySelector('form');
+            if (form) {
+                form.reset();
+            }
+            
+            // Jalankan fungsi berikutnya jika ada
+            setTimeout(() => {
+                if (typeof checkAndOpenNextModal === 'function') {
+                    checkAndOpenNextModal();
+                }
+            }, 300);
+        }
     }
 
+    // Function untuk tutup modal ketika klik di luar modal
+    window.closeModalIfOutside = function(event, modalId) {
+        const modal = document.getElementById(modalId);
+        if (event.target === modal) {
+            closeModalDataPribadi();
+        }
+    }
+
+    // Event listener untuk tombol ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('modalIsiDataPribadi');
+            if (modal && !modal.classList.contains('hidden')) {
+                closeModalDataPribadi();
+            }
+        }
+    });
+
+    // Event listener untuk klik di luar modal
     const modal = document.getElementById('modalIsiDataPribadi');
     if (modal) {
         modal.addEventListener('click', function (e) {
@@ -362,35 +428,127 @@ document.addEventListener('DOMContentLoaded', function () {
                 closeModalDataPribadi();
             }
         });
+        
+        // PASTIKAN MODAL TERTUTUP SAAT PAGE LOAD
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
     }
 
+    // ========== FORM SUBMIT HANDLER ==========
     const form = document.querySelector('form[action="{{ route('pendaftaran.store') }}"]');
     if (form) {
-        form.addEventListener('submit', function () {
+        form.addEventListener('submit', function (e) {
             const submitBtn = this.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = 'Menyimpan...';
+                submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Menyimpan...';
             }
         });
     }
 
-
-    // const API = 'https://emsifa.github.io/api-wilayah-indonesia/api';
+    // ========== WILAYAH INDONESIA & LUAR NEGERI ==========
     const API = '/wilayah';
 
+    // Elements Indonesia (Dropdown)
     const provinsi     = document.getElementById('provinsi');
     const kabupaten    = document.getElementById('kabupaten');
     const kecamatan    = document.getElementById('kecamatan');
     const desa         = document.getElementById('desa');
-    const alamatJalan  = document.getElementById('alamat_jalan');
-    const alamatFinal  = document.getElementById('alamat_final');
+    
+    // Elements Luar Negeri (Input Manual)
+    const provinsiManual  = document.getElementById('provinsi_manual');
+    const kabupatenManual = document.getElementById('kabupaten_manual');
+    const kecamatanManual = document.getElementById('kecamatan_manual');
+    const desaManual      = document.getElementById('desa_manual');
+    
+    // Other elements
+    const alamatJalan     = document.getElementById('alamat_jalan');
+    const alamatFinal     = document.getElementById('alamat_final');
+    const tipeAlamatRadios = document.querySelectorAll('input[name="tipe_alamat"]');
+    
+    // Label elements
+    const provinsiLabel   = document.getElementById('provinsi_label');
+    const kabupatenLabel  = document.getElementById('kabupaten_label');
+    const kecamatanLabel  = document.getElementById('kecamatan_label');
+    const desaLabel       = document.getElementById('desa_label');
 
     if (!provinsi) {
         console.error('Element provinsi tidak ditemukan');
         return;
     }
 
+    // ========== SWITCH TIPE ALAMAT (Indonesia / Luar Negeri) ==========
+    function switchAlamatType(type) {
+        const indonesiaElements = document.querySelectorAll('.alamat-indonesia');
+        const luarNegeriElements = document.querySelectorAll('.alamat-luar-negeri');
+        
+        if (type === 'indonesia') {
+            // Tampilkan dropdown Indonesia
+            indonesiaElements.forEach(el => {
+                el.classList.remove('hidden');
+                el.disabled = false;
+            });
+            
+            // Sembunyikan input manual
+            luarNegeriElements.forEach(el => {
+                el.classList.add('hidden');
+                el.disabled = true;
+                el.value = ''; // Reset value
+            });
+            
+            // Update labels
+            if (provinsiLabel) provinsiLabel.textContent = 'Provinsi';
+            if (kabupatenLabel) kabupatenLabel.textContent = 'Kabupaten/Kota';
+            if (kecamatanLabel) kecamatanLabel.textContent = 'Kecamatan';
+            if (desaLabel) desaLabel.textContent = 'Desa/Kelurahan';
+            
+            // Reset dropdown kabupaten, kecamatan, desa
+            kabupaten.disabled = true;
+            kecamatan.disabled = true;
+            desa.disabled = true;
+            kabupaten.innerHTML = '<option value="">Pilih Kabupaten</option>';
+            kecamatan.innerHTML = '<option value="">Pilih Kecamatan</option>';
+            desa.innerHTML = '<option value="">Pilih Desa</option>';
+            
+        } else {
+            // Sembunyikan dropdown Indonesia
+            indonesiaElements.forEach(el => {
+                el.classList.add('hidden');
+                el.disabled = true;
+            });
+            
+            // Tampilkan input manual
+            luarNegeriElements.forEach(el => {
+                el.classList.remove('hidden');
+                el.disabled = false;
+            });
+            
+            // Update labels
+            if (provinsiLabel) provinsiLabel.textContent = 'Negara';
+            if (kabupatenLabel) kabupatenLabel.textContent = 'Kota';
+            if (kecamatanLabel) kecamatanLabel.textContent = 'Wilayah/District';
+            if (desaLabel) desaLabel.textContent = 'Alamat Lengkap';
+        }
+        
+        // Update alamat final setiap kali switch
+        if (typeof gabungAlamat === 'function') {
+            gabungAlamat();
+        }
+    }
+
+    // Event listener untuk radio button
+    tipeAlamatRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            switchAlamatType(this.value);
+        });
+    });
+
+    // Initialize dengan Indonesia
+    switchAlamatType('indonesia');
+
+    // ========== LOAD WILAYAH INDONESIA (API) ==========
+    
     // Load Provinsi
     fetch(`${API}/provinsi`)
         .then(res => res.json())
@@ -398,7 +556,8 @@ document.addEventListener('DOMContentLoaded', function () {
             data.forEach(p => {
                 provinsi.innerHTML += `<option value="${p.id}">${p.name}</option>`;
             });
-        });
+        })
+        .catch(err => console.error('Error loading provinsi:', err));
 
     // Provinsi → Kabupaten
     provinsi.addEventListener('change', function () {
@@ -410,7 +569,10 @@ document.addEventListener('DOMContentLoaded', function () {
         kecamatan.innerHTML = '<option value="">Pilih Kecamatan</option>';
         desa.innerHTML = '<option value="">Pilih Desa</option>';
 
-        if (!this.value) return;
+        if (!this.value) {
+            if (typeof gabungAlamat === 'function') gabungAlamat();
+            return;
+        }
 
         fetch(`${API}/kabupaten/${this.value}`)
             .then(res => res.json())
@@ -419,7 +581,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 data.forEach(k => {
                     kabupaten.innerHTML += `<option value="${k.id}">${k.name}</option>`;
                 });
-            });
+                if (typeof gabungAlamat === 'function') gabungAlamat();
+            })
+            .catch(err => console.error('Error loading kabupaten:', err));
     });
 
     // Kabupaten → Kecamatan
@@ -430,7 +594,10 @@ document.addEventListener('DOMContentLoaded', function () {
         kecamatan.innerHTML = '<option value="">Pilih Kecamatan</option>';
         desa.innerHTML = '<option value="">Pilih Desa</option>';
 
-        if (!this.value) return;
+        if (!this.value) {
+            if (typeof gabungAlamat === 'function') gabungAlamat();
+            return;
+        }
 
         fetch(`${API}/kecamatan/${this.value}`)
             .then(res => res.json())
@@ -439,7 +606,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 data.forEach(k => {
                     kecamatan.innerHTML += `<option value="${k.id}">${k.name}</option>`;
                 });
-            });
+                if (typeof gabungAlamat === 'function') gabungAlamat();
+            })
+            .catch(err => console.error('Error loading kecamatan:', err));
     });
 
     // Kecamatan → Desa
@@ -447,7 +616,10 @@ document.addEventListener('DOMContentLoaded', function () {
         desa.disabled = true;
         desa.innerHTML = '<option value="">Pilih Desa</option>';
 
-        if (!this.value) return;
+        if (!this.value) {
+            if (typeof gabungAlamat === 'function') gabungAlamat();
+            return;
+        }
 
         fetch(`${API}/desa/${this.value}`)
             .then(res => res.json())
@@ -456,22 +628,50 @@ document.addEventListener('DOMContentLoaded', function () {
                 data.forEach(d => {
                     desa.innerHTML += `<option value="${d.id}">${d.name}</option>`;
                 });
-            });
+                if (typeof gabungAlamat === 'function') gabungAlamat();
+            })
+            .catch(err => console.error('Error loading desa:', err));
     });
 
-    // Gabungkan alamat
+    // ========== GABUNG ALAMAT (Indonesia & Luar Negeri) ==========
     function gabungAlamat() {
-        alamatFinal.value = [
-            alamatJalan.value,
-            desa.options[desa.selectedIndex]?.text,
-            kecamatan.options[kecamatan.selectedIndex]?.text,
-            kabupaten.options[kabupaten.selectedIndex]?.text,
-            provinsi.options[provinsi.selectedIndex]?.text,
-        ].filter(Boolean).join(', ');
+        if (!alamatFinal) return;
+        
+        const tipeAlamat = document.querySelector('input[name="tipe_alamat"]:checked')?.value || 'indonesia';
+        
+        if (tipeAlamat === 'indonesia') {
+            // Gabung alamat Indonesia (dari dropdown)
+            alamatFinal.value = [
+                alamatJalan?.value,
+                desa.options[desa.selectedIndex]?.text !== 'Pilih Desa' ? desa.options[desa.selectedIndex]?.text : '',
+                kecamatan.options[kecamatan.selectedIndex]?.text !== 'Pilih Kecamatan' ? kecamatan.options[kecamatan.selectedIndex]?.text : '',
+                kabupaten.options[kabupaten.selectedIndex]?.text !== 'Pilih Kabupaten' ? kabupaten.options[kabupaten.selectedIndex]?.text : '',
+                provinsi.options[provinsi.selectedIndex]?.text !== 'Pilih Provinsi' ? provinsi.options[provinsi.selectedIndex]?.text : '',
+            ].filter(Boolean).join(', ');
+        } else {
+            // Gabung alamat Luar Negeri (dari input manual)
+            alamatFinal.value = [
+                alamatJalan?.value,
+                desaManual?.value,
+                kecamatanManual?.value,
+                kabupatenManual?.value,
+                provinsiManual?.value,
+            ].filter(Boolean).join(', ');
+        }
     }
 
-    [provinsi, kabupaten, kecamatan, desa, alamatJalan]
-        .forEach(el => el.addEventListener('change', gabungAlamat));
+    // Event listeners untuk update alamat
+    if (provinsi) provinsi.addEventListener('change', gabungAlamat);
+    if (kabupaten) kabupaten.addEventListener('change', gabungAlamat);
+    if (kecamatan) kecamatan.addEventListener('change', gabungAlamat);
+    if (desa) desa.addEventListener('change', gabungAlamat);
+    if (alamatJalan) alamatJalan.addEventListener('input', gabungAlamat);
+    
+    // Event listeners untuk input manual (Luar Negeri)
+    if (provinsiManual) provinsiManual.addEventListener('input', gabungAlamat);
+    if (kabupatenManual) kabupatenManual.addEventListener('input', gabungAlamat);
+    if (kecamatanManual) kecamatanManual.addEventListener('input', gabungAlamat);
+    if (desaManual) desaManual.addEventListener('input', gabungAlamat);
 
 });
 </script>

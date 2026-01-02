@@ -5,7 +5,7 @@
     
     // Ambil pertanyaan dari database
     $pertanyaans = \App\Models\PertanyaanWawancara::where('is_active', true)
-        ->orderBy('urutan')
+        ->orderBy('id')
         ->get();
     
     // Ambil data wawancara jika sudah pernah
