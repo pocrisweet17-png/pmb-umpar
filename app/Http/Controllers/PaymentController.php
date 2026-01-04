@@ -117,15 +117,36 @@ class PaymentController extends Controller
         Log::info('Payment record created', ['payment_id' => $payment->id, 'order_id' => $orderId]);
 
         try {
-            $snapToken = $this->generateSnapToken($user, $jumlah, $orderId);
+            // Ambil metode dari request
+            $metodeDipilih = $request->input('metode_pembayaran', 'all');
+            $enabledPayments = $this->getEnabledPayments($metodeDipilih);
+
+            //  Hitung biaya admin
+            $biayaAdmin = $this->getBiayaAdmin($metodeDipilih);
+            $totalBayar = $jumlah + $biayaAdmin;
+
+            //  Update jumlah di payment record
+            $payment->update(['jumlah' => $totalBayar]);
+
+            $snapToken = $this->generateSnapToken($user, $jumlah, $orderId, $enabledPayments, $biayaAdmin);
+
+            Log::info('Payment with admin fee', [
+                'order_id' => $orderId,
+                'biaya_pokok' => $jumlah,
+                'biaya_admin' => $biayaAdmin,
+                'total' => $totalBayar,
+                'metode' => $metodeDipilih
+            ]);
 
             Log::info('Snap token generated', ['order_id' => $orderId]);
 
             return response()->json([
-                'success' => true,
-                'snap_token' => $snapToken,
-                'order_id' => $orderId,
-                'amount' => $jumlah
+                'success'     => true,
+                'snap_token'  => $snapToken,
+                'order_id'    => $orderId,
+                'amount'      => $jumlah,
+                'biaya_admin' => $biayaAdmin,
+                'total'       => $totalBayar
             ]);
 
         } catch (\Exception $e) {
@@ -149,45 +170,66 @@ class PaymentController extends Controller
     /**
      * Generate Snap Token
      */
-    private function generateSnapToken($user, $amount, $orderId)
+    private function generateSnapToken($user, $amount, $orderId, $enabledPayments = null, $biayaAdmin = 0)
     {
         if (empty($orderId)) {
             throw new \Exception('Order ID tidak boleh kosong');
         }
-        
+
         if ($amount <= 0) {
             throw new \Exception('Jumlah pembayaran tidak valid');
+        }
+
+        //  Hitung total
+        $totalAmount = (int) $amount + (int) $biayaAdmin;
+
+        //  Item details dengan biaya admin terpisah
+        $itemDetails = [
+            [
+                'id'       => 'PMB-' . date('Y-m') . '-' . $user->id,
+                'price'    => (int) $amount,
+                'quantity' => 1,
+                'name'     => 'Biaya Pendaftaran PMB ' . date('Y'),
+            ]
+        ];
+
+        //  Tambahkan biaya admin jika ada
+        if ($biayaAdmin > 0) {
+            $itemDetails[] = [
+                'id'       => 'ADMIN-FEE-' . $user->id,
+                'price'    => (int) $biayaAdmin,
+                'quantity' => 1,
+                'name'     => 'Biaya Admin Pembayaran',
+            ];
         }
 
         $params = [
             'transaction_details' => [
                 'order_id'     => $orderId,
-                'gross_amount' => (int) $amount,
+                'gross_amount' => $totalAmount,
             ],
-            'item_details' => [
-                [
-                    'id'       => 'PD-' . date('Y'),
-                    'price'    => (int) $amount,
-                    'quantity' => 1,
-                    'name'     => 'Biaya Pendaftaran PMB ' . date('Y'),
-                ]
-            ],
+            'item_details' => $itemDetails,
             'customer_details' => [
                 'first_name' => $user->nama_lengkap ?? $user->name,
                 'email'      => $user->email,
                 'phone'      => $user->no_whatsapp ?? '-',
-            ],
-            'enabled_payments' => [
-                'gopay', 'qris', 
             ],
             'callbacks' => [
                 'finish' => route('payment.finish'),
             ],
         ];
 
-        Log::info('Generate Snap Token Params', [
+        // Tambahkan enabled_payments jika ada
+        if ($enabledPayments && is_array($enabledPayments)) {
+            $params['enabled_payments'] = $enabledPayments;
+        }
+
+        Log::info('Snap Token Params', [
             'order_id' => $orderId,
-            'amount' => $amount
+            'biaya_pokok' => $amount,
+            'biaya_admin' => $biayaAdmin,
+            'total' => $totalAmount,
+            'enabled_payments' => $enabledPayments
         ]);
 
         return Snap::getSnapToken($params);
@@ -637,5 +679,35 @@ class PaymentController extends Controller
             'is_ukt_paid' => $payment->user->is_ukt_paid ?? false,
             'nim' => $payment->user->nim ?? null
         ]);
+    }
+    // method untuk aktifkan satu satu payment, permintaan pak untung
+    private function getEnabledPayments($metode)
+    {
+        $mapping = [
+            'qris'          => ['other_qris'],
+            'gopay'         => ['gopay'],
+            'shopeepay'     => ['shopeepay'],
+            'dana'          => ['dana'],
+            'bank_transfer' => ['bank_transfer', 'bca_va', 'bni_va', 'bri_va', 'permata_va', 'echannel'],
+            'credit_card'   => ['credit_card'],
+            'all'           => ['gopay', 'shopeepay', 'other_qris', 'bank_transfer', 'bca_va', 'bni_va', 'bri_va'],
+        ];
+
+        return $mapping[$metode] ?? $mapping['all'];
+    }
+    // biaya admin atau biaya tamahan, perminataanya lagi pak untung
+    private function getBiayaAdmin($metode)
+    {
+        $biayaAdmin = [
+            'qris'          => 1500,   
+            'gopay'         => 1500,   
+            'shopeepay'     => 1500,   
+            'dana'          => 1500,   
+            'bank_transfer' => 4000,   
+            'credit_card'   => 5000,   
+            'all'           => 0,      // Tidak ada biaya admin jika pilih semua
+        ];
+    
+        return $biayaAdmin[$metode] ?? 0;
     }
 }

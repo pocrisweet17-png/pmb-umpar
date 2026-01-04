@@ -58,12 +58,12 @@
 
                     <div class="flex justify-between text-sm mb-2">
                         <span class="text-gray-600">Biaya Pendaftaran</span>
-                        <span class="font-semibold">Rp {{ number_format($biaya_pendaftaran ?? 0, 0, ',', '.') }}</span>
+                        <span class="font-semibold">Rp 50.000</span>
                     </div>
 
                     <div class="flex justify-between text-sm mb-4">
                         <span class="text-gray-600">Biaya Admin</span>
-                        <span class="font-bold text-green-600">GRATIS</span>
+                        <span class="font-bold text-green-600">Rp 4.500</span>
                     </div>
 
                     <hr class="my-3">
@@ -119,38 +119,90 @@
 
                         <!-- TAB: ONLINE PAYMENT -->
                         <div id="onlineTab" class="tab-content-bayar block">
-                            <div class="text-center py-10">
-                                <div class="text-blue-600 text-6xl mb-4">💳</div>
-                                <h3 class="text-xl font-semibold mb-2">Pembayaran Online Otomatis</h3>
-                                <p class="text-gray-500 mb-2">Bayar dengan mudah menggunakan:</p>
-                                
-                                <!-- Metode Pembayaran -->
-                                <div class="flex flex-wrap justify-center gap-2 mb-6">
-                                    <span class="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">Transfer Bank</span>
-                                    <span class="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">GoPay</span>
-                                    <span class="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">ShopeePay</span>
-                                    <span class="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">QRIS</span>
-                                    <span class="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full">Kartu Kredit</span>
+                            <div class="py-6">
+                                <h3 class="text-xl font-semibold mb-2 text-center">Pilih Metode Pembayaran</h3>
+                                <p class="text-gray-500 mb-6 text-center">Klik metode yang ingin Anda gunakan</p>
+
+                                <!-- Grid Metode Pembayaran -->
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+
+                                    <!-- QRIS -->
+                                    <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition flex flex-col items-center gap-2 group"
+                                            data-metode="qris">
+                                        <div class="w-12 h-12 flex items-center justify-center">
+                                            <svg class="w-10 h-10 text-purple-600" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M3 3h7v7H3V3zm1 1v5h5V4H4zm2 2h1v1H6V6zm8-3h7v7h-7V3zm1 1v5h5V4h-5zm2 2h1v1h-1V6zM3 14h7v7H3v-7zm1 1v5h5v-5H4zm2 2h1v1H6v-1zm10-3h1v2h-1v-2zm-3 0h2v1h-2v-1zm0 3h1v1h-1v-1zm3 0h3v1h-3v-1zm0 2h1v2h-1v-2zm2 0h2v1h-2v-1zm-5 0h2v1h-2v-1zm2 2h3v1h-3v-1zm3-5h1v1h-1v-1z"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm font-semibold text-gray-700 group-hover:text-purple-700">QRIS</span>
+                                        <span class="text-xs text-gray-400">Semua E-Wallet</span>
+                                    </button>
+
+                                    <!-- GoPay -->
+                                    <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition flex flex-col items-center gap-2 group"
+                                            data-metode="gopay">
+                                        <div class="w-12 h-12 flex items-center justify-center">
+                                            <svg class="w-10 h-10" viewBox="0 0 48 48" fill="none">
+                                                <circle cx="24" cy="24" r="24" fill="#00AED6"/>
+                                                <path d="M24 12c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 21.6c-5.302 0-9.6-4.298-9.6-9.6s4.298-9.6 9.6-9.6 9.6 4.298 9.6 9.6-4.298 9.6-9.6 9.6z" fill="white"/>
+                                                <path d="M24 16.8c-3.978 0-7.2 3.222-7.2 7.2s3.222 7.2 7.2 7.2 7.2-3.222 7.2-7.2-3.222-7.2-7.2-7.2zm0 12c-2.651 0-4.8-2.149-4.8-4.8s2.149-4.8 4.8-4.8 4.8 2.149 4.8 4.8-2.149 4.8-4.8 4.8z" fill="white"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm font-semibold text-gray-700 group-hover:text-green-700">GoPay</span>
+                                        <span class="text-xs text-gray-400">Gojek</span>
+                                    </button>
+
+                                    <!-- ShopeePay -->
+                                    <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition flex flex-col items-center gap-2 group"
+                                            data-metode="shopeepay">
+                                        <div class="w-12 h-12 flex items-center justify-center">
+                                            <svg class="w-10 h-10" viewBox="0 0 48 48" fill="none">
+                                                <rect width="48" height="48" rx="8" fill="#EE4D2D"/>
+                                                <path d="M24 10c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14zm0 25.2c-6.185 0-11.2-5.015-11.2-11.2S17.815 12.8 24 12.8 35.2 17.815 35.2 24 30.185 35.2 24 35.2z" fill="white"/>
+                                                <path d="M24 16c-4.418 0-8 3.582-8 8s3.582 8 8 8 8-3.582 8-8-3.582-8-8-8zm0 13c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z" fill="white"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm font-semibold text-gray-700 group-hover:text-orange-700">ShopeePay</span>
+                                        <span class="text-xs text-gray-400">Shopee</span>
+                                    </button>
+
+                                    <!-- Bank Transfer -->
+                                    <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition flex flex-col items-center gap-2 group"
+                                            data-metode="bank_transfer">
+                                        <div class="w-12 h-12 flex items-center justify-center">
+                                            <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text-sm font-semibold text-gray-700 group-hover:text-blue-700">Bank Transfer</span>
+                                        <span class="text-xs text-gray-400">BCA, BNI, Mandiri</span>
+                                    </button>
+
                                 </div>
 
-                                <form id="formMidtrans">
-                                @csrf
-                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                <button type="button" id="btnBayarOnline" 
-                                        class="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 mx-auto">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                                        </svg>
-                                        Bayar Rp {{ number_format($biaya_pendaftaran,0,',','.') }}
-                                    </button>
-                                </form>
-
+                                <!-- Info Biaya -->
+                                <div class="bg-gray-50 rounded-xl p-4 mb-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-gray-600">Biaya Pendaftaran:</span>
+                                        <span class="font-semibold">Rp {{ number_format($biaya_pendaftaran, 0, ',', '.') }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center mb-2" id="biayaAdminRow" style="display: none;">
+                                        <span class="text-gray-600">Biaya Admin:</span>
+                                        <span class="font-semibold text-orange-600" id="biayaAdminText">Rp 0</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-semibold text-gray-800">Total Pembayaran:</span>
+                                        <span class="text-xl font-bold text-blue-700" id="totalBayarText">Rp {{ number_format($biaya_pendaftaran, 0, ',', '.') }}</span>
+                                    </div>
+                                </div>
+                            
                                 <!-- Loading Indicator -->
-                                <div class="mt-4 hidden" id="loadingPayment">
+                                <div class="mt-4 hidden text-center" id="loadingPayment">
                                     <div class="inline-block animate-spin border-4 border-blue-600 border-t-transparent rounded-full w-10 h-10"></div>
                                     <p class="text-gray-600 mt-2 text-sm">Memproses pembayaran...</p>
                                 </div>
-                                
+
                                 <!-- Error Message -->
                                 <div class="mt-4 hidden p-4 bg-red-50 border border-red-200 rounded-lg" id="errorPayment">
                                     <p class="text-red-600 text-sm" id="errorMessage"></p>
@@ -255,6 +307,42 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Modal script loaded');
     
+    //  BIAYA ADMIN PER METODE - TAMBAHKAN DI SINI (AWAL)
+    const biayaPokok = {{ $biaya_pendaftaran }};
+    
+    const biayaAdminMapping = {
+        'qris': 1500,
+        'gopay': 1500,
+        'shopeepay': 1500,
+        'dana': 1500,
+        'bank_transfer': 4000,
+        'credit_card': 5000,
+        'all': 0
+    };
+
+    function formatRupiah(angka) {
+        return 'Rp ' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function updateBiayaTampilan(metode) {
+        const biayaAdmin = biayaAdminMapping[metode] || 0;
+        const total = biayaPokok + biayaAdmin;
+        
+        const biayaAdminRow = document.getElementById('biayaAdminRow');
+        const biayaAdminText = document.getElementById('biayaAdminText');
+        const totalBayarText = document.getElementById('totalBayarText');
+        
+        if (biayaAdmin > 0) {
+            biayaAdminRow.style.display = 'flex';
+            biayaAdminText.textContent = formatRupiah(biayaAdmin);
+        } else {
+            biayaAdminRow.style.display = 'none';
+        }
+        
+        totalBayarText.textContent = formatRupiah(total);
+    }
+    // ⭐ AKHIR BIAYA ADMIN
+    
     // Tab switching
     document.querySelectorAll(".tab-btn-bayar").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -271,71 +359,108 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ONLINE PAYMENT HANDLER
-    const btnBayar = document.getElementById('btnBayarOnline');
-    if (btnBayar) {
-        btnBayar.addEventListener('click', function(e) {
+    // ⭐ PAYMENT PER METODE HANDLER (DIUPDATE)
+    document.querySelectorAll('.btn-metode-bayar').forEach(btn => {
+        btn.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            const loadingDiv = document.getElementById('loadingPayment');
-            const errorDiv = document.getElementById('errorPayment');
-            const errorMsg = document.getElementById('errorMessage');
-            
-            loadingDiv.classList.remove('hidden');
-            errorDiv.classList.add('hidden');
-            btnBayar.disabled = true;
-            
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            
-            fetch('{{ route("bayar.store") }}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({})
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (loadingDiv) loadingDiv.classList.add('hidden');
-                btnBayar.disabled = false;
-                
-                if (data.success && data.snap_token) {
-                    if (data.order_id) {
-                        localStorage.setItem('pending_order_id', data.order_id);
-                        localStorage.setItem('pending_payment_type', 'pendaftaran');
-                    }
-                    
-                    snap.pay(data.snap_token, {
-                        onSuccess: function(result) {
-                            window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=settlement';
-                        },
-                        onPending: function(result) {
-                            window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=pending';
-                        },
-                        onError: function(result) {
-                            alert('Pembayaran gagal. Silakan coba lagi.');
-                        },
-                        onClose: function() {
-                            window.location.reload();
-                        }
-                    });
-                } else {
-                    errorMsg.textContent = data.message || 'Gagal membuat transaksi. Silakan coba lagi.';
-                    errorDiv.classList.remove('hidden');
-                }
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-                loadingDiv.classList.add('hidden');
-                btnBayar.disabled = false;
-                errorMsg.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
-                errorDiv.classList.remove('hidden');
+
+            const metode = this.dataset.metode;
+            console.log('🔵 Metode dipilih:', metode);
+
+            // ⭐ Update tampilan biaya SEBELUM proses payment
+            updateBiayaTampilan(metode);
+
+            // Highlight tombol yang dipilih
+            document.querySelectorAll('.btn-metode-bayar').forEach(b => {
+                b.classList.remove('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-300');
+                b.classList.remove('border-green-500', 'bg-green-50');
+                b.classList.remove('border-orange-500', 'bg-orange-50');
+                b.classList.remove('border-purple-500', 'bg-purple-50');
             });
+            this.classList.add('ring-2', 'ring-blue-300');
+
+            // Proses pembayaran
+            prosesPayment(metode);
+        });
+    });
+
+    function prosesPayment(metode) {
+        const loadingDiv = document.getElementById('loadingPayment');
+        const errorDiv = document.getElementById('errorPayment');
+        const errorMsg = document.getElementById('errorMessage');
+
+        loadingDiv.classList.remove('hidden');
+        errorDiv.classList.add('hidden');
+
+        // Disable semua tombol
+        document.querySelectorAll('.btn-metode-bayar').forEach(b => {
+            b.disabled = true;
+            b.classList.add('opacity-50', 'cursor-not-allowed');
+        });
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch('{{ route("bayar.store") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                metode_pembayaran: metode
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            loadingDiv.classList.add('hidden');
+
+            // Enable semua tombol
+            document.querySelectorAll('.btn-metode-bayar').forEach(b => {
+                b.disabled = false;
+                b.classList.remove('opacity-50', 'cursor-not-allowed');
+            });
+
+            if (data.success && data.snap_token) {
+                if (data.order_id) {
+                    localStorage.setItem('pending_order_id', data.order_id);
+                    localStorage.setItem('pending_payment_type', 'pendaftaran');
+                }
+
+                snap.pay(data.snap_token, {
+                    onSuccess: function(result) {
+                        window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=settlement';
+                    },
+                    onPending: function(result) {
+                        window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=pending';
+                    },
+                    onError: function(result) {
+                        alert('Pembayaran gagal. Silakan coba lagi.');
+                    },
+                    onClose: function() {
+                        window.location.reload();
+                    }
+                });
+            } else {
+                errorMsg.textContent = data.message || 'Gagal membuat transaksi.';
+                errorDiv.classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            loadingDiv.classList.add('hidden');
+
+            document.querySelectorAll('.btn-metode-bayar').forEach(b => {
+                b.disabled = false;
+                b.classList.remove('opacity-50', 'cursor-not-allowed');
+            });
+
+            errorMsg.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+            errorDiv.classList.remove('hidden');
         });
     }
 
-    // ⭐ OFFLINE PAYMENT HANDLER - PERBAIKAN DI SINI
+    // OFFLINE PAYMENT HANDLER
     const btnBayarOffline = document.getElementById('btnBayarOffline');
     if (btnBayarOffline) {
         console.log('✅ Offline button found');
@@ -352,7 +477,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // ⭐ PERBAIKAN: Disable button SEGERA untuk cegah double click
             btnBayarOffline.disabled = true;
             btnBayarOffline.classList.add('opacity-50', 'cursor-not-allowed');
             loadingDiv.classList.remove('hidden');
@@ -395,15 +519,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 loadingDiv.classList.add('hidden');
                 
-                // ⭐ PERBAIKAN: Cek success === true (strict check)
                 if (data.success === true) {
                     console.log('✅ Payment offline successful!');
                     showOfflineSuccessPopup();
-                    // ⭐ JANGAN enable button lagi karena sudah berhasil
                 } else {
                     console.error('❌ Payment failed:', data.message);
                     alert(data.message || 'Gagal membuat transaksi offline.');
-                    // Enable button jika gagal supaya bisa retry
                     btnBayarOffline.disabled = false;
                     btnBayarOffline.classList.remove('opacity-50', 'cursor-not-allowed');
                 }
@@ -482,7 +603,6 @@ function showOfflineSuccessPopup() {
         popup.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         
-        // Auto close after 3 seconds
         setTimeout(() => {
             closeOfflinePopupAndReload();
         }, 3000);
