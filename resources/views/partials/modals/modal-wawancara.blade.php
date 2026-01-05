@@ -1,4 +1,3 @@
-
 @php
     $user = Auth::user();
     $sudahWawancara = $user->is_wawancara_selesai;
@@ -51,7 +50,6 @@
                         </div>
                     </div>
                     @endif
-
                     <button onclick="closeModalWawancara()" 
                             class="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 md:px-10 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg hover:from-purple-700 hover:to-indigo-700 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -164,6 +162,82 @@
     </div>
 </div>
 
+<!-- MODAL NOTIFIKASI INFORMASI LANJUTAN -->
+<div id="modalNotifikasiLanjutan" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm hidden z-[60] flex items-center justify-center p-3">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] animate-scaleIn overflow-y-auto">
+        <!-- Header dengan Gradient -->
+        <div class="bg-gradient-to-r from-green-500 via-green-600 to-emerald-600 p-4 text-center">
+            <div class="relative inline-block mb-2">
+                <div class="absolute inset-0 bg-white rounded-full blur-xl opacity-30 animate-pulse"></div>
+                <svg class="w-14 h-14 md:w-16 md:h-16 relative text-white mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg md:text-xl font-bold text-white">Wawancara Berhasil Diselesaikan!</h3>
+        </div>
+
+        <!-- Body Content -->
+        <div class="p-5">
+            <div class="text-center mb-4">
+                <p class="text-sm md:text-base text-gray-700 mb-2">
+                    Terima kasih <strong class="text-blue-600">{{ $user->nama_lengkap ?? $user->name }}</strong>,
+                </p>
+                <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                    Anda telah berhasil menyelesaikan tes wawancara. Pihak kampus akan menghubungi Anda untuk wawancara lanjutan secara langsung melalui <strong>telepon video</strong> atau <strong>Zoom Meeting</strong> dalam waktu <strong class="text-blue-600">2 x 24 jam</strong> ke depan.
+                </p>
+            </div>
+
+            <!-- Info Box -->
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded-lg mb-4">
+                <div class="flex items-start gap-2">
+                    <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                        <p class="font-semibold text-blue-800 mb-1 text-xs md:text-sm">Mohon Perhatikan:</p>
+                        <p class="text-xs text-blue-700">
+                            Harap periksa <strong>Email</strong> dan <strong>WhatsApp</strong> Anda secara berkala untuk mendapatkan informasi jadwal wawancara selanjutnya.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checklist Tips -->
+            <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                <p class="font-semibold text-gray-800 mb-2 flex items-center gap-2 text-xs md:text-sm">
+                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Persiapan Wawancara:
+                </p>
+                <ul class="space-y-1.5 text-xs text-gray-700">
+                    <li class="flex items-center gap-2">
+                        <span class="text-green-500">✓</span>
+                        <span>Pastikan koneksi internet stabil</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="text-green-500">✓</span>
+                        <span>Siapkan tempat yang tenang dan pencahayaan yang baik</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="text-green-500">✓</span>
+                        <span>Kenakan pakaian yang rapi dan sopan</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Button Close -->
+            <button onclick="closeModalNotifikasi()" 
+                    class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-sm md:text-base hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02] flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span>Saya Mengerti</span>
+            </button>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
 function submitWawancara() {
@@ -182,7 +256,29 @@ function submitWawancara() {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 inline-block mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...';
         
-        form.submit();
+        // Tampilkan modal notifikasi sebelum submit
+        showModalNotifikasi();
+        
+        // Submit form setelah delay singkat untuk animasi
+        setTimeout(() => {
+            form.submit();
+        }, 500);
+    }
+}
+
+function showModalNotifikasi() {
+    const modal = document.getElementById('modalNotifikasiLanjutan');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeModalNotifikasi() {
+    const modal = document.getElementById('modalNotifikasiLanjutan');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
     }
 }
 
@@ -199,7 +295,11 @@ window.addEventListener('beforeunload', function (e) {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const modal = document.getElementById('modalWawancara');
-        if (modal && !modal.classList.contains('hidden')) {
+        const modalNotif = document.getElementById('modalNotifikasiLanjutan');
+        
+        if (modalNotif && !modalNotif.classList.contains('hidden')) {
+            closeModalNotifikasi();
+        } else if (modal && !modal.classList.contains('hidden')) {
             closeModalWawancara();
         }
     }
