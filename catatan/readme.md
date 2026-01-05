@@ -27,3 +27,7 @@ TUGAS :
 composer require maatwebsite/excel
 
 php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider" --tag=config
+
+instal penghubung fonte, composer require guzzlehttp/guzzle
+
+masukan ke envFONNTE_TOKEN=vRX2XDEV53gFgCEGB73r
