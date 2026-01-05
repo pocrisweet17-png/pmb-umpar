@@ -124,15 +124,17 @@
                                 <p class="text-gray-500 mb-6 text-center">Klik metode yang ingin Anda gunakan</p>
 
                                 <!-- Grid Metode Pembayaran -->
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
 
                                     <!-- QRIS -->
                                     <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition flex flex-col items-center gap-2 group"
                                             data-metode="qris">
                                         <div class="w-12 h-12 flex items-center justify-center">
-                                            <svg class="w-10 h-10 text-purple-600" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M3 3h7v7H3V3zm1 1v5h5V4H4zm2 2h1v1H6V6zm8-3h7v7h-7V3zm1 1v5h5V4h-5zm2 2h1v1h-1V6zM3 14h7v7H3v-7zm1 1v5h5v-5H4zm2 2h1v1H6v-1zm10-3h1v2h-1v-2zm-3 0h2v1h-2v-1zm0 3h1v1h-1v-1zm3 0h3v1h-3v-1zm0 2h1v2h-1v-2zm2 0h2v1h-2v-1zm-5 0h2v1h-2v-1zm2 2h3v1h-3v-1zm3-5h1v1h-1v-1z"/>
-                                            </svg>
+                                            <img
+                                                src="{{ asset('img/qris.jpeg') }}"
+                                                alt="QRIS"
+                                                class="max-w-full max-h-full object-contain"
+                                            >
                                         </div>
                                         <span class="text-sm font-semibold text-gray-700 group-hover:text-purple-700">QRIS</span>
                                         <span class="text-xs text-gray-400">Semua E-Wallet</span>
@@ -142,11 +144,11 @@
                                     <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition flex flex-col items-center gap-2 group"
                                             data-metode="gopay">
                                         <div class="w-12 h-12 flex items-center justify-center">
-                                            <svg class="w-10 h-10" viewBox="0 0 48 48" fill="none">
-                                                <circle cx="24" cy="24" r="24" fill="#00AED6"/>
-                                                <path d="M24 12c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 21.6c-5.302 0-9.6-4.298-9.6-9.6s4.298-9.6 9.6-9.6 9.6 4.298 9.6 9.6-4.298 9.6-9.6 9.6z" fill="white"/>
-                                                <path d="M24 16.8c-3.978 0-7.2 3.222-7.2 7.2s3.222 7.2 7.2 7.2 7.2-3.222 7.2-7.2-3.222-7.2-7.2-7.2zm0 12c-2.651 0-4.8-2.149-4.8-4.8s2.149-4.8 4.8-4.8 4.8 2.149 4.8 4.8-2.149 4.8-4.8 4.8z" fill="white"/>
-                                            </svg>
+                                            <img
+                                                src="{{ asset('img/gopay.jpeg') }}"
+                                                alt="GOPAY"
+                                                class="max-w-full max-h-full object-contain"
+                                            >
                                         </div>
                                         <span class="text-sm font-semibold text-gray-700 group-hover:text-green-700">GoPay</span>
                                         <span class="text-xs text-gray-400">Gojek</span>
@@ -156,23 +158,53 @@
                                     <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition flex flex-col items-center gap-2 group"
                                             data-metode="shopeepay">
                                         <div class="w-12 h-12 flex items-center justify-center">
-                                            <svg class="w-10 h-10" viewBox="0 0 48 48" fill="none">
-                                                <rect width="48" height="48" rx="8" fill="#EE4D2D"/>
-                                                <path d="M24 10c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14zm0 25.2c-6.185 0-11.2-5.015-11.2-11.2S17.815 12.8 24 12.8 35.2 17.815 35.2 24 30.185 35.2 24 35.2z" fill="white"/>
-                                                <path d="M24 16c-4.418 0-8 3.582-8 8s3.582 8 8 8 8-3.582 8-8-3.582-8-8-8zm0 13c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z" fill="white"/>
-                                            </svg>
+                                            <img
+                                                src="{{ asset('img/shopeepay.jpeg') }}"
+                                                alt="SHOPEEPAY"
+                                                class="max-w-full max-h-full object-contain"
+                                            >
                                         </div>
                                         <span class="text-sm font-semibold text-gray-700 group-hover:text-orange-700">ShopeePay</span>
                                         <span class="text-xs text-gray-400">Shopee</span>
+                                    </button>
+
+                                    <!-- Dana -->
+                                    <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition flex flex-col items-center gap-2 group"
+                                            data-metode="dana">
+                                        <div class="w-12 h-12 flex items-center justify-center">
+                                            <img
+                                                src="{{ asset('img/dana.jpeg') }}"
+                                                alt="DANA"
+                                                class="max-w-full max-h-full object-contain"
+                                            >
+                                        </div>
+                                        <span class="text-sm font-semibold text-gray-700 group-hover:text-orange-700">Dana</span>
+                                        <span class="text-xs text-gray-400">Dana</span>
+                                    </button>
+
+                                     <!-- Alfamart -->
+                                    <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition flex flex-col items-center gap-2 group"
+                                            data-metode="alfamart">
+                                        <div class="w-12 h-12 flex items-center justify-center">
+                                            <img
+                                                src="{{ asset('img/alfamart.jpeg') }}"
+                                                alt="ALFAMART"
+                                                class="max-w-full max-h-full object-contain"
+                                            >
+                                        </div>
+                                        <span class="text-sm font-semibold text-gray-700 group-hover:text-orange-700">Alfamart</span>
+                                        <span class="text-xs text-gray-400">Alfamart</span>
                                     </button>
 
                                     <!-- Bank Transfer -->
                                     <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition flex flex-col items-center gap-2 group"
                                             data-metode="bank_transfer">
                                         <div class="w-12 h-12 flex items-center justify-center">
-                                            <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                                            </svg>
+                                            <img
+                                                src="{{ asset('img/bank.jpg') }}"
+                                                alt="TRANSFER-BANK"
+                                                class="max-w-full max-h-full object-contain"
+                                            >
                                         </div>
                                         <span class="text-sm font-semibold text-gray-700 group-hover:text-blue-700">Bank Transfer</span>
                                         <span class="text-xs text-gray-400">BCA, BNI, Mandiri</span>
@@ -316,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'shopeepay': 1500,
         'dana': 1500,
         'bank_transfer': 4000,
-        'credit_card': 5000,
+        'alfamart': 5000,
         'all': 0
     };
 

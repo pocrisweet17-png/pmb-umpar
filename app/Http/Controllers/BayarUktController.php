@@ -590,7 +590,6 @@ class BayarUktController extends Controller
             'dana'          => ['dana'],
             'alfamart'      => ['alfamart'],
             'bank_transfer' => ['bank_transfer', 'bca_va', 'bni_va', 'bri_va', 'permata_va', 'echannel'],
-            // 'credit_card'   => ['credit_card'],
             'all'           => ['gopay', 'shopeepay', 'other_qris', 'bank_transfer', 'bca_va', 'bni_va', 'bri_va'],
         ];
 
@@ -605,7 +604,6 @@ class BayarUktController extends Controller
             'shopeepay'     => 1500,
             'dana'          => 1500,
             'bank_transfer' => 4000,
-            'credit_card'   => 5000,
             'alfamart'      => 5000,
             'all'           => 0,
         ];

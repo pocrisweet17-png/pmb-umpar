@@ -152,12 +152,12 @@
                                         <div class="w-12 h-12 flex items-center justify-center">
                                             <img
                                                 src="{{ asset('img/gopay.jpeg') }}"
-                                                alt="QRIS"
+                                                alt="GOPAY"
                                                 class="max-w-full max-h-full object-contain"
                                             >
                                         </div>
                                         <span class="text-sm font-semibold text-gray-700 group-hover:text-green-700">GoPay</span>
-                                        <span class="text-xs text-gray-400">Gojek</span>
+                                        <span class="text-xs text-gray-400">Gopay</span>
                                     </button>
 
                                     <!-- Dana -->
@@ -166,7 +166,7 @@
                                         <div class="w-12 h-12 flex items-center justify-center">
                                             <img
                                                 src="{{ asset('img/dana.jpeg') }}"
-                                                alt="QRIS"
+                                                alt="DANA"
                                                 class="max-w-full max-h-full object-contain"
                                             >
                                         </div>
@@ -181,7 +181,7 @@
                                         <div class="w-12 h-12 flex items-center justify-center">
                                             <img
                                                 src="{{ asset('img/shopeepay.jpeg') }}"
-                                                alt="QRIS"
+                                                alt="SHOPEEPAY"
                                                 class="max-w-full max-h-full object-contain"
                                             >
                                         </div>
@@ -195,7 +195,7 @@
                                         <div class="w-12 h-12 flex items-center justify-center">
                                             <img
                                                 src="{{ asset('img/alfamart.jpeg') }}"
-                                                alt="QRIS"
+                                                alt="ALFAMART"
                                                 class="max-w-full max-h-full object-contain"
                                             >
                                         </div>
@@ -209,7 +209,7 @@
                                         <div class="w-12 h-12 flex items-center justify-center">
                                             <img
                                                 src="{{ asset('img/bank.jpg') }}"
-                                                alt="QRIS"
+                                                alt="TRANSFER-BANK"
                                                 class="max-w-full max-h-full object-contain"
                                             >
                                         </div>
@@ -356,7 +356,6 @@ document.addEventListener('DOMContentLoaded', function() {
         'shopeepay': 1500,
         'dana': 1500,
         'bank_transfer': 4000,
-        'credit_card': 5000,
         'alfamart':5000,
         'all': 0
     };

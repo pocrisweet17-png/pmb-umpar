@@ -689,7 +689,7 @@ class PaymentController extends Controller
             'shopeepay'     => ['shopeepay'],
             'dana'          => ['dana'],
             'bank_transfer' => ['bank_transfer', 'bca_va', 'bni_va', 'bri_va', 'permata_va', 'echannel'],
-            'credit_card'   => ['credit_card'],
+            'alfamart'      => ['alfamart'],   
             'all'           => ['gopay', 'shopeepay', 'other_qris', 'bank_transfer', 'bca_va', 'bni_va', 'bri_va'],
         ];
 
@@ -704,7 +704,7 @@ class PaymentController extends Controller
             'shopeepay'     => 1500,   
             'dana'          => 1500,   
             'bank_transfer' => 4000,   
-            'credit_card'   => 5000,   
+            'alfamart'      => 5000,
             'all'           => 0,      // Tidak ada biaya admin jika pilih semua
         ];
     

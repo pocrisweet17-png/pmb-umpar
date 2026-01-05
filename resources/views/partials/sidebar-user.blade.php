@@ -104,11 +104,8 @@
     <div class="relative flex items-center justify-between h-[72px] px-5 border-b border-white/10">
         <div class="flex items-center gap-3">
             {{-- Logo Icon --}}
-            <div class="logo-float w-11 h-11 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/20 transition-transform duration-300 hover:scale-105 cursor-pointer">
-                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
-                </svg>
+            <div class="logo-float w-12 h-12 p-2 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/20 transition-transform duration-300 hover:scale-105 cursor-pointer">
+                <img src="{{ asset('img/1. a. logo PMB fullcolor.png') }}" alt="logo-umpar-sidebar">
             </div>
             <div>
                 <h1 class="text-white font-bold text-lg tracking-tight">PMB Online</h1>

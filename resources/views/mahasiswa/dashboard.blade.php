@@ -253,10 +253,8 @@
                 </svg>
             </button>
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
-                    </svg>
+                <div class="w-14 h-12 p-2 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <img src="{{ asset('img/1. c. logo PMB white.png') }}" alt="umpar-dashboard" class="w-10 h-10 m-2">
                 </div>
                 <span class="font-bold text-gray-900">PMB Online</span>
             </div>
