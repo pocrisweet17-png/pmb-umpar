@@ -588,17 +588,15 @@ class BayarUktController extends Controller
             'gopay'         => ['gopay'],
             'shopeepay'     => ['shopeepay'],
             'dana'          => ['dana'],
+            'alfamart'      => ['alfamart'],
             'bank_transfer' => ['bank_transfer', 'bca_va', 'bni_va', 'bri_va', 'permata_va', 'echannel'],
-            'credit_card'   => ['credit_card'],
+            // 'credit_card'   => ['credit_card'],
             'all'           => ['gopay', 'shopeepay', 'other_qris', 'bank_transfer', 'bca_va', 'bni_va', 'bri_va'],
         ];
 
         return $mapping[$metode] ?? $mapping['all'];
     }
-
-    
      // Biaya admin per metode pembayaran permintaanya pak untug
-    
     private function getBiayaAdmin($metode)
     {
         $biayaAdmin = [
@@ -608,6 +606,7 @@ class BayarUktController extends Controller
             'dana'          => 1500,
             'bank_transfer' => 4000,
             'credit_card'   => 5000,
+            'alfamart'      => 5000,
             'all'           => 0,
         ];
 
