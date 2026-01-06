@@ -699,7 +699,7 @@ class PaymentController extends Controller
     private function getBiayaAdmin($metode)
     {
         $biayaAdmin = [
-            'qris'          => 1500,   
+            'qris'          => 350,   
             'gopay'         => 1500,   
             'shopeepay'     => 1500,   
             'dana'          => 1500,   

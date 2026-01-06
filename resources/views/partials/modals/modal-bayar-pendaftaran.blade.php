@@ -63,7 +63,7 @@
 
                     <div class="flex justify-between text-sm mb-4">
                         <span class="text-gray-600">Biaya Admin</span>
-                        <span class="font-bold text-green-600">Rp 4.500</span>
+                        <span class="font-bold text-green-600">Pembayaran akan disesuaikan dengan metode yang dipilh</span>
                     </div>
 
                     <hr class="my-3">
@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const biayaPokok = {{ $biaya_pendaftaran }};
     
     const biayaAdminMapping = {
-        'qris': 1500,
+        'qris': 350,
         'gopay': 1500,
         'shopeepay': 1500,
         'dana': 1500,
