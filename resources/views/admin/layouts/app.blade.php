@@ -87,6 +87,17 @@
                     <span class="ml-3 font-medium">Kelola Wawancara</span>
                 </a>
 
+                <!-- Kelola Landing Page -->
+                <a href="{{ route('admin.landing-page.index') }}"
+                    class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.landing-page.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.landing-page.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+                        </svg>
+                    </div>
+                    <span class="ml-3 font-medium">Landing Page</span>
+                </a>
+
                 {{-- nav untuk kelola calon Data Mahasiswa --}}
                 <a href="{{ route('admin.user.daftar-ulang') }}"
                    class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.daftar-ulang') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">

@@ -1,3 +1,15 @@
+@php
+use App\Models\LandingPageContent;
+
+$hero = LandingPageContent::getSection('hero');
+$stats = LandingPageContent::getSection('stats');
+$features = LandingPageContent::getSection('features');
+$programs = LandingPageContent::getSection('programs');
+$testimonials = LandingPageContent::getSection('testimonials');
+$news = LandingPageContent::getSection('news');
+$footer = LandingPageContent::getSection('footer');
+@endphp
+
 <!doctype html>
 <html lang="id">
 <head>
@@ -893,18 +905,18 @@
             <div class="reveal-left">
               <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-medium">
                 <span class="w-2.5 h-2.5 bg-[#00a651] rounded-full animate-pulse"></span>
-                <span class="text-[#f4d03f]">✦</span> Pendaftaran Gelombang 1 Dibuka
+                <span class="text-[#f4d03f]">✦</span> {{ $hero['badge_text'] ?? 'Pendaftaran Gelombang 1 Dibuka' }}
               </span>
             </div>
 
             <h2 class="reveal-left delay-1 text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-              Wujudkan<br>
-              <span class="font-display">Masa Depanmu</span><br>
-              <span class="text-gradient-muhammadiyah">Bersama UMPAR</span>
+              {{ $hero['title_line1'] ?? 'Wujudkan' }}<br>
+              <span class="font-display">{{ $hero['title_line2'] ?? 'Masa Depanmu' }}</span><br>
+              <span class="text-gradient-muhammadiyah">{{ $hero['title_line3'] ?? 'Bersama UMPAR' }}</span>
             </h2>
 
             <p class="reveal-left delay-2 text-lg sm:text-xl text-white/80 max-w-lg leading-relaxed">
-              Universitas Muhammadiyah Parepare - Kampus dengan akreditasi unggulan, nilai-nilai Islami, dan jaringan industri terluas di Sulawesi Selatan.
+              {{ $hero['description'] ?? 'Universitas Muhammadiyah Parepare - Kampus dengan akreditasi unggulan, nilai-nilai Islami, dan jaringan industri terluas di Sulawesi Selatan.' }}
             </p>
 
             <div class="reveal-left delay-3 flex flex-wrap gap-4">
@@ -926,20 +938,20 @@
             <div class="reveal-left delay-4 grid grid-cols-3 gap-4 pt-8 max-w-lg">
               <div class="counter-box glass-dark rounded-2xl p-4 text-center border border-[#00a651]/30">
                 <div class="relative z-10">
-                  <div class="text-2xl font-bold text-[#00a651]">A</div>
-                  <div class="text-xs text-white/70 mt-1">Akreditasi</div>
+                  <div class="text-2xl font-bold text-[#00a651]">{{ $stats['stat1_value'] ?? 'A' }}</div>
+                  <div class="text-xs text-white/70 mt-1">{{ $stats['stat1_label'] ?? 'Akreditasi' }}</div>
                 </div>
               </div>
               <div class="counter-box glass-dark rounded-2xl p-4 text-center border border-[#4da8da]/30">
                 <div class="relative z-10">
-                  <div class="text-2xl font-bold text-[#4da8da]">20+</div>
-                  <div class="text-xs text-white/70 mt-1">Prodi</div>
+                  <div class="text-2xl font-bold text-[#4da8da]">{{ $stats['stat2_value'] ?? '20+' }}</div>
+                  <div class="text-xs text-white/70 mt-1">{{ $stats['stat2_label'] ?? 'Prodi' }}</div>
                 </div>
               </div>
               <div class="counter-box glass-dark rounded-2xl p-4 text-center border border-[#f4d03f]/30">
                 <div class="relative z-10">
-                  <div class="text-2xl font-bold text-[#f4d03f]">5K+</div>
-                  <div class="text-xs text-white/70 mt-1">Alumni</div>
+                  <div class="text-2xl font-bold text-[#f4d03f]">{{ $stats['stat3_value'] ?? '5K+' }}</div>
+                  <div class="text-xs text-white/70 mt-1">{{ $stats['stat3_label'] ?? 'Alumni' }}</div>
                 </div>
               </div>
             </div>
@@ -953,7 +965,11 @@
 
               <div class="relative glass rounded-3xl shadow-2xl overflow-hidden border border-white/20">
                 <div class="img-zoom relative">
-                  <img src="/img/UMPAR-3.jpg" alt="Mahasiswa UMPAR" class="w-full h-72 object-cover" />
+                  @if(isset($hero['card_image']) && $hero['card_image'])
+                    <img src="{{ Storage::url($hero['card_image']) }}" alt="Mahasiswa UMPAR" class="w-full h-72 object-cover" />
+                    @else
+                    <img src="/img/UMPAR-3.jpg" alt="Mahasiswa UMPAR" class="w-full h-72 object-cover" />
+                  @endif
                   <!-- Muhammadiyah badge -->
                   <div class="absolute top-4 right-4 w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
                     <span class="text-2xl">☀️</span>
@@ -962,10 +978,10 @@
                 <div class="p-8">
                   <div class="flex items-center gap-2 mb-4">
                     <span class="px-3 py-1 rounded-full bg-[#00a651]/10 text-[#00a651] text-xs font-semibold border border-[#00a651]/20">BARU</span>
-                    <span class="text-sm text-gray-500">Gelombang 1 • 2025/2026</span>
-                  </div>
-                  <h3 class="text-2xl font-bold text-[#0c2340] mb-3">Pendaftaran Mahasiswa Baru</h3>
-                  <p class="text-gray-600 mb-6">Bergabunglah dengan keluarga besar Muhammadiyah dan raih masa depan gemilang.</p>
+                    <span class="text-sm text-gray-500">{{ $hero['card_subtitle'] ?? 'Gelombang 1 • 2025/2026' }}</span>
+                      </div>
+                      <h3 class="text-2xl font-bold text-[#0c2340] mb-3">{{ $hero['card_title'] ?? 'Pendaftaran Mahasiswa Baru' }}</h3>
+                      <p class="text-gray-600 mb-6">{{ $hero['card_description'] ?? 'Bergabunglah dengan keluarga besar Muhammadiyah dan raih masa depan gemilang.' }}</p>
                   <div class="flex gap-3">
                     <a href="{{ route('register.form') }}" class="flex-1 btn-muhammadiyah text-center px-6 py-3 text-white rounded-xl font-semibold">
                       Daftar
@@ -1003,10 +1019,10 @@
             MENGAPA MEMILIH KAMI
           </span>
           <h4 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-[#0c2340] mb-4">
-            Keunggulan <span class="text-gradient-static">UMPAR</span>
+            {{ $features['section_title'] ?? 'Keunggulan' }} <span class="text-gradient-static">UMPAR</span>
           </h4>
           <p class="reveal delay-2 text-gray-600 max-w-2xl mx-auto text-lg">
-            Dengan nilai-nilai Islami dan komitmen pada kualitas, kami siap mencetak generasi unggul.
+            {{ $features['section_subtitle'] ?? 'Dengan nilai-nilai Islami dan komitmen pada kualitas, kami siap mencetak generasi unggul.' }}
           </p>
         </div>
 
@@ -1018,8 +1034,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
               </svg>
             </div>
-            <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#00a651] transition-colors">Akreditasi Unggul</h5>
-            <p class="text-gray-600">Program studi terakreditasi BAN-PT dengan kurikulum terstandar industri.</p>
+            <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#00a651] transition-colors">{{ $features['feature1_title'] ?? 'Akreditasi Unggul' }}</h5>
+              <p class="text-gray-600">{{ $features['feature1_desc'] ?? 'Program studi terakreditasi BAN-PT dengan kurikulum terstandar industri.' }}</p>
           </div>
 
           <!-- Card 2 - Beasiswa -->
@@ -1029,8 +1045,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#4da8da] transition-colors">Beasiswa Lengkap</h5>
-            <p class="text-gray-600">Berbagai skema beasiswa untuk mahasiswa berprestasi dan kurang mampu.</p>
+            <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#4da8da] transition-colors">{{ $features['feature2_title'] ?? 'Beasiswa Lengkap' }}</h5>
+              <p class="text-gray-600">{{ $features['feature2_desc'] ?? 'Berbagai skema beasiswa untuk mahasiswa berprestasi dan kurang mampu.' }}</p>
           </div>
 
           <!-- Card 3 - Islami -->
@@ -1038,8 +1054,8 @@
             <div class="w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#f4d03f] to-[#d4ac0d] text-[#0c2340] mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg shadow-[#f4d03f]/30">
               <span class="text-3xl icon-spin" style="animation-duration: 20s;">☀️</span>
             </div>
-            <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#d4ac0d] transition-colors">Nilai Islami</h5>
-            <p class="text-gray-600">Pendidikan berbasis nilai-nilai Islam ala Muhammadiyah yang moderat.</p>
+              <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#d4ac0d] transition-colors">{{ $features['feature3_title'] ?? 'Nilai Islami' }}</h5>
+              <p class="text-gray-600">{{ $features['feature3_desc'] ?? 'Pendidikan berbasis nilai-nilai Islam ala Muhammadiyah yang moderat.' }}</p>
           </div>
 
           <!-- Card 4 - Karir -->
@@ -1049,8 +1065,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#0f3460] transition-colors">Siap Kerja</h5>
-            <p class="text-gray-600">Program magang dan kerja sama industri untuk karier profesional.</p>
+              <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#0f3460] transition-colors">{{ $features['feature4_title'] ?? 'Siap Kerja' }}</h5>
+              <p class="text-gray-600">{{ $features['feature4_desc'] ?? 'Program magang dan kerja sama industri untuk karier profesional.' }}</p>
           </div>
         </div>
       </div>
@@ -1069,7 +1085,7 @@
               🎓 PROGRAM UNGGULAN
             </span>
             <h4 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-[#0c2340]">
-              Program Studi <span class="text-gradient-static">Populer</span>
+              {{ $programs['section_title'] ?? 'Program Studi' }} <span class="text-gradient-static">Populer</span>
             </h4>
           </div>
           <a href="/programs" class="reveal delay-2 group inline-flex items-center gap-2 text-[#00a651] font-semibold hover:text-[#008c44] transition-colors">
@@ -1084,13 +1100,17 @@
           <!-- Card TI -->
           <div class="reveal delay-1 card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
             <div class="img-zoom relative h-52">
-              <img src="/img/teknik-informatika.jpg" alt="Teknik Informatika" class="w-full h-full object-cover">
+              @if(isset($programs['program1_image']) && $programs['program1_image'])
+                  <img src="{{ Storage::url($programs['program1_image']) }}" alt="Teknik Informatika" class="w-full h-full object-cover">
+              @else
+                  <img src="/img/teknik-informatika.jpg" alt="Teknik Informatika" class="w-full h-full object-cover">
+              @endif
               <div class="absolute inset-0 bg-gradient-to-t from-[#0c2340]/80 to-transparent"></div>
-              <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-[#00a651] text-white text-xs font-semibold">Teknologi</span>
+              <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-[#00a651] text-white text-xs font-semibold">{{ $programs['program1_category'] ?? 'Teknologi' }}</span>
             </div>
             <div class="p-6">
-              <h5 class="text-xl font-bold text-[#0c2340] mb-2 group-hover:text-[#00a651] transition-colors">Teknik Informatika</h5>
-              <p class="text-gray-600 text-sm mb-6">Kurikulum terkini, laboratorium lengkap, dan dosen berpengalaman di industri IT.</p>
+                <h5 class="text-xl font-bold text-[#0c2340] mb-2 group-hover:text-[#00a651] transition-colors">{{ $programs['program1_title'] ?? 'Teknik Informatika' }}</h5>
+                <p class="text-gray-600 text-sm mb-6">{{ $programs['program1_desc'] ?? 'Kurikulum terkini, laboratorium lengkap, dan dosen berpengalaman di industri IT.' }}</p>
               <div class="flex gap-3">
                 <a href="/programs/ti" class="flex-1 text-center py-3 rounded-xl border-2 border-[#0c2340] text-[#0c2340] font-semibold hover:bg-[#0c2340]/5 transition-all">
                   Detail
@@ -1105,13 +1125,17 @@
           <!-- Card Bisnis -->
           <div class="reveal delay-2 card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
             <div class="img-zoom relative h-52">
-              <img src="/img/manajemen-bisnis.jpg" alt="Bisnis & Manajemen" class="w-full h-full object-cover">
+              @if(isset($programs['program2_image']) && $programs['program2_image'])
+                  <img src="{{ Storage::url($programs['program2_image']) }}" alt="Bisnis & Manajemen" class="w-full h-full object-cover">
+              @else
+                  <img src="/img/manajemen-bisnis.jpg" alt="Bisnis & Manajemen" class="w-full h-full object-cover">
+              @endif
               <div class="absolute inset-0 bg-gradient-to-t from-[#0c2340]/80 to-transparent"></div>
-              <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-[#4da8da] text-white text-xs font-semibold">Bisnis</span>
+              <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-[#4da8da] text-white text-xs font-semibold">{{ $programs['program2_category'] ?? 'Bisnis' }}</span>
             </div>
             <div class="p-6">
-              <h5 class="text-xl font-bold text-[#0c2340] mb-2 group-hover:text-[#4da8da] transition-colors">Bisnis & Manajemen</h5>
-              <p class="text-gray-600 text-sm mb-6">Fokus pada kewirausahaan, manajemen, dan keterampilan bisnis modern.</p>
+                <h5 class="text-xl font-bold text-[#0c2340] mb-2 group-hover:text-[#4da8da] transition-colors">{{ $programs['program2_title'] ?? 'Bisnis & Manajemen' }}</h5>
+                <p class="text-gray-600 text-sm mb-6">{{ $programs['program2_desc'] ?? 'Fokus pada kewirausahaan, manajemen, dan keterampilan bisnis modern.' }}</p>
               <div class="flex gap-3">
                 <a href="/programs/bisnis" class="flex-1 text-center py-3 rounded-xl border-2 border-[#0c2340] text-[#0c2340] font-semibold hover:bg-[#0c2340]/5 transition-all">
                   Detail
@@ -1126,13 +1150,17 @@
           <!-- Card Pendidikan -->
           <div class="reveal delay-3 card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
             <div class="img-zoom relative h-52">
-              <img src="/img/pendidikan.jpg" alt="Pendidikan" class="w-full h-full object-cover">
+              @if(isset($programs['program3_image']) && $programs['program3_image'])
+                  <img src="{{ Storage::url($programs['program3_image']) }}" alt="Pendidikan" class="w-full h-full object-cover">
+              @else
+                  <img src="/img/pendidikan.jpg" alt="Pendidikan" class="w-full h-full object-cover">
+              @endif
               <div class="absolute inset-0 bg-gradient-to-t from-[#0c2340]/80 to-transparent"></div>
-              <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-[#f4d03f] text-[#0c2340] text-xs font-semibold">Pendidikan</span>
+              <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-[#f4d03f] text-[#0c2340] text-xs font-semibold">{{ $programs['program3_category'] ?? 'Pendidikan' }}</span>
             </div>
             <div class="p-6">
-              <h5 class="text-xl font-bold text-[#0c2340] mb-2 group-hover:text-[#d4ac0d] transition-colors">Pendidikan & Keguruan</h5>
-              <p class="text-gray-600 text-sm mb-6">Mencetak guru profesional dengan nilai-nilai Islam Muhammadiyah.</p>
+              <h5 class="text-xl font-bold text-[#0c2340] mb-2 group-hover:text-[#d4ac0d] transition-colors">{{ $programs['program3_title'] ?? 'Pendidikan & Keguruan' }}</h5>
+              <p class="text-gray-600 text-sm mb-6">{{ $programs['program3_desc'] ?? 'Mencetak guru profesional dengan nilai-nilai Islam Muhammadiyah.' }}</p>
               <div class="flex gap-3">
                 <a href="/programs/dkv" class="flex-1 text-center py-3 rounded-xl border-2 border-[#0c2340] text-[#0c2340] font-semibold hover:bg-[#0c2340]/5 transition-all">
                   Detail
@@ -1162,10 +1190,10 @@
             ⭐ LANGKAH MUDAH
           </span>
           <h4 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-[#0c2340] mb-4">
-            Alur <span class="text-gradient-static">Pendaftaran</span>
+            {{ $testimonials['section_title'] ?? 'Apa Kata' }} <span class="text-gradient-static">Alumni</span>?
           </h4>
           <p class="reveal delay-2 text-gray-600 max-w-2xl mx-auto text-lg">
-            Proses pendaftaran yang mudah dan cepat untuk bergabung bersama keluarga besar Muhammadiyah.
+            {{ $testimonials['section_subtitle'] ?? 'Dengarkan pengalaman dari para alumni dan mahasiswa kami.' }}
           </p>
         </div>
 
@@ -1275,13 +1303,17 @@
           <div class="reveal delay-1 card-hover card-glow relative p-8 bg-white rounded-3xl shadow-xl border border-gray-100">
             <div class="quote-mark absolute top-4 right-6">"</div>
             <div class="flex items-center gap-4 mb-6">
-              <img src="/img/alumni-1.jpg" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#00a651]/20">
+              @if(isset($testimonials['testi1_image']) && $testimonials['testi1_image'])
+                  <img src="{{ Storage::url($testimonials['testi1_image']) }}" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#00a651]/20">
+              @else
+                  <img src="/img/alumni-1.jpg" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#00a651]/20">
+              @endif
               <div>
-                <div class="font-bold text-[#0c2340]">Aulia Rahma</div>
-                <div class="text-sm text-[#00a651]">Lulusan TI 2022</div>
+                <div class="font-bold text-[#0c2340]">{{ $testimonials['testi1_name'] ?? 'Aulia Rahma' }}</div>
+                <div class="text-sm text-[#00a651]">{{ $testimonials['testi1_title'] ?? 'Lulusan TI 2022' }}</div>
               </div>
             </div>
-            <p class="text-gray-600 leading-relaxed">"UMPAR memberikan pengalaman belajar yang luar biasa dengan nilai-nilai Islami yang kuat. Dosen sangat supportif!"</p>
+            <p class="text-gray-600 leading-relaxed">"{{ $testimonials['testi1_content'] ?? 'UMPAR memberikan pengalaman belajar yang luar biasa dengan nilai-nilai Islami yang kuat. Dosen sangat supportif!' }}"</p>
             <div class="flex gap-1 mt-4">
               <span class="text-[#f4d03f]">★★★★★</span>
             </div>
@@ -1291,13 +1323,17 @@
           <div class="reveal delay-2 card-hover card-glow relative p-8 bg-white rounded-3xl shadow-xl border border-gray-100">
             <div class="quote-mark absolute top-4 right-6">"</div>
             <div class="flex items-center gap-4 mb-6">
-              <img src="/img/alumni-2.jpg" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#4da8da]/20">
+              @if(isset($testimonials['testi2_image']) && $testimonials['testi2_image'])
+                  <img src="{{ Storage::url($testimonials['testi2_image']) }}" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#4da8da]/20">
+              @else
+                  <img src="/img/alumni-2.jpg" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#4da8da]/20">
+              @endif
               <div>
-                <div class="font-bold text-[#0c2340]">Budi Santoso</div>
-                <div class="text-sm text-[#4da8da]">Lulusan Bisnis 2021</div>
+                <div class="font-bold text-[#0c2340]">{{ $testimonials['testi2_name'] ?? 'Budi Santoso' }}</div>
+                <div class="text-sm text-[#4da8da]">{{ $testimonials['testi2_title'] ?? 'Lulusan Bisnis 2021' }}</div>
               </div>
             </div>
-            <p class="text-gray-600 leading-relaxed">"Program magang membuka kesempatan kerja yang luas. Jaringan alumni Muhammadiyah sangat membantu karier saya."</p>
+              <p class="text-gray-600 leading-relaxed">"{{ $testimonials['testi2_content'] ?? 'Program magang membuka kesempatan kerja yang luas. Jaringan alumni Muhammadiyah sangat membantu karier saya.' }}"</p>
             <div class="flex gap-1 mt-4">
               <span class="text-[#f4d03f]">★★★★★</span>
             </div>
@@ -1307,13 +1343,17 @@
           <div class="reveal delay-3 card-hover card-glow relative p-8 bg-white rounded-3xl shadow-xl border border-gray-100">
             <div class="quote-mark absolute top-4 right-6">"</div>
             <div class="flex items-center gap-4 mb-6">
-              <img src="/img/alumni-3.jpg" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#f4d03f]/20">
+              @if(isset($testimonials['testi3_image']) && $testimonials['testi3_image'])
+                  <img src="{{ Storage::url($testimonials['testi3_image']) }}" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#f4d03f]/20">
+              @else
+                  <img src="/img/alumni-3.jpg" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#f4d03f]/20">
+              @endif
               <div>
-                <div class="font-bold text-[#0c2340]">Citra Dewi</div>
-                <div class="text-sm text-[#d4ac0d]">Lulusan PGSD 2020</div>
+                <div class="font-bold text-[#0c2340]">{{ $testimonials['testi3_name'] ?? 'Citra Dewi' }}</div>
+                <div class="text-sm text-[#d4ac0d]">{{ $testimonials['testi3_title'] ?? 'Lulusan PGSD 2020' }}</div>
               </div>
             </div>
-            <p class="text-gray-600 leading-relaxed">"Lingkungan kampus yang Islami dan modern membuat saya berkembang pesat sebagai pendidik profesional."</p>
+              <p class="text-gray-600 leading-relaxed">"{{ $testimonials['testi3_content'] ?? 'Lingkungan kampus yang Islami dan modern membuat saya berkembang pesat sebagai pendidik profesional.' }}"</p>
             <div class="flex gap-1 mt-4">
               <span class="text-[#f4d03f]">★★★★★</span>
             </div>
@@ -1331,7 +1371,7 @@
               📰 BERITA TERBARU
             </span>
             <h4 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-[#0c2340]">
-              Berita & <span class="text-gradient-static">Kegiatan</span>
+              {{ $news['section_title'] ?? 'Berita &' }} <span class="text-gradient-static">Kegiatan</span>
             </h4>
           </div>
           <a href="/news" class="reveal delay-2 group inline-flex items-center gap-2 text-[#00a651] font-semibold hover:text-[#008c44] transition-colors">
@@ -1346,18 +1386,22 @@
           <!-- News 1 -->
           <article class="reveal delay-1 card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
             <div class="img-zoom relative h-52">
-              <img src="/img/workshop-wirausaha.jpg" alt="Berita 1" class="w-full h-full object-cover">
-              <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#00a651] text-white text-xs font-semibold">Kegiatan</div>
+              @if(isset($news['news1_image']) && $news['news1_image'])
+                  <img src="{{ Storage::url($news['news1_image']) }}" alt="Berita 1" class="w-full h-full object-cover">
+              @else
+                  <img src="/img/workshop-wirausaha.jpg" alt="Berita 1" class="w-full h-full object-cover">
+              @endif
+              <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#00a651] text-white text-xs font-semibold">{{ $news['news1_category'] ?? 'Kegiatan' }}</div>
             </div>
             <div class="p-6">
               <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                12 November 2025
+                {{ $news['news1_date'] ?? '12 November 2025' }}
               </div>
-              <h5 class="text-lg font-bold text-[#0c2340] mb-2 group-hover:text-[#00a651] transition-colors">Workshop Kewirausahaan Mahasiswa</h5>
-              <p class="text-gray-600 text-sm mb-4">Mahasiswa belajar strategi bisnis modern dari praktisi industri.</p>
+                <h5 class="text-lg font-bold text-[#0c2340] mb-2 group-hover:text-[#00a651] transition-colors">{{ $news['news1_title'] ?? 'Workshop Kewirausahaan Mahasiswa' }}</h5>
+                <p class="text-gray-600 text-sm mb-4">{{ $news['news1_desc'] ?? 'Mahasiswa belajar strategi bisnis modern dari praktisi industri.' }}</p>
               <a href="/news/1" class="inline-flex items-center gap-2 text-[#00a651] font-semibold group-hover:gap-3 transition-all">
                 Baca Selengkapnya
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1370,18 +1414,22 @@
           <!-- News 2 -->
           <article class="reveal delay-2 card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
             <div class="img-zoom relative h-52">
-              <img src="/img/MoU-industri.jpg" alt="Berita 2" class="w-full h-full object-cover">
-              <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#4da8da] text-white text-xs font-semibold">Kerjasama</div>
+              @if(isset($news['news2_image']) && $news['news2_image'])
+                  <img src="{{ Storage::url($news['news2_image']) }}" alt="Berita 2" class="w-full h-full object-cover">
+              @else
+                  <img src="/img/MoU-industri.jpg" alt="Berita 2" class="w-full h-full object-cover">
+              @endif
+              <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#4da8da] text-white text-xs font-semibold">{{ $news['news2_category'] ?? 'Kerjasama' }}</div>
             </div>
             <div class="p-6">
               <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                2 Oktober 2025
+                {{ $news['news2_date'] ?? '2 Oktober 2025' }}
               </div>
-              <h5 class="text-lg font-bold text-[#0c2340] mb-2 group-hover:text-[#4da8da] transition-colors">Penandatanganan MoU Industri</h5>
-              <p class="text-gray-600 text-sm mb-4">Penguatan kerja sama riset dan program magang mahasiswa.</p>
+              <h5 class="text-lg font-bold text-[#0c2340] mb-2 group-hover:text-[#4da8da] transition-colors">{{ $news['news2_title'] ?? 'Penandatanganan MoU Industri' }}</h5>
+              <p class="text-gray-600 text-sm mb-4">{{ $news['news2_desc'] ?? 'Penguatan kerja sama riset dan program magang mahasiswa.' }}</p>
               <a href="/news/2" class="inline-flex items-center gap-2 text-[#4da8da] font-semibold group-hover:gap-3 transition-all">
                 Baca Selengkapnya
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1394,18 +1442,22 @@
           <!-- News 3 -->
           <article class="reveal delay-3 card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
             <div class="img-zoom relative h-52">
-              <img src="/img/milad-muhammadiyah-113.jpg" alt="Berita 3" class="w-full h-full object-cover">
-              <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#f4d03f] text-[#0c2340] text-xs font-semibold">Milad</div>
+              @if(isset($news['news3_image']) && $news['news3_image'])
+                  <img src="{{ Storage::url($news['news3_image']) }}" alt="Berita 3" class="w-full h-full object-cover">
+              @else
+                  <img src="/img/milad-muhammadiyah-113.jpg" alt="Berita 3" class="w-full h-full object-cover">
+              @endif
+              <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#f4d03f] text-[#0c2340] text-xs font-semibold">{{ $news['news3_category'] ?? 'Milad' }}</div>
             </div>
             <div class="p-6">
               <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                25 September 2025
+                {{ $news['news3_date'] ?? '25 September 2025' }}
               </div>
-              <h5 class="text-lg font-bold text-[#0c2340] mb-2 group-hover:text-[#d4ac0d] transition-colors">Milad Muhammadiyah ke-113</h5>
-              <p class="text-gray-600 text-sm mb-4">Perayaan milad dengan berbagai kegiatan sosial dan keagamaan.</p>
+              <h5 class="text-lg font-bold text-[#0c2340] mb-2 group-hover:text-[#d4ac0d] transition-colors">{{ $news['news3_title'] ?? 'Milad Muhammadiyah ke-113' }}</h5>
+              <p class="text-gray-600 text-sm mb-4">{{ $news['news3_desc'] ?? 'Perayaan milad dengan berbagai kegiatan sosial dan keagamaan.' }}</p>
               <a href="/news/3" class="inline-flex items-center gap-2 text-[#d4ac0d] font-semibold group-hover:gap-3 transition-all">
                 Baca Selengkapnya
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1471,16 +1523,16 @@
             </div>
           </div>
           <p class="text-gray-400 text-sm leading-relaxed mb-6">
-            Kampus Muhammadiyah dengan nilai-nilai Islam moderat dan komitmen mencetak generasi unggul.
+            {{ $footer['description'] ?? 'Kampus Muhammadiyah dengan nilai-nilai Islam moderat dan komitmen mencetak generasi unggul.' }}
           </p>
           <div class="flex gap-3">
-            <a href="#" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-[#00a651] transition-colors border border-white/10">
+            <a href="{{ $footer['facebook_url'] ?? '#' }}" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-[#00a651] transition-colors border border-white/10">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
             </a>
-            <a href="#" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-[#4da8da] transition-colors border border-white/10">
+            <a href="{{ $footer['instagram_url'] ?? '#' }}" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-[#4da8da] transition-colors border border-white/10">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
             </a>
-            <a href="#" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-[#f4d03f] hover:text-[#0a1628] transition-colors border border-white/10">
+              <a href="{{ $footer['youtube_url'] ?? '#' }}" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-[#f4d03f] hover:text-[#0a1628] transition-colors border border-white/10">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
             </a>
           </div>
@@ -1506,19 +1558,19 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              <span>Jl. Jenderal Ahmad Yani KM 6, Parepare, Sulawesi Selatan</span>
+              <span>{{ $footer['address'] ?? 'Jl. Jenderal Ahmad Yani KM 6, Parepare, Sulawesi Selatan' }}</span>
             </li>
             <li class="flex items-center gap-3">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#4da8da]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
-              <span>(0421) 2912 2xxx</span>
+              <span>{{ $footer['phone'] ?? '(0421) 2912 2xxx' }}</span>
             </li>
             <li class="flex items-center gap-3">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#f4d03f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <span>info@umpar.ac.id</span>
+              <span>{{ $footer['email'] ?? 'info@umpar.ac.id' }}</span>
             </li>
           </ul>
         </div>
