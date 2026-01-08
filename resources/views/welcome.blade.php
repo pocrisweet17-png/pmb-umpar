@@ -1221,8 +1221,8 @@ $footer = LandingPageContent::getSection('footer');
                 <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#4da8da] to-[#0f3460] text-white text-xl font-bold shadow-lg shadow-[#4da8da]/30 mb-4 group-hover:scale-110 transition-transform" style="--delay: 0.4s;">
                   2
                 </div>
-                <h6 class="font-bold text-[#0c2340] mb-2">Isi Formulir</h6>
-                <p class="text-sm text-gray-500">Lengkapi data akademik dan pribadi.</p>
+                <h6 class="font-bold text-[#0c2340] mb-2">Pilih Prodi</h6>
+                <p class="text-sm text-gray-500">Pilih program studi yang anda inginka.</p>
               </div>
 
               <!-- Connector -->
@@ -1235,36 +1235,89 @@ $footer = LandingPageContent::getSection('footer');
                 <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#f4d03f] to-[#d4ac0d] text-[#0c2340] text-xl font-bold shadow-lg shadow-[#f4d03f]/30 mb-4 group-hover:scale-110 transition-transform" style="--delay: 0.8s;">
                   3
                 </div>
+                <h6 class="font-bold text-[#0c2340] mb-2">Bayar pendaftaran</h6>
+                <p class="text-sm text-gray-500">bayar pendaftaran awal</p>
+              </div>
+              {{-- step 4 --}}
+              <!-- Connector -->
+              <div class="w-20 flex items-center justify-center pt-7">
+                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
+              </div>
+
+               <div class="flex-1 flex flex-col items-center text-center px-4 group">
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] to-[#008c44] text-white text-xl font-bold shadow-lg shadow-[#00a651]/30 mb-4 group-hover:scale-110 transition-transform">
+                  4
+                </div>
+                <h6 class="font-bold text-[#0c2340] mb-2">Lengkapi data</h6>
+                <p class="text-sm text-gray-500">masukkan data pribadi anda</p>
+              </div>
+
+              <!-- Connector -->
+              <div class="w-20 flex items-center justify-center pt-7">
+                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
+              </div>
+              
+              <!-- Step 5 -->
+              <div class="flex-1 flex flex-col items-center text-center px-4 group">
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#4da8da] to-[#0f3460] text-white text-xl font-bold shadow-lg shadow-[#4da8da]/30 mb-4 group-hover:scale-110 transition-transform" style="--delay: 0.4s;">
+                  5
+                </div>
                 <h6 class="font-bold text-[#0c2340] mb-2">Unggah Dokumen</h6>
                 <p class="text-sm text-gray-500">Ijazah, transkrip, pas foto, dsb.</p>
               </div>
-
-              <!-- Connector -->
+               <!-- Connector -->
               <div class="w-20 flex items-center justify-center pt-7">
                 <div class="timeline-connector h-1.5 w-full rounded-full"></div>
               </div>
 
-              <!-- Step 4 -->
+              <!-- Step 6 -->
+              <div class="flex-1 flex flex-col items-center text-center px-4 group">
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#f4d03f] to-[#d4ac0d] text-[#0c2340] text-xl font-bold shadow-lg shadow-[#f4d03f]/30 mb-4 group-hover:scale-110 transition-transform" style="--delay: 0.8s;">
+                  6
+                </div>
+                <h6 class="font-bold text-[#0c2340] mb-2">test</h6>
+                <p class="text-sm text-gray-500">kerjakan test yang telah di sediakan</p>
+              </div>
+
+              <div class="w-20 flex items-center justify-center pt-7">
+                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
+              </div>
+
+               <div class="flex-1 flex flex-col items-center text-center px-4 group">
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] to-[#008c44] text-white text-xl font-bold shadow-lg shadow-[#00a651]/30 mb-4 group-hover:scale-110 transition-transform">
+                  7
+                </div>
+                <h6 class="font-bold text-[#0c2340] mb-2">Wawancara</h6>
+                <p class="text-sm text-gray-500">Jawab pertanyaan wawancara, nanti anda akan di berikan notif</p>
+              </div>
+
+               <!-- Connector -->
+              <div class="w-20 flex items-center justify-center pt-7">
+                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
+              </div>
+              
+              <!-- Step 9 -->
               <div class="flex-1 flex flex-col items-center text-center px-4 group">
                 <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#0f3460] to-[#0c2340] text-white text-xl font-bold shadow-lg shadow-[#0f3460]/30 mb-4 group-hover:scale-110 transition-transform" style="--delay: 1.2s;">
-                  4
+                  9
                 </div>
-                <h6 class="font-bold text-[#0c2340] mb-2">Pembayaran</h6>
-                <p class="text-sm text-gray-500">Bayar via metode yang tersedia.</p>
+                <h6 class="font-bold text-[#0c2340] mb-2">Pembayaran daftar ulang</h6>
+                <p class="text-sm text-gray-500">Bayar via metode yang tersedia, untuk mendapatkan nim</p>
               </div>
+
 
               <!-- Connector -->
               <div class="w-20 flex items-center justify-center pt-7">
                 <div class="timeline-connector h-1.5 w-full rounded-full"></div>
               </div>
 
-              <!-- Step 5 -->
+              <!-- Step 10 -->
               <div class="flex-1 flex flex-col items-center text-center px-4 group">
                 <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] via-[#4da8da] to-[#f4d03f] text-white text-xl font-bold shadow-lg mb-4 group-hover:scale-110 transition-transform" style="--delay: 1.6s;">
                   ✓
                 </div>
-                <h6 class="font-bold text-[#0c2340] mb-2">Pengumuman</h6>
-                <p class="text-sm text-gray-500">Cek hasil seleksi via akun.</p>
+                <h6 class="font-bold text-[#0c2340] mb-2">Daftar ulang</h6>
+                <p class="text-sm text-gray-500">anda akan di hubungi via WA dan Email apabila lulus seleksi</p>
               </div>
 
             </div>
@@ -1512,9 +1565,9 @@ $footer = LandingPageContent::getSection('footer');
         <!-- About -->
         <div class="lg:col-span-1">
           <div class="flex items-center gap-3 mb-6">
-            <div class="w-14 h-14 rounded-xl flex items-center justify-center bg-gradient-to-br from-[#00a651] via-[#4da8da] to-[#f4d03f] p-0.5">
-              <div class="w-full h-full bg-[#0a1628] rounded-[10px] flex items-center justify-center">
-                <span class="text-white font-bold text-lg">UM</span>
+            <div class="w-11 h-11 rounded-full flex items-center justify-center bg-gradient-to-br from-[#00a651] via-[#4da8da] to-[#f4d03f] p-0.5">
+              <div class="w-full h-full bg-[#0a1628] rounded-[30px] flex items-center justify-center">
+                <span class="text-white font-bold text-lg"><img src="img/umpar.png" alt=""></span>
               </div>
             </div>
             <div>
