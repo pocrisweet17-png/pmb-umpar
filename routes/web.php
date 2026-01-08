@@ -26,6 +26,7 @@ use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\AuthRegisterController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\VerificationController;
+use App\Http\Controllers\LandingPageContentController;
 use App\Http\Controllers\MahasiswaDashboardController;
 use App\Http\Controllers\PertanyaanWawancaraController;
 // ======================================================================
@@ -257,6 +258,10 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::put('/admin/wawancara/{id}', [PertanyaanWawancaraController::class, 'update'])->name('admin.wawancara.update');
     Route::delete('/admin/wawancara/{id}', [PertanyaanWawancaraController::class, 'destroy'])->name('admin.wawancara.destroy');
     Route::post('/admin/wawancara/{id}/toggle', [PertanyaanWawancaraController::class, 'toggleStatus'])->name('admin.wawancara.toggle');
+
+    Route::get('/admin/landing-page', [LandingPageContentController::class, 'index'])->name('admin.landing-page.index');
+    Route::post('/admin/landing-page/update', [LandingPageContentController::class, 'update'])->name('admin.landing-page.update');
+    Route::post('/admin/landing-page/upload-image', [LandingPageContentController::class, 'uploadImage'])->name('admin.landing-page.upload-image');
         
 });
 

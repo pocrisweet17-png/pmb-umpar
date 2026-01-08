@@ -62,8 +62,8 @@
                     </div>
 
                     <div class="flex justify-between text-sm mb-4">
-                        <span class="text-gray-600">Biaya Admin</span>
-                        <span class="font-bold text-green-600">Pembayaran akan disesuaikan dengan metode yang dipilh</span>
+                        <h6 class="text-gray-600">Biaya Admin</p>
+                        <span class="font-bold text-green-600">disesuaikan dengan metode yang dipilih</span>
                     </div>
 
                     <hr class="my-3">

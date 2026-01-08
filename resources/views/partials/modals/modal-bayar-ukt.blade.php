@@ -69,7 +69,8 @@
 
                     <div class="flex justify-between text-sm mb-4">
                         <span class="text-gray-600">Biaya Admin</span>
-                        <span class="font-bold text-green-600">GRATIS</span>
+                        <br/>
+                        <span class="font-bold text-green-600">disesuaikan dengan metode yang dipilih</span>
                     </div>
 
                     <hr class="my-3">
