@@ -339,14 +339,13 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Modal script loaded');
     
-    //  BIAYA ADMIN PER METODE - TAMBAHKAN DI SINI (AWAL)
     const biayaPokok = {{ $biaya_pendaftaran }};
     
     const biayaAdminMapping = {
-        'qris': 350,
-        'gopay': 1500,
-        'shopeepay': 1500,
-        'dana': 1500,
+        'qris': Math.round(biayaPokok * 0.007), // 0.7%
+        'gopay': Math.round(biayaPokok * 0.02),  // 2%
+        'shopeepay': Math.round(biayaPokok * 0.02),  // 2%
+        'dana': Math.round(biayaPokok * 0.015),  // 1.5% 
         'bank_transfer': 4000,
         'alfamart': 5000,
         'all': 0

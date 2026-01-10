@@ -72,6 +72,33 @@
         background: linear-gradient(90deg, #eff6ff 25%, #dbeafe 50%, #eff6ff 75%);
         background-size: 200% 100%;
     }
+        .print-btn-hover {
+        transition: all 0.2s ease;
+    }
+    
+    .print-btn-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px -4px rgba(59, 130, 246, 0.3);
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #printArea, #printArea * {
+            visibility: visible;
+        }
+        #printArea {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+        .no-print {
+            display: none !important;
+        }
+    }
+
 </style>
 
 <div id="modalLihatDataPribadi" class="hidden fixed inset-0 z-50 overflow-y-auto" onclick="closeModalIfOutside(event, 'modalLihatDataPribadi')">
@@ -279,7 +306,16 @@
                 </div>
 
                 {{-- Modal Footer --}}
-                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-white">
+                <div class="flex items-center justify-between gap-3 px-6 py-4 border-t border-gray-100 bg-white">
+                    <button 
+                        type="button" 
+                        onclick="printDataPribadi()" 
+                        class="print-btn-hover px-6 py-2.5 bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 hover:border-blue-500 rounded-xl text-sm font-semibold flex items-center gap-2 active:scale-[0.98] transition-all duration-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                        </svg>
+                        Cetak PDF
+                    </button>
                     <button 
                         type="button" 
                         onclick="closeModalLihatDataPribadi()" 
@@ -317,4 +353,114 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+// print data
+function printDataPribadi() {
+    // Buat window baru untuk print
+    const printWindow = window.open('', '_blank');
+    
+    // Ambil data dari modal
+    const namaLengkap = "{{ $user->nama_lengkap ?? $user->name ?? 'User' }}";
+    const nomorRegistrasi = "{{ $user->nomor_registrasi ?? 'Belum terdaftar' }}";
+    const jurusan = "{{ $user->namaProdiPilihan1 ?? $user->pilihan_1 ?? '-' }}";
+    const nim = "{{ $user->nim ?? '-' }}";
+    const email = "{{ $user->email ?? '-' }}";
+    const noWhatsapp = "{{ $user->no_whatsapp ?? '-' }}";
+    const nik = "{{ $user->nik ?? '-' }}";
+    
+    @if(isset($registrasi))
+    const tempatLahir = "{{ $registrasi->tempatLahir ?? '-' }}";
+    const tanggalLahir = "{{ $registrasi->tanggalLahir ? \Carbon\Carbon::parse($registrasi->tanggalLahir)->format('d F Y') : '-' }}";
+    const agama = "{{ $registrasi->agama ?? '-' }}";
+    const alamat = "{{ $registrasi->alamat ?? '-' }}";
+    const asalSekolah = "{{ $registrasi->asalSekolah ?? '-' }}";
+    const jurusanSekolah = "{{ $registrasi->jurusan ?? '-' }}";
+    const tahunLulus = "{{ $registrasi->tahunLulus ?? '-' }}";
+    const dataLengkap = true;
+    @else
+    const dataLengkap = false;
+    @endif
+    
+    // HTML untuk print
+    const printContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Data Pribadi - ${namaLengkap}</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #1f2937; }
+                .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #3b82f6; padding-bottom: 20px; }
+                .header h1 { color: #1e40af; font-size: 28px; margin-bottom: 8px; }
+                .header p { color: #6b7280; font-size: 14px; }
+                .section { margin-bottom: 30px; }
+                .section-title { background: linear-gradient(to right, #3b82f6, #8b5cf6); color: white; padding: 12px 16px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-bottom: 16px; }
+                .data-table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+                .data-table tr { border-bottom: 1px solid #f3f4f6; }
+                .data-table tr:last-child { border-bottom: none; }
+                .data-table td { padding: 12px 16px; }
+                .data-table td:first-child { font-weight: 600; color: #6b7280; width: 40%; background: #f9fafb; }
+                .data-table td:last-child { color: #111827; }
+                .footer { margin-top: 40px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; padding-top: 20px; }
+                .badge { display: inline-block; background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+                @media print { body { padding: 20px; } }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>DATA PRIBADI</h1>
+                <p>Dicetak pada: ${new Date().toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' })}</p>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Informasi Akun</div>
+                <table class="data-table">
+                    <tr><td>Nama Lengkap</td><td>${namaLengkap}</td></tr>
+                    <tr><td>Jurusan</td><td>${jurusan}</td></tr>
+                    <tr><td>NIM</td><td>${nim}</td></tr>
+                    <tr><td>Email</td><td>${email}</td></tr>
+                    <tr><td>No. WhatsApp</td><td>${noWhatsapp}</td></tr>
+                    <tr><td>NIK</td><td>${nik}</td></tr>
+                    <tr><td>No. Registrasi</td><td><span class="badge">${nomorRegistrasi}</span></td></tr>
+                </table>
+            </div>
+            
+            ${dataLengkap ? `
+            <div class="section">
+                <div class="section-title">Data Pribadi</div>
+                <table class="data-table">
+                    <tr><td>Tempat Lahir</td><td>${tempatLahir}</td></tr>
+                    <tr><td>Tanggal Lahir</td><td>${tanggalLahir}</td></tr>
+                    <tr><td>Agama</td><td>${agama}</td></tr>
+                    <tr><td>Alamat</td><td>${alamat}</td></tr>
+                    <tr><td>Asal Sekolah</td><td>${asalSekolah}</td></tr>
+                    <tr><td>Jurusan Sekolah</td><td>${jurusanSekolah}</td></tr>
+                    <tr><td>Tahun Lulus</td><td>${tahunLulus}</td></tr>
+                </table>
+            </div>
+            ` : `
+            <div class="section">
+                <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 16px; text-align: center;">
+                    <p style="color: #92400e; font-weight: 600;">Data pribadi belum lengkap</p>
+                </div>
+            </div>
+            `}
+            
+            <div class="footer">
+                <p>Dokumen ini dicetak secara otomatis dari sistem</p>
+            </div>
+        </body>
+        </html>
+    `;
+    
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    
+    // Tunggu konten dimuat lalu print
+    printWindow.onload = function() {
+        printWindow.print();
+        // Tutup window setelah print (opsional)
+        // printWindow.onafterprint = function() { printWindow.close(); };
+    };
+}
+</script>
 </script>

@@ -348,16 +348,15 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Modal bayar UKT loaded');
     
-    // ⭐ BIAYA ADMIN PER METODE - UKT
     const biayaPokokUkt = {{ $biaya_ukt }};
     
     const biayaAdminMappingUkt = {
-        'qris': 1500,
-        'gopay': 1500,
-        'shopeepay': 1500,
-        'dana': 1500,
-        'bank_transfer': 4000,
-        'alfamart':5000,
+        'qris': Math.round(biayaPokokUkt * 0.007),      // 0.7% dari biaya UKT
+        'gopay': Math.round(biayaPokokUkt * 0.02),      // 2% dari biaya UKT
+        'shopeepay': Math.round(biayaPokokUkt * 0.02),  // 2% dari biaya UKT
+        'dana': Math.round(biayaPokokUkt * 0.015),      // 1.5% dari biaya UKT
+        'bank_transfer': 4000,                           
+        'alfamart': 5000,                                
         'all': 0
     };
 

@@ -122,7 +122,7 @@ class PaymentController extends Controller
             $enabledPayments = $this->getEnabledPayments($metodeDipilih);
 
             //  Hitung biaya admin
-            $biayaAdmin = $this->getBiayaAdmin($metodeDipilih);
+            $biayaAdmin = $this->getBiayaAdmin($metodeDipilih, $jumlah);
             $totalBayar = $jumlah + $biayaAdmin;
 
             //  Update jumlah di payment record
@@ -696,13 +696,13 @@ class PaymentController extends Controller
         return $mapping[$metode] ?? $mapping['all'];
     }
     // biaya admin atau biaya tamahan, perminataanya lagi pak untung
-    private function getBiayaAdmin($metode)
+    private function getBiayaAdmin($metode, $biaya_pendaftaran)
     {
         $biayaAdmin = [
-            'qris'          => 350,   
-            'gopay'         => 1500,   
-            'shopeepay'     => 1500,   
-            'dana'          => 1500,   
+            'qris'          => $biaya_pendaftaran * 0.007,   // 0.7% 
+            'gopay'         => $biaya_pendaftaran * 0.02,    // 2%
+            'shopeepay'     => $biaya_pendaftaran * 0.02,    // 2%
+            'dana'          => $biaya_pendaftaran * 0.015,   // 1.5%
             'bank_transfer' => 4000,   
             'alfamart'      => 5000,
             'all'           => 0,      // Tidak ada biaya admin jika pilih semua

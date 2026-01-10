@@ -42,33 +42,20 @@ Route::post('/login', [AuthLoginController::class, 'login'])->name('login.proces
 Route::post('/logout', [AuthLoginController::class, 'logout'])->name('logout');
 
 // ======================================================================
-
 // EMAIL VERIFICATION
-
 // ======================================================================
 
 Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
-
     ->middleware(['signed'])
-
     ->name('verification.verify');
 
-
-
 Route::get('/email/verify', function () {
-
     return view('auth.verify-email');
-
 })->middleware('auth')->name('verification.notice');
 
-
-
 Route::post('/email/verification-notification', function (Request $request) {
-
     $request->user()->sendEmailVerificationNotification();
-
     return back()->with('message', 'Link verifikasi telah dikirim ulang!');
-
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 // API Prodi (public)

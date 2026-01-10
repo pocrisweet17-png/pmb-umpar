@@ -130,7 +130,7 @@ class BayarUktController extends Controller
         $enabledPayments = $this->getEnabledPayments($metodeDipilih);
 
         // Hitung biaya admin
-        $biayaAdmin = $this->getBiayaAdmin($metodeDipilih);
+        $biayaAdmin = $this->getBiayaAdmin($metodeDipilih, $jumlah);
         $totalBayar = $jumlah + $biayaAdmin;
 
         try {
@@ -595,14 +595,14 @@ class BayarUktController extends Controller
 
         return $mapping[$metode] ?? $mapping['all'];
     }
-     // Biaya admin per metode pembayaran permintaanya pak untug
-    private function getBiayaAdmin($metode)
+     // Biaya admin per metode pembayaran permintaanya pak untung
+    private function getBiayaAdmin($metode, $biaya_ukt)
     {
         $biayaAdmin = [
-            'qris'          => 1500,
-            'gopay'         => 1500,
-            'shopeepay'     => 1500,
-            'dana'          => 1500,
+            'qris'          => $biaya_ukt * 0.007, // 0.7%
+            'gopay'         => $biaya_ukt * 0.02,  // 2%
+            'shopeepay'     => $biaya_ukt * 0.02,  // 2%
+            'dana'          => $biaya_ukt * 0.015, // 1.5% 
             'bank_transfer' => 4000,
             'alfamart'      => 5000,
             'all'           => 0,
