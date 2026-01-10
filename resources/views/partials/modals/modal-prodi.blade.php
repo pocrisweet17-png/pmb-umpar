@@ -1,4 +1,3 @@
-{{-- MODAL PILIH PRODI --}}
 <div id="modalProdi" 
      style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
     
@@ -24,6 +23,22 @@
         <form action="{{ route('prodi.store') }}" method="POST" id="formPilihProdi">
             @csrf
 
+            {{-- untk jenjang --}}
+            <div class="mb-4">
+                <label class="block font-semibold text-gray-700 mb-2">
+                    <span class="inline-block px-2 py-1 bg-blue-500 text-white text-lg rounded mr-1">Pilih Jenjang</span> 
+                    <span class="text-red-500">*</span>
+                </label>
+                <select id="selectJenjang" 
+                        required 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Pilih Jenjang --</option>
+                    <option value="S1">S1 (Sarjana)</option>
+                    <option value="S2">S2 (Magister)</option>
+                    <option value="S3">S3 (Doktor)</option>
+                    <option value="Profesi">Profesi</option>
+                </select>
+            </div>
             {{-- Fakultas --}}
             <div class="mb-4">
                 <label class="block font-semibold text-gray-700 mb-2">
@@ -58,7 +73,6 @@
                     Pilih Fakultas <span class="text-red-500">*</span>
                 </label>
                 <select id="selectFakultas2" 
-                        required 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     <option value="">-- Pilih Fakultas --</option>
                     @foreach($fakultas as $f)
@@ -74,19 +88,16 @@
                 </label>
                 <select name="pilihan_2" 
                         id="selectProdi2" 
-                        required 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                     <option value="">-- Pilih Fakultas Terlebih Dahulu --</option>
                 </select>
             </div>
 
-            {{-- Error Message --}}
             <div id="errorMessage" 
                  style="display: none;" 
                  class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
             </div>
 
-            {{-- Loading State --}}
             <div id="loadingProdi" 
                  style="display: none;" 
                  class="text-center mb-4 text-gray-600">
@@ -94,7 +105,6 @@
                 <p class="mt-2 text-sm">Memuat data prodi...</p>
             </div>
 
-            {{-- Submit Button --}}
             <button type="submit" 
                     id="btnSubmitProdi" 
                     class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition">
@@ -106,27 +116,23 @@
 
 @push('scripts')
 <script>
-// ============================================
-// MODAL PRODI FUNCTIONS - FIXED VERSION
-// ============================================
+// MODAL PRODI 
 
 function openModalProdi() {
     console.log('🔓 Opening modalProdi');
     const modal = document.getElementById('modalProdi');
     
     if (modal) {
-        // Gunakan display flex untuk centering
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
-        console.log('✅ Modal displayed with flex');
-        console.log('Modal computed style:', window.getComputedStyle(modal).display);
+        console.log('✅ Modal ditampilkan');
     } else {
-        console.error('❌ Modal #modalProdi not found!');
+        console.error('❌ Modal #tidak di temukan');
     }
 }
 
 function closeModalProdi(reload = false) {
-    console.log('🔒 Closing modalProdi');
+    console.log('🔒 Tutup modalProdi');
     const modal = document.getElementById('modalProdi');
     
     if (modal) {
@@ -143,6 +149,7 @@ function closeModalProdi(reload = false) {
 document.addEventListener("DOMContentLoaded", function () {
     console.log('🚀 Modal Prodi script initialized');
     
+    const jenjangSelect = document.getElementById("selectJenjang");
     const fakultas1Select = document.getElementById("selectFakultas1");
     const fakultas2Select = document.getElementById("selectFakultas2");
     const prodi1Select = document.getElementById("selectProdi1");
@@ -152,50 +159,52 @@ document.addEventListener("DOMContentLoaded", function () {
     const formProdi = document.getElementById('formPilihProdi');
     const modal = document.getElementById('modalProdi');
     
-    // Debug check
-    console.log('Modal element:', modal);
-    console.log('Form element:', formProdi);
-    
-    // Close modal when clicking overlay
+    // Close modal 
     if (modal) {
         modal.addEventListener('click', function(e) {
             if (e.target === this) {
-                console.log('👆 Clicked overlay, closing modal');
                 closeModalProdi();
             }
         });
     }
     
-    // Close with ESC key
+    // Close pake ESC 
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             const modalDisplay = window.getComputedStyle(modal).display;
             if (modalDisplay !== 'none') {
-                console.log('⌨️ ESC pressed, closing modal');
                 closeModalProdi();
             }
         }
     });
-    
 
-
-// Function untuk load prodi
+    // FUNGSI LOAD PRODI DENGAN FILTER JENJANG 
     function loadProdi(fakultasValue, targetSelect) {
         targetSelect.innerHTML = '<option value="">-- Pilih Program Studi --</option>';
         errorDiv.style.display = 'none';
         
         if (!fakultasValue) return;
         
+        const jenjang = jenjangSelect.value;
+        if (!jenjang) {
+            errorDiv.textContent = 'Harap pilih jenjang terlebih dahulu!';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
         loadingDiv.style.display = 'block';
         targetSelect.disabled = true;
         
-        fetch(`/api/prodi-by-fakultas?fakultas=${encodeURIComponent(fakultasValue)}`)
+        // Tambahkan parameter jenjang ke API call
+        fetch(`/api/prodi-by-fakultas?fakultas=${encodeURIComponent(fakultasValue)}&jenjang=${encodeURIComponent(jenjang)}`)
             .then(response => {
                 if (!response.ok) throw new Error('Gagal memuat data prodi');
                 return response.json();
             })
             .then(data => {
-                if (data.length === 0) throw new Error('Tidak ada program studi untuk fakultas ini');
+                if (data.length === 0) {
+                    throw new Error(`Tidak ada program studi ${jenjang} untuk fakultas ini`);
+                }
                 
                 const options = data.map(p => 
                     `<option value="${p.kodeProdi}">${p.namaProdi}</option>`
@@ -209,8 +218,36 @@ document.addEventListener("DOMContentLoaded", function () {
                 errorDiv.textContent = error.message || 'Terjadi kesalahan';
                 errorDiv.style.display = 'block';
                 loadingDiv.style.display = 'none';
+                targetSelect.disabled = false;
             });
     }
+
+    //  EVENT LISTENER JENJANG
+    jenjangSelect?.addEventListener("change", function () {
+        const selectedJenjang = this.value;
+        
+        // Reset semua dropdown
+        fakultas1Select.value = '';
+        fakultas2Select.value = '';
+        prodi1Select.innerHTML = '<option value="">-- Pilih Fakultas Terlebih Dahulu --</option>';
+        prodi2Select.innerHTML = '<option value="">-- Pilih Fakultas Terlebih Dahulu --</option>';
+        errorDiv.style.display = 'none';
+        
+        // Jika S3 dipilih, sembunyikan pilihan 2
+        if (selectedJenjang === 'S3' || selectedJenjang === 'Profesi') {
+            document.querySelector('label[for="selectFakultas2"]').parentElement.style.display = 'none';
+            document.querySelector('label[for="selectProdi2"]').parentElement.style.display = 'none';
+            
+            // tidak harus isi dua dua prodi dan fakultas untuk S3 dan profesi
+            prodi2Select.required = false;
+            fakultas2Select.required = false;
+        } else {
+            document.querySelector('label[for="selectFakultas2"]').parentElement.style.display = 'block';
+            document.querySelector('label[for="selectProdi2"]').parentElement.style.display = 'block';
+            prodi2Select.required = true;
+            fakultas2Select.required = true;
+        }
+    });
 
     // Event listener untuk fakultas 1
     fakultas1Select?.addEventListener("change", function () {
@@ -222,9 +259,17 @@ document.addEventListener("DOMContentLoaded", function () {
         loadProdi(this.value, prodi2Select);
     });
 
-    // Prevent selecting same prodi
+    // hindari prodi terpilih sama
     prodi1Select?.addEventListener("change", function() {
         const val1 = this.value;
+        const jenjang = jenjangSelect.value;
+        
+        if ((jenjang === 'S3' || jenjang === 'Profesi') && val1) {
+            prodi2Select.value = '';
+            prodi2Select.innerHTML = '<option value="">-- Tidak Perlu Diisi --</option>';
+            return;
+        }
+        
         if (val1 && val1 === prodi2Select.value) {
             errorDiv.textContent = 'Pilihan 1 dan Pilihan 2 tidak boleh sama!';
             errorDiv.style.display = 'block';
@@ -245,58 +290,45 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-        // Event listener untuk fakultas 1
-        fakultas1Select?.addEventListener("change", function () {
-            loadProdi(this.value, prodi1Select);
-        });
-
-        // Event listener untuk fakultas 2
-        fakultas2Select?.addEventListener("change", function () {
-            loadProdi(this.value, prodi2Select);
-        });
-
-            // Prevent selecting same prodi
-            prodi1Select?.addEventListener("change", function() {
-                const val1 = this.value;
-                if (val1 && val1 === prodi2Select.value) {
-                    errorDiv.textContent = 'Pilihan 1 dan Pilihan 2 tidak boleh sama!';
-                    errorDiv.style.display = 'block';
-                    this.value = '';
-                } else {
-                    errorDiv.style.display = 'none';
-                }
-            });
-
-            prodi2Select?.addEventListener("change", function() {
-                const val2 = this.value;
-                if (val2 && val2 === prodi1Select.value) {
-                    errorDiv.textContent = 'Pilihan 1 dan Pilihan 2 tidak boleh sama!';
-                    errorDiv.style.display = 'block';
-                    this.value = '';
-                } else {
-                    errorDiv.style.display = 'none';
-                }
-            });
-
     // Handle form submit
     formProdi?.addEventListener('submit', function(e) {
         e.preventDefault();
         console.log('Form submitted');
         
+        const jenjang = jenjangSelect.value;
         const val1 = prodi1Select.value;
-        const val2 = prodi2Select.value;
+        let val2 = prodi2Select.value;
         
-        // Validasi
-        if (!val1 || !val2) {
-            errorDiv.textContent = 'Harap pilih kedua program studi!';
+        // Validasi jenjang
+        if (!jenjang) {
+            errorDiv.textContent = 'Harap pilih jenjang!';
             errorDiv.style.display = 'block';
             return false;
         }
         
-        if (val1 === val2) {
-            errorDiv.textContent = 'Pilihan 1 dan Pilihan 2 tidak boleh sama!';
+        // Validasi pilihan 1
+        if (!val1) {
+            errorDiv.textContent = 'Harap pilih program studi pilihan 1!';
             errorDiv.style.display = 'block';
             return false;
+        }
+        
+        // Untuk S3 dan Profesi, pilihan 2 opsional (bisa kosong)
+        if (jenjang === 'S3' || jenjang === 'Profesi') {
+            // Pilihan 2 tidak wajib, bisa kosong atau null
+            val2 = val2 || null;
+        } else {
+            if (!val2) {
+                errorDiv.textContent = 'Harap pilih kedua program studi!';
+                errorDiv.style.display = 'block';
+                return false;
+            }
+            
+            if (val1 === val2) {
+                errorDiv.textContent = 'Pilihan 1 dan Pilihan 2 tidak boleh sama!';
+                errorDiv.style.display = 'block';
+                return false;
+            }
         }
         
         // Disable button
@@ -336,11 +368,8 @@ document.addEventListener("DOMContentLoaded", function () {
             
             if (data.success) {
                 closeModalProdi();
-                
-                // Show success message
                 alert(data.message || 'Pilihan program studi berhasil disimpan!');
                 
-                // Redirect
                 if (data.redirect) {
                     window.location.href = data.redirect;
                 } else {
@@ -364,7 +393,6 @@ document.addEventListener("DOMContentLoaded", function () {
             errorDiv.textContent = errorMessage;
             errorDiv.style.display = 'block';
             
-            // Re-enable button
             submitBtn.disabled = false;
             submitBtn.innerHTML = 'Simpan Pilihan';
         });
