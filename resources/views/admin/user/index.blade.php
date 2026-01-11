@@ -90,6 +90,8 @@
                         <option value="">Semua Role</option>
                         <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
                         <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="keuangan" {{ request('role') == 'keuangan' ? 'selected' : '' }}>Keuangan</option>
+                        <option value="wr-3" {{ request('role') == 'wr-3' ? 'selected' : '' }}>Wakil Rektor 3</option>
                     </select>
                 </div>
             
@@ -278,6 +280,14 @@
                                 @if($user->role === 'admin')
                                     <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-purple-800 bg-purple-100 rounded-full">
                                         ADMIN
+                                    </span>
+                                @elseif($user->role === 'keuangan')
+                                <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-green-800 bg-green-100 rounded-full">
+                                        Keuangan
+                                    </span>
+                                @elseif($user->role === 'wr-3')
+                                <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-yellow-800 bg-yellow-100 rounded-full">
+                                        Wakil Rektor 3
                                     </span>
                                 @else
                                     <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-full">

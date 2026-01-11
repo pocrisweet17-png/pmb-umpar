@@ -48,7 +48,7 @@ return new class extends Migration
             $table->boolean('is_ukt_paid')->default(false);
             
             // Role
-            $table->enum('role', ['admin', 'user'])->default('user');
+            $table->enum('role', ['admin', 'user', 'keuangan', 'wr-3'])->default('user');
             
             $table->rememberToken();
             $table->timestamps();

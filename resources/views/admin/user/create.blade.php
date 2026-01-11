@@ -154,6 +154,8 @@
                                     class="w-full border-2 border-purple-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white font-medium text-sm sm:text-base">
                                 <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
                                 <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="keuangan" {{ old('role') == 'keuangan' ? 'selected' : '' }}>Keuangan</option>
+                                <option value="wr-3" {{ old('role') == 'wr-3' ? 'selected' : '' }}>Wakil Rektor 3</option>
                             </select>
                         </div>
 

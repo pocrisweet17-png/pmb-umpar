@@ -63,7 +63,7 @@ class UserController extends Controller
             'nama_lengkap' => 'required|string|max:255',
             'nik' => 'required|string|max:16|unique:users',
             'no_whatsapp' => 'required|string|max:15',
-            'role' => 'required|in:admin,user',
+            'role' => 'required|in:admin,user,keuangan,wr-3',
             'is_wawancara_selesai' => 'boolean',
         ]);
 
@@ -107,7 +107,7 @@ public function show(string $id)
                 'nama_lengkap' => 'required|string|max:255',
                 'nik' => ['required', 'string', 'max:16', Rule::unique('users')->ignore($user->id)],
                 'no_whatsapp' => 'required|string|max:15',
-                'role' => 'required|in:admin,user',
+                'role' => 'required|in:admin,user,keuangan,wr-3',
                 'password' => 'nullable|string|min:8|confirmed',
                 'is_verified' => 'boolean',
                 'is_prodi_selected' => 'boolean',
@@ -120,15 +120,50 @@ public function show(string $id)
                 'is_ukt_paid' => 'boolean',
             ]);
         
-            $validated['is_verified'] = $request->has('is_verified');
-            $validated['is_prodi_selected'] = $request->has('is_prodi_selected');
-            $validated['is_bayar_pendaftaran'] = $request->has('is_bayar_pendaftaran');
-            $validated['is_data_completed'] = $request->has('is_data_completed');
-            $validated['is_dokumen_uploaded'] = $request->has('is_dokumen_uploaded');
-            $validated['is_tes_selesai'] = $request->has('is_tes_selesai');
-            $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
-            $validated['is_daftar_ulang'] = $request->has('is_daftar_ulang');
-            $validated['is_ukt_paid'] = $request->has('is_ukt_paid');
+            // Cek role user yang sedang login
+            $currentUserRole = auth()->user()->role;
+            $isAdmin = $currentUserRole === 'admin';
+            $isKeuangan = $currentUserRole === 'keuangan';
+            $isWakilRektor = $currentUserRole === 'wr-3';
+
+            // Admin bisa update semua
+            if ($isAdmin) {
+                $validated['is_verified'] = $request->has('is_verified');
+                $validated['is_prodi_selected'] = $request->has('is_prodi_selected');
+                $validated['is_bayar_pendaftaran'] = $request->has('is_bayar_pendaftaran');
+                $validated['is_data_completed'] = $request->has('is_data_completed');
+                $validated['is_dokumen_uploaded'] = $request->has('is_dokumen_uploaded');
+                $validated['is_tes_selesai'] = $request->has('is_tes_selesai');
+                $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
+                $validated['is_daftar_ulang'] = $request->has('is_daftar_ulang');
+                $validated['is_ukt_paid'] = $request->has('is_ukt_paid');
+            }
+            // Keuangan hanya bisa update step 2 (bayar pendaftaran) dan step 8 (bayar UKT)
+            elseif ($isKeuangan) {
+                $validated['is_bayar_pendaftaran'] = $request->has('is_bayar_pendaftaran');
+                $validated['is_ukt_paid'] = $request->has('is_ukt_paid');
+                // Pertahankan nilai lama untuk field lainnya
+                unset($validated['is_verified']);
+                unset($validated['is_prodi_selected']);
+                unset($validated['is_data_completed']);
+                unset($validated['is_dokumen_uploaded']);
+                unset($validated['is_tes_selesai']);
+                unset($validated['is_wawancara_selesai']);
+                unset($validated['is_daftar_ulang']);
+            }
+            // WR-3 hanya bisa update step 6 (wawancara)
+            elseif ($isWakilRektor) {
+                $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
+                // Pertahankan nilai lama untuk field lainnya
+                unset($validated['is_verified']);
+                unset($validated['is_prodi_selected']);
+                unset($validated['is_bayar_pendaftaran']);
+                unset($validated['is_data_completed']);
+                unset($validated['is_dokumen_uploaded']);
+                unset($validated['is_tes_selesai']);
+                unset($validated['is_daftar_ulang']);
+                unset($validated['is_ukt_paid']);
+            }
         
             // Only update password if provided
             if (!empty($validated['password'])) {
@@ -137,9 +172,9 @@ public function show(string $id)
                 unset($validated['password']);
             }
         
-    // intinya ini logic untuk ceklis dan unceklis Bayar daftar ulang
+            // intinya ini logic untuk ceklis dan unceklis Bayar daftar ulang
             $wasUktPaid = $user->is_ukt_paid; 
-            $nowUktPaid = $validated['is_ukt_paid'];
+            $nowUktPaid = $validated['is_ukt_paid'] ?? $user->is_ukt_paid;;
         
             // ========== CASE 1: UKT DI-UNCHECK (dari TRUE ke FALSE) ==========
             if ($wasUktPaid && !$nowUktPaid) {

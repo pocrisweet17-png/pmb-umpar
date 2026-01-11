@@ -47,6 +47,14 @@
                         <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-purple-800 bg-purple-100 rounded-full">
                             ADMIN
                         </span>
+                    @elseif($user->role === 'keuangan')
+                        <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-orange-800 bg-orange-100 rounded-full">
+                            KEUANGAN
+                        </span>
+                    @elseif($user->role === 'wr-3')
+                        <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-green-800 bg-green-100 rounded-full">
+                            WAKIL REKTOR 3
+                        </span>
                     @else
                         <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-full">
                             USER

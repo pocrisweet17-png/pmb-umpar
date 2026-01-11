@@ -11,7 +11,7 @@ class AdminMiddleware
 {
     public function handle($request, Closure $next)
     {
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
+        if (!Auth::check() || !in_array(Auth::user()->role, ['admin', 'keuangan', 'wr-3'])) {
             abort(403, 'Anda tidak memiliki akses.');
         }
         return $next($request);

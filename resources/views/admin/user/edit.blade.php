@@ -4,6 +4,11 @@
 @section('page-title', 'User')
 
 @section('content')
+@php
+    $isKeuangan = auth()->user()->role === 'keuangan';
+    $isWakilRektor = auth()->user()->role === 'wr-3';
+    $isAdmin = auth()->user()->role === 'admin';
+@endphp
 <div class="max-w-6xl mx-auto">
 
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
@@ -503,8 +508,9 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         <!-- Step 1: Pilih Prodi -->
-                        <label class="flex items-start cursor-pointer bg-white border-2 border-teal-200 rounded-lg px-4 py-3 hover:bg-teal-50 transition-colors {{ old('is_prodi_selected', $user->is_prodi_selected) ? 'bg-teal-100 border-teal-400' : '' }}">
+                        <label class="flex items-start cursor-pointer bg-white border-2 border-teal-200 rounded-lg px-4 py-3 hover:bg-teal-50 transition-colors {{ old('is_prodi_selected', $user->is_prodi_selected) ? 'bg-teal-100 border-teal-400' : '' }} {{ $isKeuangan || $isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_prodi_selected" value="1" {{ old('is_prodi_selected', $user->is_prodi_selected) ? 'checked' : '' }}
+                                   {{ $isKeuangan || $isWakilRektor ? 'disabled' : '' }}
                                    class="w-5 h-5 text-teal-600 rounded focus:ring-teal-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
                                 <span class="block text-sm font-semibold text-gray-900">1. Pilih Prodi</span>
@@ -513,8 +519,9 @@
                         </label>
 
                         <!-- Step 2: Bayar Pendaftaran -->
-                        <label class="flex items-start cursor-pointer bg-white border-2 border-teal-200 rounded-lg px-4 py-3 hover:bg-teal-50 transition-colors {{ old('is_bayar_pendaftaran', $user->is_bayar_pendaftaran) ? 'bg-teal-100 border-teal-400' : '' }}">
+                        <label class="flex items-start cursor-pointer bg-white border-2 border-teal-200 rounded-lg px-4 py-3 hover:bg-teal-50 transition-colors {{ old('is_bayar_pendaftaran', $user->is_bayar_pendaftaran) ? 'bg-teal-100 border-teal-400' : '' }} {{$isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_bayar_pendaftaran" value="1" {{ old('is_bayar_pendaftaran', $user->is_bayar_pendaftaran) ? 'checked' : '' }}
+                                   {{ $isWakilRektor ? 'disabled' : '' }}
                                    class="w-5 h-5 text-teal-600 rounded focus:ring-teal-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
                                 <span class="block text-sm font-semibold text-gray-900">2. Bayar Pendaftaran</span>
@@ -523,8 +530,9 @@
                         </label>
 
                         <!-- Step 3: Data Lengkap -->
-                        <label class="flex items-start cursor-pointer bg-white border-2 border-teal-200 rounded-lg px-4 py-3 hover:bg-teal-50 transition-colors {{ old('is_data_completed', $user->is_data_completed) ? 'bg-teal-100 border-teal-400' : '' }}">
+                        <label class="flex items-start cursor-pointer bg-white border-2 border-teal-200 rounded-lg px-4 py-3 hover:bg-teal-50 transition-colors {{ old('is_data_completed', $user->is_data_completed) ? 'bg-teal-100 border-teal-400' : '' }} {{ $isKeuangan || $isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_data_completed" value="1" {{ old('is_data_completed', $user->is_data_completed) ? 'checked' : '' }}
+                                   {{ $isKeuangan || $isWakilRektor ? 'disabled' : '' }}
                                    class="w-5 h-5 text-teal-600 rounded focus:ring-teal-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
                                 <span class="block text-sm font-semibold text-gray-900">3. Data Pribadi</span>
@@ -533,8 +541,9 @@
                         </label>
 
                         <!-- Step 4: Upload Dokumen -->
-                        <label class="flex items-start cursor-pointer bg-white border-2 border-orange-200 rounded-lg px-4 py-3 hover:bg-orange-50 transition-colors {{ old('is_dokumen_uploaded', $user->is_dokumen_uploaded) ? 'bg-orange-100 border-orange-400' : '' }}">
+                        <label class="flex items-start cursor-pointer bg-white border-2 border-orange-200 rounded-lg px-4 py-3 hover:bg-orange-50 transition-colors {{ old('is_dokumen_uploaded', $user->is_dokumen_uploaded) ? 'bg-orange-100 border-orange-400' : '' }} {{ $isKeuangan || $isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_dokumen_uploaded" value="1" {{ old('is_dokumen_uploaded', $user->is_dokumen_uploaded) ? 'checked' : '' }}
+                                   {{ $isKeuangan || $isWakilRektor ? 'disabled' : '' }}
                                    class="w-5 h-5 text-orange-600 rounded focus:ring-orange-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
                                 <span class="block text-sm font-semibold text-gray-900">4. Upload Dokumen</span>
@@ -543,8 +552,9 @@
                         </label>
 
                         <!-- Step 5: Tes Selesai -->
-                        <label class="flex items-start cursor-pointer bg-white border-2 border-orange-200 rounded-lg px-4 py-3 hover:bg-orange-50 transition-colors {{ old('is_tes_selesai', $user->is_tes_selesai) ? 'bg-orange-100 border-orange-400' : '' }}">
+                        <label class="flex items-start cursor-pointer bg-white border-2 border-orange-200 rounded-lg px-4 py-3 hover:bg-orange-50 transition-colors {{ old('is_tes_selesai', $user->is_tes_selesai) ? 'bg-orange-100 border-orange-400' : '' }} {{ $isKeuangan || $isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_tes_selesai" value="1" {{ old('is_tes_selesai', $user->is_tes_selesai) ? 'checked' : '' }}
+                                   {{ $isKeuangan || $isWakilRektor ? 'disabled' : '' }}
                                    class="w-5 h-5 text-orange-600 rounded focus:ring-orange-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
                                 <span class="block text-sm font-semibold text-gray-900">5. Tes Selesai</span>
@@ -553,8 +563,9 @@
                         </label>
 
                         <!-- Step 6: Wawancara Selesai -->
-                        <label class="flex items-start cursor-pointer bg-white border-2 border-orange-200 rounded-lg px-4 py-3 hover:bg-orange-50 transition-colors {{ old('is_wawancara_selesai', $user->is_wawancara_selesai) ? 'bg-orange-100 border-orange-400' : '' }}">
+                        <label class="flex items-start cursor-pointer bg-white border-2 border-orange-200 rounded-lg px-4 py-3 hover:bg-orange-50 transition-colors {{ old('is_wawancara_selesai', $user->is_wawancara_selesai) ? 'bg-orange-100 border-orange-400' : '' }} {{ $isKeuangan ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_wawancara_selesai" value="1" {{ old('is_wawancara_selesai', $user->is_wawancara_selesai) ? 'checked' : '' }}
+                                   {{ $isKeuangan ? 'disabled' : '' }}
                                    class="w-5 h-5 text-orange-600 rounded focus:ring-orange-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
                                 <span class="block text-sm font-semibold text-gray-900">6. Wawancara</span>
@@ -562,9 +573,21 @@
                             </div>
                         </label>
 
-                        <!-- Step 7: Daftar Ulang -->
-                        <label class="flex items-start cursor-pointer bg-white border-2 border-purple-200 rounded-lg px-4 py-3 hover:bg-purple-50 transition-colors {{ old('is_daftar_ulang', $user->is_daftar_ulang) ? 'bg-purple-100 border-purple-400' : '' }}">
+                        <!-- Step 7: Bayar bayar pendataran ulang  -->
+                        <label class="flex items-start cursor-pointer bg-white border-2 border-purple-200 rounded-lg px-4 py-3 hover:bg-purple-50 transition-colors {{ old('is_ukt_paid', $user->is_ukt_paid) ? 'bg-purple-100 border-purple-400' : '' }} {{$isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
+                            <input type="checkbox" name="is_ukt_paid" value="1" {{ old('is_ukt_paid', $user->is_ukt_paid) ? 'checked' : '' }}
+                                   {{ $isWakilRektor ? 'disabled' : '' }}
+                                   class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 focus:ring-2 mt-0.5">
+                            <div class="ml-3">
+                                <span class="block text-sm font-semibold text-gray-900">8. Bayar Pendaftaran Ulang</span>
+                                <span class="text-xs text-gray-600">Lunas pembayaran Daftar ulang</span>
+                            </div>
+                        </label>
+
+                        <!-- Step 8: Daftar Ulang -->
+                        <label class="flex items-start cursor-pointer bg-white border-2 border-purple-200 rounded-lg px-4 py-3 hover:bg-purple-50 transition-colors {{ old('is_daftar_ulang', $user->is_daftar_ulang) ? 'bg-purple-100 border-purple-400' : '' }} {{ $isKeuangan || $isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_daftar_ulang" value="1" {{ old('is_daftar_ulang', $user->is_daftar_ulang) ? 'checked' : '' }}
+                                   {{ $isKeuangan || $isWakilRektor ? 'disabled' : '' }}
                                    class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
                                 <span class="block text-sm font-semibold text-gray-900">7. Daftar Ulang</span>
@@ -572,15 +595,6 @@
                             </div>
                         </label>
 
-                        <!-- Step 8: Bayar bayar pendataran ulang  -->
-                        <label class="flex items-start cursor-pointer bg-white border-2 border-purple-200 rounded-lg px-4 py-3 hover:bg-purple-50 transition-colors {{ old('is_ukt_paid', $user->is_ukt_paid) ? 'bg-purple-100 border-purple-400' : '' }}">
-                            <input type="checkbox" name="is_ukt_paid" value="1" {{ old('is_ukt_paid', $user->is_ukt_paid) ? 'checked' : '' }}
-                                   class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 focus:ring-2 mt-0.5">
-                            <div class="ml-3">
-                                <span class="block text-sm font-semibold text-gray-900">8. Bayar Pendaftaran Ulang</span>
-                                <span class="text-xs text-gray-600">Lunas pembayaran Daftar ulang</span>
-                            </div>
-                        </label>
                     </div>
 
                     <div class="mt-4 p-3 bg-white rounded-lg border border-teal-300">
@@ -601,28 +615,38 @@
                         </svg>
                         Role & Sudah wawancara
                     </h4>
-
+                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-gray-700 font-medium mb-2 text-sm">
                                 Role <span class="text-red-500">*</span>
                             </label>
                             <select name="role" required
-                                    class="w-full border-2 border-purple-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white font-medium text-sm sm:text-base">
+                                    {{ !$isAdmin ? 'disabled' : '' }}
+                                    class="w-full border-2 border-purple-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white font-medium text-sm sm:text-base {{ !$isAdmin ? 'opacity-50 cursor-not-allowed' : '' }}">
                                 <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User / Camaba</option>
                                 <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="keuangan" {{ old('role', $user->role) == 'keuangan' ? 'selected' : '' }}>keuangan</option>
+                                <option value="wr-3" {{ old('role', $user->role) == 'wr-3' ? 'selected' : '' }}>Wakil rektor 3</option>
                             </select>
+                            @if(!$isAdmin)
+                                <input type="hidden" name="role" value="{{ $user->role }}">
+                            @endif
                         </div>
-
+                    
                         <div>
                             <label class="block text-gray-700 font-medium mb-2 text-sm">
                                 Status Verifikasi Email
                             </label>
-                            <label class="flex items-center cursor-pointer bg-white border-2 border-purple-300 rounded-xl px-4 py-3 hover:bg-purple-50 transition-colors">
+                            <label class="flex items-center cursor-pointer bg-white border-2 border-purple-300 rounded-xl px-4 py-3 hover:bg-purple-50 transition-colors {{ !$isAdmin ? 'opacity-50 cursor-not-allowed' : '' }}">
                                 <input type="checkbox" name="is_verified" value="1" {{ old('is_verified', $user->is_verified) ? 'checked' : '' }}
-                                       class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 focus:ring-2">
+                                        {{ !$isAdmin ? 'disabled' : '' }}
+                                        class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 focus:ring-2">
                                 <span class="ml-3 text-sm font-medium text-gray-700">Verifikasi Email manual</span>
                             </label>
+                            @if(!$isAdmin)
+                                <input type="hidden" name="is_verified" value="{{ $user->is_verified ? '1' : '0' }}">
+                            @endif
                         </div>
                     </div>
 
