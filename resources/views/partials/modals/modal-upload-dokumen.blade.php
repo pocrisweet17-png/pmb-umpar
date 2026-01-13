@@ -48,7 +48,7 @@
                 <div class="space-y-4">
 
                     {{-- Ijazah --}}
-                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
+                    {{-- <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">
                             Fotokopi Ijazah SMA/SMK/MA <span class="text-red-500">*</span>
                         </label>
@@ -62,7 +62,7 @@
                                       file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 
                                       hover:file:bg-blue-100 file:cursor-pointer cursor-pointer">
                         <p class="mt-1 text-xs text-gray-500">Format: PDF, Max: 5MB</p>
-                    </div>
+                    </div> --}}
 
                     {{-- Nilai UN --}}
                     <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
@@ -82,7 +82,7 @@
                     </div>
 
                     {{-- Akte --}}
-                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
+                    {{-- <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">
                             Fotokopi Akte Kelahiran <span class="text-red-500">*</span>
                         </label>
@@ -96,10 +96,10 @@
                                       file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 
                                       hover:file:bg-blue-100 file:cursor-pointer cursor-pointer">
                         <p class="mt-1 text-xs text-gray-500">Format: PDF, Max: 5MB</p>
-                    </div>
+                    </div> --}}
 
                     {{-- KK --}}
-                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
+                    {{-- <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">
                             Fotokopi Kartu Keluarga <span class="text-red-500">*</span>
                         </label>
@@ -113,7 +113,7 @@
                                       file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 
                                       hover:file:bg-blue-100 file:cursor-pointer cursor-pointer">
                         <p class="mt-1 text-xs text-gray-500">Format: PDF, Max: 5MB</p>
-                    </div>
+                    </div> --}}
 
                     {{-- Foto --}}
                     <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
@@ -226,10 +226,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // File size validation
     const fileInputs = [
-        { id: 'file_ijazah', maxSize: 5, label: 'Ijazah' },
+        // { id: 'file_ijazah', maxSize: 5, label: 'Ijazah' },
         { id: 'file_nilai_un', maxSize: 5, label: 'Nilai UN' },
-        { id: 'file_akte', maxSize: 5, label: 'Akte Kelahiran' },
-        { id: 'file_kk', maxSize: 5, label: 'Kartu Keluarga' },
+        // { id: 'file_akte', maxSize: 5, label: 'Akte Kelahiran' },
+        // { id: 'file_kk', maxSize: 5, label: 'Kartu Keluarga' },
         { id: 'file_foto', maxSize: 2, label: 'Pas Foto' }
     ];
     
@@ -272,6 +272,10 @@ document.addEventListener('DOMContentLoaded', function() {
         let missingFiles = [];
         fileInputs.forEach(({ id, label }) => {
             const input = document.getElementById(id);
+            if(!input){
+                console.warn("Input {$id} tidak di temukan!");
+                return;
+            }
             if (!input.files || input.files.length === 0) {
                 allFilled = false;
                 missingFiles.push(label);
