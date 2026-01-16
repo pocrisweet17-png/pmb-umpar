@@ -28,6 +28,9 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\MahasiswaDashboardController;
 use App\Http\Controllers\PertanyaanWawancaraController;
+use App\Http\Controllers\BiayaPmbController; 
+use App\Http\Controllers\KeuanganController;
+use App\Http\Controllers\ProgramStudiController;
 // ======================================================================
 // PUBLIC ROUTES
 // ======================================================================
@@ -259,6 +262,30 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::post('/admin/wawancara/{id}/toggle', [PertanyaanWawancaraController::class, 'toggleStatus'])->name('admin.wawancara.toggle');
         
 });
+
+//nda ku dpt i yg midleware role keuangan jadi bgini saja ku taro
+
+ // ========== Kelola Biaya PMB ==========
+    Route::prefix('admin/biaya-pmb')->name('admin.biaya-pmb.')->group(function () {
+        Route::get('/', [BiayaPmbController::class, 'index'])->name('index');
+        Route::post('/', [BiayaPmbController::class, 'store'])->name('store');
+        Route::put('/{id}', [BiayaPmbController::class, 'update'])->name('update');
+        Route::delete('/{id}', [BiayaPmbController::class, 'destroy'])->name('destroy');
+    });
+
+    // ========== Kelola Keuangan & Transaksi ==========
+    Route::prefix('admin/keuangan')->name('admin.keuangan.')->group(function () {
+        Route::get('/', [KeuanganController::class, 'index'])->name('index');
+        Route::get('/export', [KeuanganController::class, 'export'])->name('export');
+        Route::get('/{id}', [KeuanganController::class, 'show'])->name('show');
+    });
+    // ========== Kelola Program Studi ==========
+    Route::prefix('admin/program-studi')->name('admin.program-studi.')->group(function () {
+        Route::get('/', [ProgramStudiController::class, 'index'])->name('index');
+        Route::post('/', [ProgramStudiController::class, 'store'])->name('store');
+        Route::put('/{kodeProdi}', [ProgramStudiController::class, 'update'])->name('update');
+        Route::delete('/{kodeProdi}', [ProgramStudiController::class, 'destroy'])->name('destroy');
+    });
 
 
 Route::get('/wilayah/{type}/{id?}', function ($type, $id = null) {
