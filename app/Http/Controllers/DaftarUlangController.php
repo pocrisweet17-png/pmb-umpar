@@ -105,6 +105,18 @@ class DaftarUlangController extends Controller
             $mahasiswa = Mahasiswa::create($dataCreate);
             
             Log::info('Mahasiswa created:', ['id' => $mahasiswa->id]);
+            if ($filePath) {
+                \App\Models\Dokumen::create([
+                    'user_id' => $user->id,
+                    'jenisDokumen' => 'Bukti Pembayaran Daftar Ulang',
+                    'namaFile' => basename($filePath),
+                    'formatFile' => 'pdf',
+                    'urlFile' => $filePath,
+                    'tanggalUpload' => now(),
+                    'statusVerifikasi' => false,
+                    'catatanVerifikasi' => null,
+                ]);
+            }
             
         } else {
             Log::info('Updating mahasiswa');
@@ -121,6 +133,19 @@ class DaftarUlangController extends Controller
             ]);
             
             Log::info('Mahasiswa updated');
+
+            if ($filePath) {
+                \App\Models\Dokumen::create([
+                    'user_id' => $user->id,
+                    'jenisDokumen' => 'Bukti Pembayaran Daftar Ulang',
+                    'namaFile' => basename($filePath),
+                    'formatFile' => 'pdf',
+                    'urlFile' => $filePath,
+                    'tanggalUpload' => now(),
+                    'statusVerifikasi' => false,
+                    'catatanVerifikasi' => null,
+                ]);
+            }
         }
         $user->is_daftar_ulang = true;
         $user->save();

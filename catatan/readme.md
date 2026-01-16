@@ -27,3 +27,8 @@ TUGAS :
 composer require maatwebsite/excel
 
 php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider" --tag=config
+
+# Tambahkan pendaftaran S2 S3
+
+solusi kalau gambar tidak di load oleh web.
+php artisan storage:link
