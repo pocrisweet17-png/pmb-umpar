@@ -1,12 +1,10 @@
-@?php
+@php
     $user = Auth::user();
-    $sudahWawancara = $user->is_wawancara_selesai;
-    
-    // Ambil pertanyaan dari database
-    $pertanyaans = \App\Models\PertanyaanWawancara::where('is_active', true)
-        ->get();
-    
-    // Ambil data wawancara jika sudah pernah
+
+    $sudahWawancara = $user->is_wawancara_selesai ?? false;
+
+    $pertanyaans = \App\Models\PertanyaanWawancara::get();
+
     $wawancara = null;
     if ($sudahWawancara) {
         $wawancara = \App\Models\Wawancara::where('user_id', $user->id)->first();

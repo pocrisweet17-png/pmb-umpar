@@ -9,16 +9,6 @@
     <div class="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
 
         <!-- Header -->
-<<<<<<< HEAD
-        <div class="bg-blue-500 px-6 sm:px-8 py-6">
-            <h3 class="text-xl sm:text-2xl font-bold text-white flex items-center">
-                <svg class="w-7 h-7 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-                Data Calon Mahasiswa
-            </h3>
-            <p class="text-orange-100 mt-1 text-sm">ID User: <span class="font-semibold">{{ $user->id }}</span> | Username: <span class="font-semibold">{{ $user->username }}</span> | No. Registrasi: <span class="font-semibold">{{ $user->nomor_registrasi ?? 'Belum ada' }}</span></p>
-=======
         <div class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 px-6 sm:px-8 py-6 relative overflow-hidden">
             <!-- Background Pattern -->
             <div class="absolute inset-0 opacity-10">
@@ -228,7 +218,6 @@
                     </div>
                 </div>
             </div>
->>>>>>> 5a5fb124463cb6798df1be9c5922abd461aade66
         </div>
 
         <div class="p-6 sm:p-8">
