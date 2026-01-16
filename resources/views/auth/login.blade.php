@@ -17,7 +17,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 
     <!-- CSS -->
-    @vite('resources/css/app.css')
+    {{-- @vite('resources/css/app.css') --}}
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         :root {
@@ -523,53 +524,7 @@
             100% { width: 100%; }
         }
 
-        /* =====================================================
-           GLITCH TEXT EFFECT
-           ===================================================== */
-        .glitch {
-            position: relative;
-        }
-
-        .glitch::before,
-        .glitch::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .glitch::before {
-            animation: glitch-1 2s infinite linear alternate-reverse;
-            clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
-            -webkit-text-fill-color: var(--cyan-400);
-        }
-
-        .glitch::after {
-            animation: glitch-2 3s infinite linear alternate-reverse;
-            clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
-            -webkit-text-fill-color: var(--blue-400);
-        }
-
-        @keyframes glitch-1 {
-            0% { transform: translateX(0); }
-            20% { transform: translateX(-2px); }
-            40% { transform: translateX(2px); }
-            60% { transform: translateX(-1px); }
-            80% { transform: translateX(1px); }
-            100% { transform: translateX(0); }
-        }
-
-        @keyframes glitch-2 {
-            0% { transform: translateX(0); }
-            20% { transform: translateX(2px); }
-            40% { transform: translateX(-2px); }
-            60% { transform: translateX(1px); }
-            80% { transform: translateX(-1px); }
-            100% { transform: translateX(0); }
-        }
-
+ 
         /* =====================================================
            RESPONSIVE
            ===================================================== */
@@ -654,8 +609,10 @@
                     </div>
                 </div>
 
-                <h1 class="animate-in delay-2 font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3 drop-shadow-2xl">
-                    <span class="glitch" data-text="PMB UMPAR">PMB UMPAR</span>
+                <h1 class="animate-in delay-2 font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-5 mt-5 drop-shadow-2xl flex justify-center">
+                    <span class="glitch-image">
+                        <img src="{{ asset("img/2. b. UMPAR lontara white.png") }}" alt="lotara-umpar" class="h-6 sm:h-6 lg:h-6 w-auto">
+                    </span>
                 </h1>
 
                 <p class="animate-in delay-3 text-blue-100 text-base sm:text-lg max-w-md mx-auto font-light">

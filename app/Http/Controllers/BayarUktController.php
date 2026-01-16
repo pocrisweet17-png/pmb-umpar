@@ -81,9 +81,9 @@ class BayarUktController extends Controller
     public function store(Request $request)
     {
         Log::info('========== UKT STORE METHOD CALLED ==========');
-        
+
         $user = Auth::user();
-        
+
         Log::info('User data for UKT payment', [
             'user_id' => $user->id,
             'pilihan_1' => $user->pilihan_1,
@@ -97,7 +97,6 @@ class BayarUktController extends Controller
             ], 400);
         }
 
-        // PERBAIKAN: Gunakan pilihan_1 bukan kodeProdi_1
         $biaya = BiayaPmb::where('tahun', date('Y'))
             ->where('kodeProdi', $user->pilihan_1)
             ->first();
@@ -115,7 +114,7 @@ class BayarUktController extends Controller
         }
 
         $jumlah = $biaya->biaya_ukt;
-        
+
         if (!$jumlah || $jumlah <= 0) {
             return response()->json([
                 'success' => false,
@@ -125,18 +124,32 @@ class BayarUktController extends Controller
 
         // Generate order_id baru
         $orderId = 'PMB-UKT-' . $user->id . '-' . time() . '-' . substr(uniqid(), -4);
-        
+
+        // Ambil metode dari request
+        $metodeDipilih = $request->input('metode_pembayaran', 'all');
+        $enabledPayments = $this->getEnabledPayments($metodeDipilih);
+
+        // Hitung biaya admin
+        $biayaAdmin = $this->getBiayaAdmin($metodeDipilih);
+        $totalBayar = $jumlah + $biayaAdmin;
+
         try {
+            // PERBAIKAN: Buat payment record DULU dengan total yang sudah dihitung
             $payment = Payment::create([
                 'user_id'          => $user->id,
                 'order_id'         => $orderId,
-                'jumlah'           => $jumlah,
+                'jumlah'           => $totalBayar,
                 'tipe_pembayaran'  => 'ukt',
                 'status_transaksi' => 'pending',
             ]);
-            
-            Log::info('UKT Payment record created', ['payment_id' => $payment->id]);
-            
+
+            Log::info('UKT Payment record created', [
+                'payment_id' => $payment->id,
+                'biaya_pokok' => $jumlah,
+                'biaya_admin' => $biayaAdmin,
+                'total' => $totalBayar
+            ]);
+
         } catch (\Exception $e) {
             Log::error('Failed to create UKT payment', ['error' => $e->getMessage()]);
             return response()->json([
@@ -146,21 +159,31 @@ class BayarUktController extends Controller
         }
 
         try {
-            $snapToken = $this->generateSnapToken($user, $jumlah, $orderId);
+            $snapToken = $this->generateSnapToken($user, $jumlah, $orderId, $enabledPayments, $biayaAdmin);
+
+            Log::info('UKT Payment with admin fee', [
+                'order_id' => $orderId,
+                'biaya_pokok' => $jumlah,
+                'biaya_admin' => $biayaAdmin,
+                'total' => $totalBayar,
+                'metode' => $metodeDipilih
+            ]);
 
             return response()->json([
-                'success' => true,
-                'snap_token' => $snapToken,
-                'order_id' => $orderId,
-                'amount' => $jumlah
+                'success'     => true,
+                'snap_token'  => $snapToken,
+                'order_id'    => $orderId,
+                'amount'      => $jumlah,
+                'biaya_admin' => $biayaAdmin,
+                'total'       => $totalBayar
             ]);
 
         } catch (\Exception $e) {
             Log::error('UKT Midtrans Error: ' . $e->getMessage());
-            
+
             // Hapus payment yang gagal
             Payment::where('order_id', $orderId)->delete();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal membuat transaksi: ' . $e->getMessage()
@@ -170,8 +193,8 @@ class BayarUktController extends Controller
 
     /**
      * Generate Snap Token untuk UKT
-     */
-    private function generateSnapToken($user, $amount, $orderId)
+    */
+    private function generateSnapToken($user, $amount, $orderId, $enabledPayments = null, $biayaAdmin = 0)
     {
         if (empty($orderId)) {
             throw new \Exception('Order ID tidak boleh kosong');
@@ -181,42 +204,60 @@ class BayarUktController extends Controller
             throw new \Exception('Jumlah pembayaran UKT tidak valid: ' . $amount);
         }
         
-        $amount = (int) $amount;
+        // Hitung total
+        $totalAmount = (int) $amount + (int) $biayaAdmin;
+        
+        // Item details dengan biaya admin terpisah
+        $itemDetails = [
+            [
+                'id'       => 'UKT-' . date('Y-m') . '-' . $user->id,
+                'price'    => (int) $amount,
+                'quantity' => 1,
+                'name'     => 'Biaya UKT Semester 1 - ' . date('Y'),
+            ]
+        ];
+    
+        // Tambahkan biaya admin jika ada
+        if ($biayaAdmin > 0) {
+            $itemDetails[] = [
+                'id'       => 'ADMIN-FEE-UKT-' . $user->id,
+                'price'    => (int) $biayaAdmin,
+                'quantity' => 1,
+                'name'     => 'Biaya Admin Pembayaran',
+            ];
+        }
         
         $params = [
             'transaction_details' => [
                 'order_id'     => $orderId,
-                'gross_amount' => $amount,
+                'gross_amount' => $totalAmount,
             ],
-            'item_details' => [
-                [
-                    'id'       => 'UKT-' . date('Y-m') . '-' . $user->id,
-                    'price'    => $amount,
-                    'quantity' => 1,
-                    'name'     => 'Biaya UKT Semester 1 - ' . date('Y'),
-                ]
-            ],
+            'item_details' => $itemDetails,
             'customer_details' => [
                 'first_name' => $user->nama_lengkap ?? $user->name,
                 'email'      => $user->email,
                 'phone'      => $user->no_whatsapp ?? '-',
-            ],
-            'enabled_payments' => [
-                'gopay', 'shopeepay', 'qris',
             ],
             'callbacks' => [
                 'finish' => route('payment.finish') . '?type=ukt',
             ],
         ];
         
+        // Tambahkan enabled_payments jika ada
+        if ($enabledPayments && is_array($enabledPayments)) {
+            $params['enabled_payments'] = $enabledPayments;
+        }
+        
         Log::info('Snap Token Params for UKT', [
             'order_id' => $orderId,
-            'amount' => $amount
+            'biaya_pokok' => $amount,
+            'biaya_admin' => $biayaAdmin,
+            'total' => $totalAmount,
+            'enabled_payments' => $enabledPayments
         ]);
         
         return Snap::getSnapToken($params);
     }
-
     
     public function storeOffline(Request $request)
     {
@@ -537,5 +578,36 @@ class BayarUktController extends Controller
             ]);
             return null;
         }
+    }
+
+    //Mapping metode ke enabled_payments Midtrans
+    private function getEnabledPayments($metode)
+    {
+        $mapping = [
+            'qris'          => ['other_qris'],
+            'gopay'         => ['gopay'],
+            'shopeepay'     => ['shopeepay'],
+            'dana'          => ['dana'],
+            'alfamart'      => ['alfamart'],
+            'bank_transfer' => ['bank_transfer', 'bca_va', 'bni_va', 'bri_va', 'permata_va', 'echannel'],
+            'all'           => ['gopay', 'shopeepay', 'other_qris', 'bank_transfer', 'bca_va', 'bni_va', 'bri_va'],
+        ];
+
+        return $mapping[$metode] ?? $mapping['all'];
+    }
+     // Biaya admin per metode pembayaran permintaanya pak untug
+    private function getBiayaAdmin($metode)
+    {
+        $biayaAdmin = [
+            'qris'          => 1500,
+            'gopay'         => 1500,
+            'shopeepay'     => 1500,
+            'dana'          => 1500,
+            'bank_transfer' => 4000,
+            'alfamart'      => 5000,
+            'all'           => 0,
+        ];
+
+        return $biayaAdmin[$metode] ?? 0;
     }
 }
