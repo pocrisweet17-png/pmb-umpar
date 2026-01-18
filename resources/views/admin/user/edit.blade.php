@@ -8,6 +8,7 @@
     $isKeuangan = auth()->user()->role === 'keuangan';
     $isWakilRektor = auth()->user()->role === 'wr-3';
     $isAdmin = auth()->user()->role === 'admin';
+    $isAdmisi = auth()->user()->role === 'admisi';
 @endphp
 <div class="max-w-6xl mx-auto">
 
@@ -510,7 +511,7 @@
                         <!-- Step 1: Pilih Prodi -->
                         <label class="flex items-start cursor-pointer bg-white border-2 border-teal-200 rounded-lg px-4 py-3 hover:bg-teal-50 transition-colors {{ old('is_prodi_selected', $user->is_prodi_selected) ? 'bg-teal-100 border-teal-400' : '' }} {{ $isKeuangan || $isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_prodi_selected" value="1" {{ old('is_prodi_selected', $user->is_prodi_selected) ? 'checked' : '' }}
-                                   {{ $isKeuangan || $isWakilRektor ? 'disabled' : '' }}
+                                   {{ $isKeuangan || $isWakilRektor || $isAdmisi ? 'disabled' : '' }}
                                    class="w-5 h-5 text-teal-600 rounded focus:ring-teal-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
                                 <span class="block text-sm font-semibold text-gray-900">1. Pilih Prodi</span>
@@ -521,7 +522,7 @@
                         <!-- Step 2: Bayar Pendaftaran -->
                         <label class="flex items-start cursor-pointer bg-white border-2 border-teal-200 rounded-lg px-4 py-3 hover:bg-teal-50 transition-colors {{ old('is_bayar_pendaftaran', $user->is_bayar_pendaftaran) ? 'bg-teal-100 border-teal-400' : '' }} {{$isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_bayar_pendaftaran" value="1" {{ old('is_bayar_pendaftaran', $user->is_bayar_pendaftaran) ? 'checked' : '' }}
-                                   {{ $isWakilRektor ? 'disabled' : '' }}
+                                   {{ $isWakilRektor || $isAdmisi ? 'disabled' : '' }}
                                    class="w-5 h-5 text-teal-600 rounded focus:ring-teal-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
                                 <span class="block text-sm font-semibold text-gray-900">2. Bayar Pendaftaran</span>
@@ -532,7 +533,7 @@
                         <!-- Step 3: Data Lengkap -->
                         <label class="flex items-start cursor-pointer bg-white border-2 border-teal-200 rounded-lg px-4 py-3 hover:bg-teal-50 transition-colors {{ old('is_data_completed', $user->is_data_completed) ? 'bg-teal-100 border-teal-400' : '' }} {{ $isKeuangan || $isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_data_completed" value="1" {{ old('is_data_completed', $user->is_data_completed) ? 'checked' : '' }}
-                                   {{ $isKeuangan || $isWakilRektor ? 'disabled' : '' }}
+                                   {{ $isKeuangan || $isWakilRektor || $isAdmisi ? 'disabled' : '' }}
                                    class="w-5 h-5 text-teal-600 rounded focus:ring-teal-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
                                 <span class="block text-sm font-semibold text-gray-900">3. Data Pribadi</span>
@@ -543,7 +544,7 @@
                         <!-- Step 4: Upload Dokumen -->
                         <label class="flex items-start cursor-pointer bg-white border-2 border-orange-200 rounded-lg px-4 py-3 hover:bg-orange-50 transition-colors {{ old('is_dokumen_uploaded', $user->is_dokumen_uploaded) ? 'bg-orange-100 border-orange-400' : '' }} {{ $isKeuangan || $isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_dokumen_uploaded" value="1" {{ old('is_dokumen_uploaded', $user->is_dokumen_uploaded) ? 'checked' : '' }}
-                                   {{ $isKeuangan || $isWakilRektor ? 'disabled' : '' }}
+                                   {{ $isKeuangan || $isWakilRektor || $isAdmisi ? 'disabled' : '' }}
                                    class="w-5 h-5 text-orange-600 rounded focus:ring-orange-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
                                 <span class="block text-sm font-semibold text-gray-900">4. Upload Dokumen</span>
@@ -554,7 +555,7 @@
                         <!-- Step 5: Tes Selesai -->
                         <label class="flex items-start cursor-pointer bg-white border-2 border-orange-200 rounded-lg px-4 py-3 hover:bg-orange-50 transition-colors {{ old('is_tes_selesai', $user->is_tes_selesai) ? 'bg-orange-100 border-orange-400' : '' }} {{ $isKeuangan || $isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_tes_selesai" value="1" {{ old('is_tes_selesai', $user->is_tes_selesai) ? 'checked' : '' }}
-                                   {{ $isKeuangan || $isWakilRektor ? 'disabled' : '' }}
+                                   {{ $isKeuangan || $isWakilRektor || $isAdmisi ? 'disabled' : '' }}
                                    class="w-5 h-5 text-orange-600 rounded focus:ring-orange-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
                                 <span class="block text-sm font-semibold text-gray-900">5. Tes Selesai</span>
@@ -565,7 +566,7 @@
                         <!-- Step 6: Wawancara Selesai -->
                         <label class="flex items-start cursor-pointer bg-white border-2 border-orange-200 rounded-lg px-4 py-3 hover:bg-orange-50 transition-colors {{ old('is_wawancara_selesai', $user->is_wawancara_selesai) ? 'bg-orange-100 border-orange-400' : '' }} {{ $isKeuangan ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_wawancara_selesai" value="1" {{ old('is_wawancara_selesai', $user->is_wawancara_selesai) ? 'checked' : '' }}
-                                   {{ $isKeuangan ? 'disabled' : '' }}
+                                   {{ $isKeuangan || $isAdmisi ? 'disabled' : '' }}
                                    class="w-5 h-5 text-orange-600 rounded focus:ring-orange-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
                                 <span class="block text-sm font-semibold text-gray-900">6. Wawancara</span>
@@ -576,10 +577,10 @@
                         <!-- Step 7: Bayar bayar pendataran ulang  -->
                         <label class="flex items-start cursor-pointer bg-white border-2 border-purple-200 rounded-lg px-4 py-3 hover:bg-purple-50 transition-colors {{ old('is_ukt_paid', $user->is_ukt_paid) ? 'bg-purple-100 border-purple-400' : '' }} {{$isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_ukt_paid" value="1" {{ old('is_ukt_paid', $user->is_ukt_paid) ? 'checked' : '' }}
-                                   {{ $isWakilRektor ? 'disabled' : '' }}
+                                   {{ $isWakilRektor || $isAdmisi ? 'disabled' : '' }}
                                    class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
-                                <span class="block text-sm font-semibold text-gray-900">8. Bayar Pendaftaran Ulang</span>
+                                <span class="block text-sm font-semibold text-gray-900">7. Bayar Pendaftaran Ulang</span>
                                 <span class="text-xs text-gray-600">Lunas pembayaran Daftar ulang</span>
                             </div>
                         </label>
@@ -587,10 +588,10 @@
                         <!-- Step 8: Daftar Ulang -->
                         <label class="flex items-start cursor-pointer bg-white border-2 border-purple-200 rounded-lg px-4 py-3 hover:bg-purple-50 transition-colors {{ old('is_daftar_ulang', $user->is_daftar_ulang) ? 'bg-purple-100 border-purple-400' : '' }} {{ $isKeuangan || $isWakilRektor ? 'opacity-50 cursor-not-allowed' : '' }}">
                             <input type="checkbox" name="is_daftar_ulang" value="1" {{ old('is_daftar_ulang', $user->is_daftar_ulang) ? 'checked' : '' }}
-                                   {{ $isKeuangan || $isWakilRektor ? 'disabled' : '' }}
+                                   {{ $isKeuangan || $isWakilRektor || $isAdmisi ? 'disabled' : '' }}
                                    class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 focus:ring-2 mt-0.5">
                             <div class="ml-3">
-                                <span class="block text-sm font-semibold text-gray-900">7. Daftar Ulang</span>
+                                <span class="block text-sm font-semibold text-gray-900">8. Daftar Ulang</span>
                                 <span class="text-xs text-gray-600">Sudah daftar ulang</span>
                             </div>
                         </label>
@@ -628,6 +629,7 @@
                                 <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
                                 <option value="keuangan" {{ old('role', $user->role) == 'keuangan' ? 'selected' : '' }}>keuangan</option>
                                 <option value="wr-3" {{ old('role', $user->role) == 'wr-3' ? 'selected' : '' }}>Wakil rektor 3</option>
+                                <option value="admisi" {{ old('role', $user->role) == 'admisi' ? 'selected' : '' }}>admisi</option>
                             </select>
                             @if(!$isAdmin)
                                 <input type="hidden" name="role" value="{{ $user->role }}">

@@ -63,7 +63,7 @@ class UserController extends Controller
             'nama_lengkap' => 'required|string|max:255',
             'nik' => 'required|string|max:16|unique:users',
             'no_whatsapp' => 'required|string|max:15',
-            'role' => 'required|in:admin,user,keuangan,wr-3',
+            'role' => 'required|in:admin,user,keuangan,wr-3,admisi',
             'is_wawancara_selesai' => 'boolean',
         ]);
 
@@ -107,7 +107,7 @@ public function show(string $id)
                 'nama_lengkap' => 'required|string|max:255',
                 'nik' => ['required', 'string', 'max:16', Rule::unique('users')->ignore($user->id)],
                 'no_whatsapp' => 'required|string|max:15',
-                'role' => 'required|in:admin,user,keuangan,wr-3',
+                'role' => 'required|in:admin,user,keuangan,wr-3,admisi',
                 'password' => 'nullable|string|min:8|confirmed',
                 'is_verified' => 'boolean',
                 'is_prodi_selected' => 'boolean',
@@ -125,8 +125,13 @@ public function show(string $id)
             $isAdmin = $currentUserRole === 'admin';
             $isKeuangan = $currentUserRole === 'keuangan';
             $isWakilRektor = $currentUserRole === 'wr-3';
+            $isAdmisi = $currentUserRole === 'admisi';
 
             // Admin bisa update semua
+            if($isAdmisi){
+                return redirect()->route('admin.user.index')
+                ->with('error', 'Role Admisi hanya memiliki akses view, tidak dapat melakukan perubahan data');
+            }
             if ($isAdmin) {
                 $validated['is_verified'] = $request->has('is_verified');
                 $validated['is_prodi_selected'] = $request->has('is_prodi_selected');

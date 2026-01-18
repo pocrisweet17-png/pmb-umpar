@@ -4,6 +4,9 @@
 @section('page-title', 'Kelola User')
 
 @section('content')
+@php
+    $isAdmin = auth()->user()->role === 'admin';
+@endphp
 <div class="space-y-6">
 
     <!-- Success/Error Notification -->
@@ -50,8 +53,10 @@
                 <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Manajemen User</h2>
                 <p class="text-gray-600 mt-2 text-sm sm:text-base">Kelola semua pengguna sistem di sini</p>
             </div>
-            <a href="{{ route('admin.user.create') }}"
-               class="inline-flex items-center justify-center bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3.5 rounded-xl shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 hover:from-green-700 hover:to-green-800 transition-all duration-200 font-semibold group">
+            <a href="{{ $isAdmin ? route('admin.user.create') : '#' }}"
+                class="inline-flex items-center justify-center bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3.5 rounded-xl shadow-lg font-semibold group
+                        {{ !$isAdmin ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}"
+                {{ !$isAdmin ? 'onclick="return false;"' : '' }}>
                 <svg class="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -92,6 +97,7 @@
                         <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                         <option value="keuangan" {{ request('role') == 'keuangan' ? 'selected' : '' }}>Keuangan</option>
                         <option value="wr-3" {{ request('role') == 'wr-3' ? 'selected' : '' }}>Wakil Rektor 3</option>
+                        <option value="admisi" {{ request('role') == 'admisi' ? 'selected' : '' }}>Admisi</option>
                     </select>
                 </div>
             
@@ -214,13 +220,13 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="flex gap-2">
                         <a href="{{ route('admin.user.edit', $user->id) }}"
                            class="flex-1 bg-amber-500 text-white px-4 py-2.5 rounded-lg hover:bg-amber-600 transition-colors text-center font-medium text-sm shadow-sm">
                             Edit
                         </a>
-                        @if($user->id !== auth()->id())
+
+                        @if($user->id !== auth()->id() && $isAdmin)
                             <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST" class="flex-1"
                                   onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
                                 @csrf
@@ -289,6 +295,10 @@
                                 <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-yellow-800 bg-yellow-100 rounded-full">
                                         Wakil Rektor 3
                                     </span>
+                                @elseif($user->role === 'admisi')
+                                <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-full">
+                                        ADMISI
+                                    </span>
                                 @else
                                     <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-full">
                                         USER
@@ -321,14 +331,15 @@
                                         </svg>
                                         Lihat / Edit
                                     </a>
-
                                     @if($user->id !== auth()->id())
                                         <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST"
-                                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
+                                              onsubmit="return {{ $isAdmin ? "confirm('Apakah Anda yakin ingin menghapus user ini?')" : 'false' }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                    class="inline-flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all shadow-sm hover:shadow font-medium text-sm">
+                                                    {{ !$isAdmin ? 'disabled' : '' }}
+                                                    class="inline-flex items-center bg-red-500 text-white px-4 py-2 rounded-lg transition-all shadow-sm font-medium text-sm
+                                                           {{ !$isAdmin ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-600 hover:shadow' }}">
                                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>
