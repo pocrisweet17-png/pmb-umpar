@@ -108,6 +108,76 @@
                     </div>
                     <span class="ml-3 font-medium">Data Mahasiswa</span>
                 </a>
+                
+                 <!-- Kelola Program Studi -->
+                <a href="{{ route('admin.program-studi.index') }}" 
+                class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl
+                {{ request()->routeIs('admin.program-studi.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center
+                        {{ request()->routeIs('admin.program-studi.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }}
+                        transition-colors">
+
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5
+                                S4.168 5.477 3 6.253v13
+                                C4.168 18.477 5.754 18 7.5 18
+                                s3.332.477 4.5 1.253m0-13
+                                C13.168 5.477 14.754 5 16.5 5
+                                c1.747 0 3.332.477 4.5 1.253v13
+                                C19.832 18.477 18.247 18 16.5 18
+                                c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </div>
+
+                    <span class="ml-3 font-medium">Kelola Program Studi</span>
+                </a>
+                {{-- Kelola Biaya PMB --}}
+                <a href="{{ route('admin.biaya-pmb.index') }}"
+                class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl
+                {{ request()->routeIs('admin.biaya-pmb.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center
+                        {{ request()->routeIs('admin.biaya-pmb.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }}
+                        transition-colors">
+                        
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2
+                                3 .895 3 2-1.343 2-3 2
+                                m0-8c1.11 0 2.08.402 2.599 1
+                                M12 8V7m0 1v8m0 0v1
+                                m0-1c-1.11 0-2.08-.402-2.599-1
+                                M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+
+                    <span class="ml-3 font-medium">Kelola Biaya PMB</span>
+                </a>
+
+                {{-- Kelola Keuangan --}}
+                <a href="{{ route('admin.keuangan.index') }}"
+                class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl
+                {{ request()->routeIs('admin.keuangan.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center
+                        {{ request()->routeIs('admin.keuangan.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }}
+                        transition-colors">
+                        
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 7h6m0 10v-3m-3 3h.01
+                                M9 17h.01M9 14h.01
+                                M12 14h.01M15 11h.01
+                                M12 11h.01M9 11h.01
+                                M7 21h10a2 2 0 002-2V5
+                                a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+
+                    <span class="ml-3 font-medium">Kelola Keuangan</span>
+                </a>
             </nav>
 
             <div class="p-6 border-t border-gray-800/50">

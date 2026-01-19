@@ -123,7 +123,7 @@ class BayarUktController extends Controller
         }
 
         // Generate order_id baru
-        $orderId = 'PMB-UKT-' . $user->id . '-' . time() . '-' . substr(uniqid(), -4);
+        $orderId = 'PMB-DU-' . $user->id . '-' . time() . '-' . substr(uniqid(), -4);
 
         // Ambil metode dari request
         $metodeDipilih = $request->input('metode_pembayaran', 'all');

@@ -12,4 +12,10 @@ class BiayaPmb extends Model
         'biaya_pendaftaran',
         'biaya_ukt',
     ];
+
+    // relasi ke program study
+    public function programStudi()
+    {
+        return $this->belongsTo(ProgramStudy::class, 'kodeProdi', 'kodeProdi');
+    }
 }

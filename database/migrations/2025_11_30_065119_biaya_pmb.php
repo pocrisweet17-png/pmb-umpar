@@ -29,6 +29,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('biaya_pmb');
+        Schema::table('biaya_pmb', function (Blueprint $table) {
+        $table->timestamps();
+        });
     }
 };

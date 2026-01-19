@@ -19,6 +19,7 @@ class ProgramStudy extends Model
         'namaProdi',
         'fakultas',
         'jenjang',
+        'kuota',
     ];
     
     public $timestamps = false; // jika tidak pakai created_at/updated_at

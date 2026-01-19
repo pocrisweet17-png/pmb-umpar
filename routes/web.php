@@ -17,7 +17,9 @@ use App\Http\Controllers\UjianController;
 use App\Http\Middleware\StepUploadDokumen;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\BayarUktController;
+use App\Http\Controllers\BiayaPmbController;
 use App\Http\Controllers\DokumentController;
+use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\AuthLoginController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\WawancaraController;
@@ -25,6 +27,7 @@ use App\Http\Controllers\DaftarUlangController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\AuthRegisterController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProgramStudiController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\LandingPageContentController;
 use App\Http\Controllers\MahasiswaDashboardController;
@@ -251,6 +254,29 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::post('/admin/landing-page/upload-image', [LandingPageContentController::class, 'uploadImage'])->name('admin.landing-page.upload-image');
         
 });
+
+// ========== Kelola Biaya PMB ==========
+    Route::prefix('admin/biaya-pmb')->name('admin.biaya-pmb.')->group(function () {
+        Route::get('/', [BiayaPmbController::class, 'index'])->name('index');
+        Route::post('/', [BiayaPmbController::class, 'store'])->name('store');
+        Route::put('/{id}', [BiayaPmbController::class, 'update'])->name('update');
+        Route::delete('/{id}', [BiayaPmbController::class, 'destroy'])->name('destroy');
+    });
+
+    // ========== Kelola Keuangan & Transaksi ==========
+    Route::prefix('admin/keuangan')->name('admin.keuangan.')->group(function () {
+        Route::get('/', [KeuanganController::class, 'index'])->name('index');
+        Route::get('/export', [KeuanganController::class, 'export'])->name('export');
+        Route::get('/{id}', [KeuanganController::class, 'show'])->name('show');
+    });
+    // ========== Kelola Program Studi ==========
+    Route::prefix('admin/program-studi')->name('admin.program-studi.')->group(function () {
+        Route::get('/', [ProgramStudiController::class, 'index'])->name('index');
+        Route::post('/', [ProgramStudiController::class, 'store'])->name('store');
+        Route::put('/{kodeProdi}', [ProgramStudiController::class, 'update'])->name('update');
+        Route::delete('/{kodeProdi}', [ProgramStudiController::class, 'destroy'])->name('destroy');
+    });
+
 
 
 Route::get('/wilayah/{type}/{id?}', function ($type, $id = null) {
