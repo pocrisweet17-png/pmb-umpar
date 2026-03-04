@@ -32,3 +32,16 @@ php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider" -
 
 solusi kalau gambar tidak di load oleh web.
 php artisan storage:link
+
+
+# buatkan mekanisme tarik data pendaftar
+
+# KITA DI SURUH MENAMBAH FITUR oleh pak wr 3:
+
+- ketika sudah lulus test (step 8), dia akan masuk ke halaman web masing masing PRODINYA(nanti dia akan bisa tahu
+berapa yang lulus di prodinya) dan datanya bisa di cetak berdasarkan EXCEL atau PDF.
+
+- siapkan admin untuk pimpinan.
+- yang mengeksekusi wawancara langsung di prodi.
+
+ 
