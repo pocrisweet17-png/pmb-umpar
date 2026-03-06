@@ -86,8 +86,4 @@
         </div>
     </div>
 
-    <!-- Documents Section -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-100">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">Dokumen yang Diupload</h2>
-            <span class="bg-blue-100 text-blue-800 text-sm font-semibold px-4
+  

@@ -12,8 +12,6 @@ migrasi satu satu tabelnya:
 8.  2025_11_26_072355_create_dokuments_table.php
 9.  2025_11_29_140755_create_payments_table.php
 10. 2025_11_30_065119_biaya_pmb.php
-11. 2025_12_01_101259_add_program_studi_pilihan_to_registrasis_table.php
-12. 2025_12_02_070043_create_sessions_table.php
 13. 2025_12_02_093239_create_soals.php
 14. 2025_12_02_093400_create_ujians_table.php
 15. 2025_12_02_093500_create_jawabans.php
