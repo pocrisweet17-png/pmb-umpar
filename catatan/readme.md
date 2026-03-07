@@ -44,4 +44,14 @@ berapa yang lulus di prodinya) dan datanya bisa di cetak berdasarkan EXCEL atau 
 - siapkan admin untuk pimpinan.
 - yang mengeksekusi wawancara langsung di prodi.
 
+
+# PERMINTAAN PAK UNTUNG
+- SKRIPSI SAYA TENTANG RPL untuk PMB (kategori WEB).
+- manempilkan jumlah bayar ofline dan online
+- perbaiki masalah virtual account
+- step mahasiswa di kolom mahasiswa (prioritas).
+- buat halaman supaya orang fakultas bisa lihat 
+
+
+
  

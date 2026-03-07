@@ -220,6 +220,41 @@
                             </div>
                         </div>
                     </div>
+                    {{-- Progress Steps PMB Mobile --}}
+                    @php
+                        $steps = [
+                            ['field' => 'is_prodi_selected', 'label' => 'Prodi', 'short' => '1'],
+                            ['field' => 'is_bayar_pendaftaran', 'label' => 'Bayar', 'short' => '2'],
+                            ['field' => 'is_data_completed', 'label' => 'Data', 'short' => '3'],
+                            ['field' => 'is_dokumen_uploaded', 'label' => 'Dokumen', 'short' => '4'],
+                            ['field' => 'is_tes_selesai', 'label' => 'Tes', 'short' => '5'],
+                            ['field' => 'is_wawancara_selesai', 'label' => 'Wawancara', 'short' => '6'],
+                            ['field' => 'is_ukt_paid', 'label' => 'Bayar Ulang', 'short' => '7'],
+                            ['field' => 'is_daftar_ulang', 'label' => 'Daftar Ulang', 'short' => '8'],
+                        ];
+                        $completedCount = collect($steps)->filter(fn($s) => $user->{$s['field']})->count();
+                    @endphp
+                    <div class="mb-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-gray-700">Progress PMB</span>
+                            <span class="text-xs font-bold {{ $completedCount === count($steps) ? 'text-green-600' : 'text-gray-600' }}">{{ $completedCount }}/{{ count($steps) }}</span>
+                        </div>
+                        <div class="bg-gray-200 rounded-full h-2 mb-2">
+                            <div class="h-2 rounded-full transition-all duration-300 {{ $completedCount === count($steps) ? 'bg-green-500' : ($completedCount >= 5 ? 'bg-blue-500' : ($completedCount >= 3 ? 'bg-yellow-500' : 'bg-red-400')) }}"
+                                style="width: {{ count($steps) > 0 ? ($completedCount / count($steps)) * 100 : 0 }}%"></div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            @foreach($steps as $step)
+                                <div title="{{ $step['short'] }}. {{ $step['label'] }}"
+                                    class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold
+                                            {{ $user->{$step['field']} 
+                                                ? 'bg-green-500 text-white' 
+                                                : 'bg-gray-200 text-gray-500' }}">
+                                    {{ $step['short'] }}
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                     <div class="flex gap-2">
                         <a href="{{ route('admin.user.edit', $user->id) }}"
                            class="flex-1 bg-amber-500 text-white px-4 py-2.5 rounded-lg hover:bg-amber-600 transition-colors text-center font-medium text-sm shadow-sm">
@@ -264,6 +299,7 @@
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">WhatsApp</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Role</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Progres</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
@@ -321,6 +357,44 @@
                                         Unverified
                                     </span>
                                 @endif
+                            </td>
+                            {{-- Progress Steps PMB --}}
+                            <td class="px-6 py-4">
+                                @php
+                                    $steps = [
+                                        ['field' => 'is_prodi_selected', 'label' => 'Prodi', 'short' => '1'],
+                                        ['field' => 'is_bayar_pendaftaran', 'label' => 'Bayar', 'short' => '2'],
+                                        ['field' => 'is_data_completed', 'label' => 'Data', 'short' => '3'],
+                                        ['field' => 'is_dokumen_uploaded', 'label' => 'Dokumen', 'short' => '4'],
+                                        ['field' => 'is_tes_selesai', 'label' => 'Tes', 'short' => '5'],
+                                        ['field' => 'is_wawancara_selesai', 'label' => 'Wawancara', 'short' => '6'],
+                                        ['field' => 'is_ukt_paid', 'label' => 'Bayar Ulang', 'short' => '7'],
+                                        ['field' => 'is_daftar_ulang', 'label' => 'Daftar Ulang', 'short' => '8'],
+                                    ];
+                                    $completedCount = collect($steps)->filter(fn($s) => $user->{$s['field']})->count();
+                                @endphp
+                                <div class="min-w-[200px]">
+                                    {{-- Progress Bar --}}
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                            <div class="h-2 rounded-full transition-all duration-300 {{ $completedCount === count($steps) ? 'bg-green-500' : ($completedCount >= 5 ? 'bg-blue-500' : ($completedCount >= 3 ? 'bg-yellow-500' : 'bg-red-400')) }}"
+                                                style="width: {{ count($steps) > 0 ? ($completedCount / count($steps)) * 100 : 0 }}%"></div>
+                                        </div>
+                                        <span class="text-xs font-bold {{ $completedCount === count($steps) ? 'text-green-600' : 'text-gray-600' }}">{{ $completedCount }}/{{ count($steps) }}</span>
+                                    </div>
+                                    {{-- Step Dots --}}
+                                    <div class="flex items-center gap-1">
+                                        @foreach($steps as $step)
+                                            <div title="{{ $step['short'] }}. {{ $step['label'] }}: {{ $user->{$step['field']} ? 'Selesai' : 'Belum' }}"
+                                                class="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold cursor-default transition-all
+                                                        {{ $user->{$step['field']} 
+                                                            ? 'bg-green-500 text-white shadow-sm shadow-green-500/30' 
+                                                            : 'bg-gray-200 text-gray-500' }}">
+                                                {{ $step['short'] }}
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex gap-2">
