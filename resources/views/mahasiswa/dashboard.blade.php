@@ -726,6 +726,28 @@ document.addEventListener('DOMContentLoaded', function() {
     console.groupEnd();
 });
 </script>
+
+{{-- Auto-sync payment status untuk VA/Bank Transfer --}}
+@if(!$user->is_bayar_pendaftaran || !$user->is_ukt_paid)
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('{{ route("payment.verify-sync") }}', {
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.synced) {
+            console.log('✅ Payment synced!');
+            window.location.reload();
+        }
+    })
+    .catch(e => console.log('Sync check done'));
+});
+</script>
+@endif
 @endpush
 @endsection
 

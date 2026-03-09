@@ -118,7 +118,9 @@ Route::middleware('auth')->group(function () {
 // ======================================================================
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // STEP 1: Prodi (sudah ada di atas)
+    Route::get('/payment/verify-sync', [PaymentController::class, 'verifyAndSync'])
+    ->name('payment.verify-sync');
+
 
     // STEP 2: Bayar Pendaftaran
     Route::middleware('step.prodi')->group(function () {
