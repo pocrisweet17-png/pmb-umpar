@@ -622,7 +622,7 @@
                             <label class="block text-gray-700 font-medium mb-2 text-sm">
                                 Role <span class="text-red-500">*</span>
                             </label>
-                            <select name="role" required
+                            <select name="role" id="role-select" required
                                     {{ !$isAdmin ? 'disabled' : '' }}
                                     class="w-full border-2 border-purple-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white font-medium text-sm sm:text-base {{ !$isAdmin ? 'opacity-50 cursor-not-allowed' : '' }}">
                                 <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User / Camaba</option>
@@ -630,10 +630,27 @@
                                 <option value="keuangan" {{ old('role', $user->role) == 'keuangan' ? 'selected' : '' }}>keuangan</option>
                                 <option value="wr-3" {{ old('role', $user->role) == 'wr-3' ? 'selected' : '' }}>Wakil rektor 3</option>
                                 <option value="admisi" {{ old('role', $user->role) == 'admisi' ? 'selected' : '' }}>admisi</option>
+                                <option value="dekan" {{ old('role', $user->role) == 'dekan' ? 'selected' : '' }}>Dekan Fakultas</option>
                             </select>
                             @if(!$isAdmin)
                                 <input type="hidden" name="role" value="{{ $user->role }}">
                             @endif
+                        </div>
+
+                        <!-- Fakultas (hanya untuk role dekan) -->
+                        <div id="fakultas-field" style="display: {{ old('role', $user->role) == 'dekan' ? 'block' : 'none' }}">
+                            <label class="block text-gray-700 font-medium mb-2 text-sm">
+                                Fakultas <span class="text-red-500" id="fakultas-required">*</span>
+                            </label>
+                            <select name="fakultas_id" id="fakultas-select"
+                                    class="w-full border-2 border-purple-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white font-medium text-sm sm:text-base">
+                                <option value="">-- Pilih Fakultas --</option>
+                                @foreach(\App\Models\Fakultas::where('is_active', true)->get() as $fak)
+                                    <option value="{{ $fak->id }}" {{ old('fakultas_id', $user->fakultas_id) == $fak->id ? 'selected' : '' }}>
+                                        {{ $fak->nama_fakultas }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     
                         <div>
@@ -659,6 +676,26 @@
                         Admin memiliki akses penuh ke sistem
                     </p>
                 </div>
+
+                <script>
+                // Show/hide fakultas field based on role
+                document.addEventListener('DOMContentLoaded', function() {
+                    const roleSelect = document.getElementById('role-select');
+                    const fakultasField = document.getElementById('fakultas-field');
+                    const fakultasSelect = document.getElementById('fakultas-select');
+                    
+                    roleSelect.addEventListener('change', function() {
+                        if (this.value === 'dekan') {
+                            fakultasField.style.display = 'block';
+                            fakultasSelect.setAttribute('required', 'required');
+                        } else {
+                            fakultasField.style.display = 'none';
+                            fakultasSelect.removeAttribute('required');
+                            fakultasSelect.value = '';
+                        }
+                    });
+                });
+                </script>
 
                 <!-- Additional Info -->
                 <div class="bg-blue-50 rounded-xl p-4 border-2 border-blue-200">

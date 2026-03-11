@@ -1088,92 +1088,116 @@ $footer = LandingPageContent::getSection('footer');
               {{ $programs['section_title'] ?? 'Program Studi' }} <span class="text-gradient-static">Populer</span>
             </h4>
           </div>
-          <a href="/programs" class="reveal delay-2 group inline-flex items-center gap-2 text-[#00a651] font-semibold hover:text-[#008c44] transition-colors">
-            Lihat Semua Program
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </div>
+
+        @php
+            $programList = [];
+            foreach($programs as $key => $value) {
+                if (preg_match('/program(\d+)_title/', $key, $matches)) {
+                    $index = $matches[1];
+                    $programList[$index]['title'] = $value;
+                } elseif (preg_match('/program(\d+)_(.+)/', $key, $matches)) {
+                    $index = $matches[1];
+                    $field = $matches[2];
+                    $programList[$index][$field] = $value;
+                }
+            }
+            ksort($programList);
+            $totalPrograms = count($programList);
+        @endphp
+
+        <div id="program-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          @foreach($programList as $index => $program)
+          <div class="reveal delay-{{ $index }} card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 {{ $index > 3 ? 'hidden program-card-hidden' : '' }}">
+            <div class="img-zoom relative h-52">
+              @if(isset($program['image']) && $program['image'])
+                  <img src="{{ Storage::url($program['image']) }}" alt="{{ $program['title'] ?? 'Program' }}" class="w-full h-full object-cover">
+              @else
+                  <img src="/img/default-program.jpg" alt="{{ $program['title'] ?? 'Program' }}" class="w-full h-full object-cover">
+              @endif
+              <div class="absolute inset-0 bg-gradient-to-t from-[#0c2340]/80 to-transparent"></div>
+              <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-[#00a651] text-white text-xs font-semibold">
+                {{ $program['category'] ?? 'Program' }}
+              </span>
+            </div>
+            <div class="p-6">
+                <h5 class="text-xl font-bold text-[#0c2340] mb-2 group-hover:text-[#00a651] transition-colors">
+                  {{ $program['title'] ?? 'Program Studi' }}
+                </h5>
+                <p class="text-gray-600 text-sm mb-6">
+                  {{ $program['desc'] ?? 'Deskripsi program studi.' }}
+                </p>
+              <div class="flex gap-3">
+                @if(isset($program['info_url']) && $program['info_url'] !== '#')
+                <a href="{{ $program['info_url'] }}" target="_blank" 
+                   class="flex-1 text-center py-3 rounded-xl border-2 border-[#0c2340] text-[#0c2340] font-semibold hover:bg-[#0c2340]/5 transition-all">
+                  Info Lengkap
+                </a>
+                @else
+                <a href="#" 
+                   class="flex-1 text-center py-3 rounded-xl border-2 border-[#0c2340] text-[#0c2340] font-semibold hover:bg-[#0c2340]/5 transition-all">
+                  Info Lengkap
+                </a>
+                @endif
+                
+                <a href="/register?program={{ $program['kode_prodi'] ?? '' }}" 
+                   class="flex-1 btn-muhammadiyah text-center py-3 rounded-xl text-white font-semibold">
+                  Daftar
+                </a>
+              </div>
+            </div>
+          </div>
+          @endforeach
+        </div>
+
+        <!-- Toggle Button -->
+        @if($totalPrograms > 3)
+        <div class="text-center mt-12">
+          <button id="toggle-programs" 
+                  class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#00a651] to-[#008c44] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+            <span id="toggle-text">Lihat Semua Program ({{ $totalPrograms }})</span>
+            <svg id="toggle-icon" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
             </svg>
-          </a>
+          </button>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Card TI -->
-          <div class="reveal delay-1 card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-            <div class="img-zoom relative h-52">
-              @if(isset($programs['program1_image']) && $programs['program1_image'])
-                  <img src="{{ Storage::url($programs['program1_image']) }}" alt="Teknik Informatika" class="w-full h-full object-cover">
-              @else
-                  <img src="/img/teknik-informatika.jpg" alt="Teknik Informatika" class="w-full h-full object-cover">
-              @endif
-              <div class="absolute inset-0 bg-gradient-to-t from-[#0c2340]/80 to-transparent"></div>
-              <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-[#00a651] text-white text-xs font-semibold">{{ $programs['program1_category'] ?? 'Teknologi' }}</span>
-            </div>
-            <div class="p-6">
-                <h5 class="text-xl font-bold text-[#0c2340] mb-2 group-hover:text-[#00a651] transition-colors">{{ $programs['program1_title'] ?? 'Teknik Informatika' }}</h5>
-                <p class="text-gray-600 text-sm mb-6">{{ $programs['program1_desc'] ?? 'Kurikulum terkini, laboratorium lengkap, dan dosen berpengalaman di industri IT.' }}</p>
-              <div class="flex gap-3">
-                <a href="/programs/ti" class="flex-1 text-center py-3 rounded-xl border-2 border-[#0c2340] text-[#0c2340] font-semibold hover:bg-[#0c2340]/5 transition-all">
-                  Detail
-                </a>
-                <a href="/register?program=ti" class="flex-1 btn-muhammadiyah text-center py-3 rounded-xl text-white font-semibold">
-                  Daftar
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card Bisnis -->
-          <div class="reveal delay-2 card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-            <div class="img-zoom relative h-52">
-              @if(isset($programs['program2_image']) && $programs['program2_image'])
-                  <img src="{{ Storage::url($programs['program2_image']) }}" alt="Bisnis & Manajemen" class="w-full h-full object-cover">
-              @else
-                  <img src="/img/manajemen-bisnis.jpg" alt="Bisnis & Manajemen" class="w-full h-full object-cover">
-              @endif
-              <div class="absolute inset-0 bg-gradient-to-t from-[#0c2340]/80 to-transparent"></div>
-              <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-[#4da8da] text-white text-xs font-semibold">{{ $programs['program2_category'] ?? 'Bisnis' }}</span>
-            </div>
-            <div class="p-6">
-                <h5 class="text-xl font-bold text-[#0c2340] mb-2 group-hover:text-[#4da8da] transition-colors">{{ $programs['program2_title'] ?? 'Bisnis & Manajemen' }}</h5>
-                <p class="text-gray-600 text-sm mb-6">{{ $programs['program2_desc'] ?? 'Fokus pada kewirausahaan, manajemen, dan keterampilan bisnis modern.' }}</p>
-              <div class="flex gap-3">
-                <a href="/programs/bisnis" class="flex-1 text-center py-3 rounded-xl border-2 border-[#0c2340] text-[#0c2340] font-semibold hover:bg-[#0c2340]/5 transition-all">
-                  Detail
-                </a>
-                <a href="/register?program=bisnis" class="flex-1 btn-blue text-center py-3 rounded-xl text-white font-semibold">
-                  Daftar
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card Pendidikan -->
-          <div class="reveal delay-3 card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-            <div class="img-zoom relative h-52">
-              @if(isset($programs['program3_image']) && $programs['program3_image'])
-                  <img src="{{ Storage::url($programs['program3_image']) }}" alt="Pendidikan" class="w-full h-full object-cover">
-              @else
-                  <img src="/img/pendidikan.jpg" alt="Pendidikan" class="w-full h-full object-cover">
-              @endif
-              <div class="absolute inset-0 bg-gradient-to-t from-[#0c2340]/80 to-transparent"></div>
-              <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-[#f4d03f] text-[#0c2340] text-xs font-semibold">{{ $programs['program3_category'] ?? 'Pendidikan' }}</span>
-            </div>
-            <div class="p-6">
-              <h5 class="text-xl font-bold text-[#0c2340] mb-2 group-hover:text-[#d4ac0d] transition-colors">{{ $programs['program3_title'] ?? 'Pendidikan & Keguruan' }}</h5>
-              <p class="text-gray-600 text-sm mb-6">{{ $programs['program3_desc'] ?? 'Mencetak guru profesional dengan nilai-nilai Islam Muhammadiyah.' }}</p>
-              <div class="flex gap-3">
-                <a href="/programs/dkv" class="flex-1 text-center py-3 rounded-xl border-2 border-[#0c2340] text-[#0c2340] font-semibold hover:bg-[#0c2340]/5 transition-all">
-                  Detail
-                </a>
-                <a href="/register?program=dkv" class="flex-1 btn-gold text-center py-3 rounded-xl font-semibold">
-                  Daftar
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+        @endif
       </div>
-    </section>
+      
+      <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const toggleBtn = document.getElementById('toggle-programs');
+          const toggleText = document.getElementById('toggle-text');
+          const toggleIcon = document.getElementById('toggle-icon');
+          const hiddenCards = document.querySelectorAll('.program-card-hidden');
+          let isExpanded = false;
+
+          if (toggleBtn) {
+              toggleBtn.addEventListener('click', function() {
+                  isExpanded = !isExpanded;
+                  
+                  hiddenCards.forEach(card => {
+                      if (isExpanded) {
+                          card.classList.remove('hidden');
+                      } else {
+                          card.classList.add('hidden');
+                      }
+                  });
+
+                  if (isExpanded) {
+                      toggleText.textContent = 'Sembunyikan Program';
+                      toggleIcon.classList.add('rotate-180');
+                  } else {
+                      toggleText.textContent = 'Lihat Semua Program ({{ $totalPrograms }})';
+                      toggleIcon.classList.remove('rotate-180');
+                      // Scroll back to section
+                      document.getElementById('program').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+              });
+          }
+      });
+      </script>
+</section>
 
     <!-- ALUR PENDAFTARAN -->
     <section id="alur" class="py-24 bg-white relative overflow-hidden">
@@ -1336,84 +1360,228 @@ $footer = LandingPageContent::getSection('footer');
       </div>
     </section>
 
-    <!-- TESTIMONI -->
-    <section id="testimoni" class="py-24 bg-gradient-to-b from-[#f8fafc] to-white relative overflow-hidden">
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <span class="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00a651]/10 text-[#00a651] text-sm font-semibold mb-4 border border-[#00a651]/20">
-            💬 TESTIMONI
-          </span>
-          <h4 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-[#0c2340] mb-4">
-            Apa Kata <span class="text-gradient-static">Alumni</span>?
-          </h4>
-          <p class="reveal delay-2 text-gray-600 max-w-2xl mx-auto text-lg">
-            Dengarkan pengalaman dari para alumni dan mahasiswa kami.
-          </p>
+    <!-- BROWSUR -->
+    @php
+    $brosurSection = \App\Models\LandingPageContent::getSection('brosur');
+    $brosurImages  = isset($brosurSection['brosur_images'])
+                        ? json_decode($brosurSection['brosur_images'], true)
+                        : [];
+    $hasBrosur     = !empty($brosurImages);
+    $brosurTitle   = $brosurSection['brosur_title']       ?? 'Brosur PMB';
+    $brosurDesc    = $brosurSection['brosur_description']  ?? 'Unduh brosur PMB untuk informasi lengkap pendaftaran';
+    $previewLimit  = 4;
+    $totalImages   = count($brosurImages);
+    $hasMore       = $totalImages > $previewLimit;
+@endphp
+
+@if($hasBrosur)
+<section id="brosur"
+         class="py-24 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 relative overflow-hidden"
+         x-data="{ showAll: false, lightbox: null, lightboxIndex: 0 }">
+
+    {{-- Decorative blobs --}}
+    <div class="absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {{-- ── Section Header ─────────────────────────────────────── --}}
+        <div class="text-center mb-12">
+            <span class="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20
+                         backdrop-blur-sm text-white text-sm font-semibold mb-4 border border-white/30">
+                🖼️ BROSUR PMB
+            </span>
+            <h2 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-white mb-4">
+                {{ $brosurTitle }}
+            </h2>
+            <p class="reveal delay-2 text-white/80 max-w-2xl mx-auto text-lg">
+                {{ $brosurDesc }}
+            </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <!-- Testimonial 1 -->
-          <div class="reveal delay-1 card-hover card-glow relative p-8 bg-white rounded-3xl shadow-xl border border-gray-100">
-            <div class="quote-mark absolute top-4 right-6">"</div>
-            <div class="flex items-center gap-4 mb-6">
-              @if(isset($testimonials['testi1_image']) && $testimonials['testi1_image'])
-                  <img src="{{ Storage::url($testimonials['testi1_image']) }}" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#00a651]/20">
-              @else
-                  <img src="/img/alumni-1.jpg" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#00a651]/20">
-              @endif
-              <div>
-                <div class="font-bold text-[#0c2340]">{{ $testimonials['testi1_name'] ?? 'Aulia Rahma' }}</div>
-                <div class="text-sm text-[#00a651]">{{ $testimonials['testi1_title'] ?? 'Lulusan TI 2022' }}</div>
-              </div>
-            </div>
-            <p class="text-gray-600 leading-relaxed">"{{ $testimonials['testi1_content'] ?? 'UMPAR memberikan pengalaman belajar yang luar biasa dengan nilai-nilai Islami yang kuat. Dosen sangat supportif!' }}"</p>
-            <div class="flex gap-1 mt-4">
-              <span class="text-[#f4d03f]">★★★★★</span>
-            </div>
-          </div>
+        {{-- ── Image Grid ──────────────────────────────────────────── --}}
+        {{--
+            Layout: 2 col mobile → 3 col sm → 4 col md+
+            First 4 always visible, rest toggled by showAll
+        --}}
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            @foreach($brosurImages as $i => $imgPath)
+            <div class="reveal delay-{{ min($i + 1, 4) }}"
+                 @if($i >= $previewLimit)
+                 x-show="showAll"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 @endif>
 
-          <!-- Testimonial 2 -->
-          <div class="reveal delay-2 card-hover card-glow relative p-8 bg-white rounded-3xl shadow-xl border border-gray-100">
-            <div class="quote-mark absolute top-4 right-6">"</div>
-            <div class="flex items-center gap-4 mb-6">
-              @if(isset($testimonials['testi2_image']) && $testimonials['testi2_image'])
-                  <img src="{{ Storage::url($testimonials['testi2_image']) }}" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#4da8da]/20">
-              @else
-                  <img src="/img/alumni-2.jpg" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#4da8da]/20">
-              @endif
-              <div>
-                <div class="font-bold text-[#0c2340]">{{ $testimonials['testi2_name'] ?? 'Budi Santoso' }}</div>
-                <div class="text-sm text-[#4da8da]">{{ $testimonials['testi2_title'] ?? 'Lulusan Bisnis 2021' }}</div>
-              </div>
-            </div>
-              <p class="text-gray-600 leading-relaxed">"{{ $testimonials['testi2_content'] ?? 'Program magang membuka kesempatan kerja yang luas. Jaringan alumni Muhammadiyah sangat membantu karier saya.' }}"</p>
-            <div class="flex gap-1 mt-4">
-              <span class="text-[#f4d03f]">★★★★★</span>
-            </div>
-          </div>
+                {{-- Square card --}}
+                <div class="group relative aspect-square rounded-2xl overflow-hidden shadow-xl
+                            cursor-pointer ring-2 ring-white/20 hover:ring-white/60 transition-all duration-300
+                            hover:shadow-2xl hover:-translate-y-1"
+                     @click="lightbox = '{{ Storage::url($imgPath) }}'; lightboxIndex = {{ $i }}">
 
-          <!-- Testimonial 3 -->
-          <div class="reveal delay-3 card-hover card-glow relative p-8 bg-white rounded-3xl shadow-xl border border-gray-100">
-            <div class="quote-mark absolute top-4 right-6">"</div>
-            <div class="flex items-center gap-4 mb-6">
-              @if(isset($testimonials['testi3_image']) && $testimonials['testi3_image'])
-                  <img src="{{ Storage::url($testimonials['testi3_image']) }}" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#f4d03f]/20">
-              @else
-                  <img src="/img/alumni-3.jpg" alt="Alumni" class="w-14 h-14 rounded-2xl object-cover ring-4 ring-[#f4d03f]/20">
-              @endif
-              <div>
-                <div class="font-bold text-[#0c2340]">{{ $testimonials['testi3_name'] ?? 'Citra Dewi' }}</div>
-                <div class="text-sm text-[#d4ac0d]">{{ $testimonials['testi3_title'] ?? 'Lulusan PGSD 2020' }}</div>
-              </div>
+                    {{-- Image --}}
+                    <img src="{{ Storage::url($imgPath) }}"
+                         alt="{{ $brosurTitle }} – gambar {{ $i + 1 }}"
+                         loading="lazy"
+                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+
+                    {{-- Hover overlay --}}
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent
+                                opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                    {{-- Full-view icon (bottom-left) --}}
+                    <div class="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div class="flex items-center gap-1.5 bg-white/20 backdrop-blur-sm text-white
+                                    text-xs font-medium px-2.5 py-1.5 rounded-full border border-white/30">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            Lihat
+                        </div>
+                    </div>
+
+                    {{-- Download button (top-right always visible) --}}
+                    <a href="{{ route('brosur.download', $i) }}"
+                       download
+                       @click.stop
+                       title="Download gambar {{ $i + 1 }}"
+                       class="absolute top-2.5 right-2.5 w-8 h-8 bg-black/40 backdrop-blur-sm rounded-full
+                              flex items-center justify-center text-white hover:bg-black/70 transition-colors
+                              shadow-lg border border-white/20 z-10">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                    </a>
+                </div>
             </div>
-              <p class="text-gray-600 leading-relaxed">"{{ $testimonials['testi3_content'] ?? 'Lingkungan kampus yang Islami dan modern membuat saya berkembang pesat sebagai pendidik profesional.' }}"</p>
-            <div class="flex gap-1 mt-4">
-              <span class="text-[#f4d03f]">★★★★★</span>
-            </div>
-          </div>
+            @endforeach
         </div>
-      </div>
-    </section>
+
+        {{-- ── Show More / Less ────────────────────────────────────── --}}
+        @if($hasMore)
+        <div class="mt-8 text-center">
+            <button @click="showAll = !showAll"
+                    class="inline-flex items-center gap-2 px-8 py-3 bg-white/15 backdrop-blur-sm text-white
+                           font-semibold rounded-full border border-white/30 hover:bg-white/25 transition-all
+                           shadow-lg hover:shadow-xl">
+                <svg class="w-5 h-5 transition-transform duration-300"
+                     :class="showAll ? 'rotate-180' : ''"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+                <span x-text="showAll
+                    ? 'Sembunyikan'
+                    : 'Tampilkan semua {{ $totalImages }} gambar'">
+                </span>
+            </button>
+        </div>
+        @endif
+
+    </div>
+
+    {{-- ────────────────────────────────────────────────────────────
+         LIGHTBOX
+         ──────────────────────────────────────────────────────────── --}}
+    <div x-show="lightbox"
+         x-cloak
+         @click.self="lightbox = null"
+         @keydown.escape.window="lightbox = null"
+         @keydown.arrow-left.window="navigateLightbox(-1)"
+         @keydown.arrow-right.window="navigateLightbox(1)"
+         class="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 sm:p-8"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+
+        {{-- Close --}}
+        <button @click="lightbox = null"
+                class="absolute top-4 right-4 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center
+                       text-white hover:bg-white/20 transition-colors z-10 text-xl leading-none">
+            ×
+        </button>
+
+        {{-- Prev --}}
+        <button @click="navigateLightbox(-1)"
+                class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full
+                       flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
+                x-show="{{ $totalImages }} > 1">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+        </button>
+
+        {{-- Image --}}
+        <div class="relative max-w-3xl max-h-full flex flex-col items-center gap-4">
+            <img :src="lightbox"
+                 class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl select-none">
+
+            {{-- Counter & download --}}
+            <div class="flex items-center gap-4">
+                @if($totalImages > 1)
+                <span class="text-white/70 text-sm" x-text="(lightboxIndex + 1) + ' / {{ $totalImages }}'"></span>
+                @endif
+                <a :href="'/brosur-pmb/download/' + lightboxIndex"
+                   download
+                   class="inline-flex items-center gap-2 px-5 py-2 bg-white/15 backdrop-blur-sm text-white
+                          text-sm font-medium rounded-full border border-white/30 hover:bg-white/25 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Download
+                </a>
+            </div>
+        </div>
+
+        {{-- Next --}}
+        <button @click="navigateLightbox(1)"
+                class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full
+                       flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
+                x-show="{{ $totalImages }} > 1">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </button>
+    </div>
+
+    {{-- Alpine lightbox nav – injected images array --}}
+    <script>
+    document.addEventListener('alpine:init', () => {
+        const images = @json(array_values(array_map(fn($p) => Storage::url($p), $brosurImages)));
+
+        // Patch the section's x-data when it mounts
+        document.querySelector('#brosur').__x && (function(){})();
+
+        // Expose helper on the component
+        window._brosurImages = images;
+    });
+    </script>
+
+</section>
+
+<script>
+// navigateLightbox is called on the x-data component
+// We extend it here so the function is available inside the section's scope
+document.addEventListener('alpine:init', () => {
+    Alpine.data('brosurNav', () => ({
+        images: [],
+        init() { this.images = window._brosurImages || []; },
+        navigateLightbox(dir) {
+            const total = this.images.length;
+            if (total <= 1) return;
+            this.lightboxIndex = (this.lightboxIndex + dir + total) % total;
+            this.lightbox = this.images[this.lightboxIndex];
+        }
+    }));
+});
+</script>
+@endif
 
     <!-- BERITA -->
     <section id="berita" class="py-24 bg-white">

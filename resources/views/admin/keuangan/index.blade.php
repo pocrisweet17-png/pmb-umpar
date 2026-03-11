@@ -37,10 +37,11 @@
                 <input type="hidden" name="tipe_pembayaran" value="{{ request('tipe_pembayaran') }}">
                 <input type="hidden" name="status_transaksi" value="{{ request('status_transaksi') }}">
                 <input type="hidden" name="metode_pembayaran" value="{{ request('metode_pembayaran') }}">
+                <input type="hidden" name="jenjang" value="{{ request('jenjang') }}">
                 <input type="hidden" name="search" value="{{ request('search') }}">
                 <input type="hidden" name="start_date" value="{{ request('start_date') }}">
                 <input type="hidden" name="end_date" value="{{ request('end_date') }}">
-                
+
                 <!-- <button type="submit"
                    class="inline-flex items-center justify-center bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3.5 rounded-xl shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 hover:from-green-700 hover:to-green-800 transition-all duration-200 font-semibold group">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,6 +113,17 @@
                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                 </div>
 
+                <!-- Jenjang -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Jenjang</label>
+                    <select name="jenjang" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        <option value="">Semua Jenjang</option>
+                        <option value="S1" {{ request('jenjang') == 'S1' ? 'selected' : '' }}>S1 - Sarjana</option>
+                        <option value="S2" {{ request('jenjang') == 'S2' ? 'selected' : '' }}>S2 - Magister</option>
+                        <option value="S3" {{ request('jenjang') == 'S3' ? 'selected' : '' }}>S3 - Doktor</option>
+                    </select>
+                </div>
+
                 <!-- Tipe Pembayaran -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Pembayaran</label>
@@ -167,8 +179,8 @@
                     </svg>
                     Filter
                 </button>
-                
-                @if(request()->anyFilled(['search', 'tipe_pembayaran', 'status_transaksi', 'metode_pembayaran', 'start_date', 'end_date']))
+
+                @if(request()->anyFilled(['search', 'tipe_pembayaran', 'status_transaksi', 'metode_pembayaran', 'jenjang', 'start_date', 'end_date']))
                     <a href="{{ route('admin.keuangan.index') }}" class="inline-flex items-center bg-gray-500 hover:bg-gray-600 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -177,7 +189,7 @@
                     </a>
                 @endif
 
-                @if(request()->anyFilled(['search', 'tipe_pembayaran', 'status_transaksi', 'metode_pembayaran', 'start_date', 'end_date']))
+                @if(request()->anyFilled(['search', 'tipe_pembayaran', 'status_transaksi', 'metode_pembayaran', 'jenjang', 'start_date', 'end_date']))
                     <div class="flex items-center text-sm text-gray-600 bg-blue-50 px-4 py-2.5 rounded-xl border border-blue-200">
                         <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -200,6 +212,7 @@
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Order ID</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nama Lengkap</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Program Studi</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Jenjang</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Tipe</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Metode</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
@@ -208,6 +221,9 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
                     @forelse ($payments as $index => $payment)
+                        @php
+                            $jenjang = strtoupper($payment->user->programStudiPilihan1->jenjang ?? '');
+                        @endphp
                         <tr class="hover:bg-blue-50/50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $index + 1 }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
@@ -229,6 +245,23 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                 {{ $payment->user->programStudiPilihan1->namaProdi ?? '-' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($jenjang === 'S1')
+                                    <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-full">
+                                        S1
+                                    </span>
+                                @elseif($jenjang === 'S2')
+                                    <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-violet-800 bg-violet-100 rounded-full">
+                                        S2
+                                    </span>
+                                @elseif($jenjang === 'S3')
+                                    <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-rose-800 bg-rose-100 rounded-full">
+                                        S3
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-gray-600 bg-gray-100 rounded-full">-</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($payment->tipe_pembayaran === 'pendaftaran')
@@ -285,7 +318,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="px-6 py-16 text-center">
+                            <td colspan="10" class="px-6 py-16 text-center">
                                 <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-4">
                                     <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>

@@ -75,6 +75,11 @@ Route::get('/api/prodi-by-fakultas', [ProdiController::class, 'getProdiByFakulta
 Route::post('/midtrans/webhook', [PaymentController::class, 'webhook'])
     ->name('midtrans.webhook');
 
+    //dowlod browsur
+Route::get('/brosur-pmb/download/{index?}', [LandingPageController::class, 'downloadBrosur'])
+          ->name('brosur.download')
+          ->where('index', '[0-9]+');
+
 // ======================================================================
 // AUTHENTICATED ROUTES (harus login)
 // ======================================================================
@@ -239,6 +244,9 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/mahasiswa/daftar-ulang', [MahasiswaController::class, 'daftarUlang'])->name('admin.user.daftar-ulang');
     Route::post('/mahasiswa/{id}/verify-daftar-ulang', [MahasiswaController::class, 'verifyDaftarUlang'])->name('admin.mahasiswa.verify-daftar-ulang');
     Route::post('/mahasiswa/{id}/reject-daftar-ulang', [MahasiswaController::class, 'rejectDaftarUlang'])->name('admin.mahasiswa.reject-daftar-ulang');
+    Route::get('/mahasiswa/{mahasiswa}/dokumen/{dokumen}/download',
+    [MahasiswaController::class, 'downloadDokumen'])
+    ->name('admin.mahasiswa.download-dokumen');
 
     // CRUD Pertanyaan Wawancara
     Route::get('/admin/wawancara', [PertanyaanWawancaraController::class, 'index'])->name('admin.wawancara.index');
@@ -252,6 +260,26 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/admin/landing-page', [LandingPageContentController::class, 'index'])->name('admin.landing-page.index');
     Route::post('/admin/landing-page/update', [LandingPageContentController::class, 'update'])->name('admin.landing-page.update');
     Route::post('/admin/landing-page/upload-image', [LandingPageContentController::class, 'uploadImage'])->name('admin.landing-page.upload-image');
+
+    // Di routes/web.php - dalam group admin
+
+    // Tambah program baru
+    Route::post('/admin/landing-page/programs/add', 
+        [LandingPageContentController::class, 'addProgramCard'])
+        ->name('admin.landing-page.programs.add');
+
+    // Hapus program
+    Route::delete('/admin/landing-page/programs/{index}', 
+        [LandingPageContentController::class, 'deleteProgramCard'])
+        ->name('admin.landing-page.programs.delete');
+
+    Route::post('/admin/landing-page/brosur/upload',         [LandingPageContentController::class, 'uploadBrosur'])
+          ->name('admin.landing-page.brosur.upload');
+     Route::delete('/admin/landing-page/brosur/delete',       [LandingPageContentController::class, 'deleteBrosur'])
+          ->name('admin.landing-page.brosur.delete');
+     Route::delete('/admin/landing-page/brosur/delete-image/{index}', [LandingPageContentController::class, 'deleteBrosurImage'])
+          ->name('admin.landing-page.brosur.delete-image')
+          ->where('index', '[0-9]+');
         
 });
 
@@ -277,7 +305,17 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
         Route::delete('/{kodeProdi}', [ProgramStudiController::class, 'destroy'])->name('destroy');
     });
 
-
+    Route::prefix('admin')
+    ->middleware(['auth', 'check.fakultas'])
+    ->group(function () {
+        Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::get('/admin/user', [UserController::class, 'index'])->name('admin.user.index');
+        Route::get('/admin/user/create', [UserController::class, 'create'])->name('admin.user.create');
+        Route::post('/admin/user/store', [UserController::class, 'store'])->name('admin.user.store');
+        Route::get('/admin/user/{id}/edit', [UserController::class, 'edit'])->name('admin.user.edit');
+        Route::put('/admin/user/{id}', [UserController::class, 'update'])->name('admin.user.update');
+        Route::delete('/admin/user/{id}', [UserController::class, 'destroy'])->name('admin.user.destroy');
+        });
 
 Route::get('/wilayah/{type}/{id?}', function ($type, $id = null) {
     $base = 'https://emsifa.github.io/api-wilayah-indonesia/api';

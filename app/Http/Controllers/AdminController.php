@@ -11,87 +11,132 @@ use App\Models\Registrasi;
 use App\Models\ProgramStudy;
 use Illuminate\Support\Facades\DB;
 
-
 class AdminController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
+        
+        // ── Base Query dengan Filter Role ──────────────────────────────────────
+        $baseQuery = User::query();
+        
+        // Filter untuk role Dekan - hanya lihat data fakultasnya
+        if ($user->role === 'dekan' && $user->fakultas_id) {
+            $kodeProdiFakultas = ProgramStudy::where('fakultas_id', $user->fakultas_id)
+                                            ->pluck('kodeProdi')
+                                            ->toArray();
+            
+            $baseQuery->where(function($q) use ($kodeProdiFakultas) {
+                $q->whereIn('pilihan_1', $kodeProdiFakultas)
+                  ->orWhereIn('pilihan_2', $kodeProdiFakultas);
+            });
+        }
+        
+        // ── Statistik Dasar ─────────────────────────────────────────────────────
         $totalSoal = Soal::count();
-        $totalUser = User::where('role', 'user')->count();
-        $totalAdmin = User::where('role', 'admin')->count();
-        $totalUserVerified = User::where('is_verified', true)->count();
+        $totalUser = (clone $baseQuery)->where('role', 'user')->count();
+        $totalAdmin = User::where('role', 'admin')->count(); // Admin tetap global
+        $totalUserVerified = (clone $baseQuery)->where('is_verified', true)->count();
         $totalUjian = Ujian::count();
         $ujianSelesai = Ujian::where('status', 'selesai')->count();
         $totalPertanyaanWawancara = PertanyaanWawancara::where('is_active', true)->count();
 
-        // Statistik Asal Daerah (mengambil Kabupaten/Kota dari alamat)
+        // ── Statistik Asal Daerah ───────────────────────────────────────────────
+        $userIds = (clone $baseQuery)->where('role', 'user')->pluck('id')->toArray();
+        
         $registrations = Registrasi::select('alamat')
+            ->whereIn('user_id', $userIds)
             ->whereNotNull('alamat')
             ->where('alamat', '!=', '')
             ->get();
         
         $regionStats = [];
-        
         foreach ($registrations as $reg) {
-            // Parse alamat untuk mendapatkan Kabupaten/Kota
-            // Format: Jl Keterampilan, CAPPAGALUNG, BACUKIKI BARAT, KOTA PAREPARE, SULAWESI SELATAN
             $addressParts = array_map('trim', explode(',', $reg->alamat));
-            
-            // Langsung ambil dari posisi ke-4 (index 3) karena sudah pasti formatnya
             if (isset($addressParts[3]) && !empty(trim($addressParts[3]))) {
                 $city = strtoupper(trim($addressParts[3]));
-                
-                // Format nama kota
                 $city = $this->formatCityName($city);
-                
                 if (!empty($city)) {
-                    if (isset($regionStats[$city])) {
-                        $regionStats[$city]++;
-                    } else {
-                        $regionStats[$city] = 1;
-                    }
+                    $regionStats[$city] = ($regionStats[$city] ?? 0) + 1;
                 }
             }
         }
-        
-        // Sort berdasarkan jumlah terbanyak
         arsort($regionStats);
 
-        // Statistik Jenis Kelamin
+        // ── Statistik Jenis Kelamin ─────────────────────────────────────────────
         $genderStatsRaw = Registrasi::select('jenisKelamin', DB::raw('count(*) as total'))
+            ->whereIn('user_id', $userIds)
             ->whereNotNull('jenisKelamin')
             ->where('jenisKelamin', '!=', '')
             ->groupBy('jenisKelamin')
             ->pluck('total', 'jenisKelamin')
             ->toArray();
         
-        // Format label jenis kelamin
         $genderStats = [];
         foreach ($genderStatsRaw as $gender => $count) {
             $label = $this->formatGenderLabel($gender);
-            if (isset($genderStats[$label])) {
-                $genderStats[$label] += $count;
-            } else {
-                $genderStats[$label] = $count;
-            }
+            $genderStats[$label] = ($genderStats[$label] ?? 0) + $count;
         }
 
-        $prodiStats = DB::table('users')
-        ->join('program_studis', 'users.pilihan_1', '=', 'program_studis.kodeProdi')
-        ->select('program_studis.namaProdi', DB::raw('COUNT(*) as total'))
-        ->whereNotNull('users.pilihan_1')
-        ->groupBy('program_studis.namaProdi')
-        ->orderByDesc('total')
-        ->pluck('total', 'namaProdi');
+        // ── Statistik Program Studi Pilihan 1 ───────────────────────────────────
+        $prodiQuery1 = DB::table('users')
+            ->join('program_studis', 'users.pilihan_1', '=', 'program_studis.kodeProdi')
+            ->select('program_studis.namaProdi', DB::raw('COUNT(*) as total'))
+            ->whereNotNull('users.pilihan_1');
+        
+        // Filter untuk Dekan
+        if ($user->role === 'dekan' && $user->fakultas_id) {
+            $prodiQuery1->where('program_studis.fakultas_id', $user->fakultas_id);
+        }
+        
+        $prodiStats = $prodiQuery1->groupBy('program_studis.namaProdi')
+            ->orderByDesc('total')
+            ->pluck('total', 'namaProdi');
 
-        $fakultasStats = DB::table('users')
-        ->join('program_studis', 'users.pilihan_1', '=', 'program_studis.kodeProdi')
-        ->select('program_studis.fakultas', DB::raw('COUNT(*) as total'))
-        ->whereNotNull('users.pilihan_1')
-        ->groupBy('program_studis.fakultas')
-        ->orderByDesc('total')
-        ->pluck('total', 'fakultas');
+        // ── Statistik Program Studi Pilihan 2 ───────────────────────────────────
+        $prodiQuery2 = DB::table('users')
+            ->join('program_studis', 'users.pilihan_2', '=', 'program_studis.kodeProdi')
+            ->select('program_studis.namaProdi', DB::raw('COUNT(*) as total'))
+            ->whereNotNull('users.pilihan_2');
+        
+        // Filter untuk Dekan
+        if ($user->role === 'dekan' && $user->fakultas_id) {
+            $prodiQuery2->where('program_studis.fakultas_id', $user->fakultas_id);
+        }
+        
+        $prodiStats2 = $prodiQuery2->groupBy('program_studis.namaProdi')
+            ->orderByDesc('total')
+            ->pluck('total', 'namaProdi');
 
+        // ── Statistik Fakultas Pilihan 1 ────────────────────────────────────────
+        $fakultasQuery1 = DB::table('users')
+            ->join('program_studis', 'users.pilihan_1', '=', 'program_studis.kodeProdi')
+            ->select('program_studis.fakultas', DB::raw('COUNT(*) as total'))
+            ->whereNotNull('users.pilihan_1');
+        
+        // Filter untuk Dekan
+        if ($user->role === 'dekan' && $user->fakultas_id) {
+            $fakultasQuery1->where('program_studis.fakultas_id', $user->fakultas_id);
+        }
+        
+        $fakultasStats = $fakultasQuery1->groupBy('program_studis.fakultas')
+            ->orderByDesc('total')
+            ->pluck('total', 'fakultas');
+
+        // ── Statistik Fakultas Pilihan 2 ────────────────────────────────────────
+        $fakultasQuery2 = DB::table('users')
+            ->join('program_studis', 'users.pilihan_2', '=', 'program_studis.kodeProdi')
+            ->select('program_studis.fakultas', DB::raw('COUNT(*) as total'))
+            ->whereNotNull('users.pilihan_2');
+        
+        // Filter untuk Dekan
+        if ($user->role === 'dekan' && $user->fakultas_id) {
+            $fakultasQuery2->where('program_studis.fakultas_id', $user->fakultas_id);
+        }
+        
+        $fakultasStats2 = $fakultasQuery2->groupBy('program_studis.fakultas')
+            ->orderByDesc('total')
+            ->pluck('total', 'fakultas');
 
         return view('admin.dashboard', compact(
             'totalSoal',
@@ -103,52 +148,35 @@ class AdminController extends Controller
             'regionStats',
             'genderStats',
             'prodiStats',
+            'prodiStats2',
             'fakultasStats',
+            'fakultasStats2',
             'totalPertanyaanWawancara',
         ));
     }
 
-    /**
-     * Format nama kota/kabupaten
-     */
     private function formatCityName($cityName)
     {
-        // Hapus prefix KOTA, KABUPATEN, KAB, dll
         $cityName = preg_replace('/^(KOTA|KABUPATEN|KAB\.?)\s+/i', '', $cityName);
-        
-        // Trim whitespace
         $cityName = trim($cityName);
-        
-        // Jika kosong setelah di-trim, return kosong
-        if (empty($cityName)) {
-            return '';
-        }
-        
-        // Capitalize setiap kata
-        $cityName = ucwords(strtolower($cityName));
-        
-        return $cityName;
+        if (empty($cityName)) return '';
+        return ucwords(strtolower($cityName));
     }
 
-    /**
-     * Format label jenis kelamin
-     */
     private function formatGenderLabel($gender)
     {
         $gender = strtoupper(trim($gender));
-        
         $labels = [
-            'L' => 'Laki-laki',
+            'L'         => 'Laki-laki',
             'LAKI-LAKI' => 'Laki-laki',
             'LAKI LAKI' => 'Laki-laki',
-            'MALE' => 'Laki-laki',
-            'PRIA' => 'Laki-laki',
-            'P' => 'Perempuan',
+            'MALE'      => 'Laki-laki',
+            'PRIA'      => 'Laki-laki',
+            'P'         => 'Perempuan',
             'PEREMPUAN' => 'Perempuan',
-            'WANITA' => 'Perempuan',
-            'FEMALE' => 'Perempuan',
+            'WANITA'    => 'Perempuan',
+            'FEMALE'    => 'Perempuan',
         ];
-        
         return $labels[$gender] ?? ucfirst(strtolower($gender));
     }
 }

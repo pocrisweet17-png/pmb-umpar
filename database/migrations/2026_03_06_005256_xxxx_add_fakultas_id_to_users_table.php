@@ -12,7 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('is_bayar_pendaftaran')->default(false)->after('is_prodi_selected');
+            $table->foreignId('fakultas_id')
+                  ->nullable()
+                  ->after('role')
+                  ->constrained('fakultas')
+                  ->onDelete('set null');
         });
     }
 
@@ -22,7 +26,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('is_bayar_pendaftaran');
+            $table->dropForeign(['fakultas_id']);
+            $table->dropColumn('fakultas_id');
         });
     }
 };

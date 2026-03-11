@@ -10,12 +10,10 @@ use Illuminate\Support\Facades\DB;
 class KeuanganController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Apply shared filters to a query.
      */
-    public function index(Request $request)
+    private function applyFilters($query, Request $request)
     {
-        $query = Payment::with(['user.programStudiPilihan1']);
-
         // Filter by tipe pembayaran
         if ($request->filled('tipe_pembayaran')) {
             $query->where('tipe_pembayaran', $request->tipe_pembayaran);
@@ -31,12 +29,20 @@ class KeuanganController extends Controller
             $query->where('metode_pembayaran', $request->metode_pembayaran);
         }
 
+        // Filter by jenjang (S1, S2, S3)
+        if ($request->filled('jenjang')) {
+            $jenjang = $request->jenjang;
+            $query->whereHas('user.programStudiPilihan1', function ($q) use ($jenjang) {
+                $q->where('jenjang', $jenjang);
+            });
+        }
+
         // Search by nama lengkap atau order_id
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('order_id', 'LIKE', "%{$search}%")
-                  ->orWhereHas('user', function($userQuery) use ($search) {
+                  ->orWhereHas('user', function ($userQuery) use ($search) {
                       $userQuery->where('nama_lengkap', 'LIKE', "%{$search}%")
                                 ->orWhere('username', 'LIKE', "%{$search}%")
                                 ->orWhere('email', 'LIKE', "%{$search}%");
@@ -51,6 +57,18 @@ class KeuanganController extends Controller
         if ($request->filled('end_date')) {
             $query->whereDate('created_at', '<=', $request->end_date);
         }
+
+        return $query;
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $query = Payment::with(['user.programStudiPilihan1']);
+
+        $this->applyFilters($query, $request);
 
         $payments = $query->orderBy('created_at', 'desc')->get();
 
@@ -78,53 +96,27 @@ class KeuanganController extends Controller
     {
         $query = Payment::with(['user.programStudiPilihan1']);
 
-        // Apply same filters as index
-        if ($request->filled('tipe_pembayaran')) {
-            $query->where('tipe_pembayaran', $request->tipe_pembayaran);
-        }
-        if ($request->filled('status_transaksi')) {
-            $query->where('status_transaksi', $request->status_transaksi);
-        }
-        if ($request->filled('metode_pembayaran')) {
-            $query->where('metode_pembayaran', $request->metode_pembayaran);
-        }
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('order_id', 'LIKE', "%{$search}%")
-                  ->orWhereHas('user', function($userQuery) use ($search) {
-                      $userQuery->where('nama_lengkap', 'LIKE', "%{$search}%")
-                                ->orWhere('username', 'LIKE', "%{$search}%")
-                                ->orWhere('email', 'LIKE', "%{$search}%");
-                  });
-            });
-        }
-        if ($request->filled('start_date')) {
-            $query->whereDate('created_at', '>=', $request->start_date);
-        }
-        if ($request->filled('end_date')) {
-            $query->whereDate('created_at', '<=', $request->end_date);
-        }
+        $this->applyFilters($query, $request);
 
         $payments = $query->orderBy('created_at', 'desc')->get();
 
         // Create CSV
         $filename = 'laporan_keuangan_' . date('Y-m-d_His') . '.csv';
-        
+
         $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Type'        => 'text/csv; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-            'Pragma' => 'no-cache',
-            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-            'Expires' => '0'
+            'Pragma'              => 'no-cache',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires'             => '0',
         ];
 
-        $callback = function() use ($payments) {
+        $callback = function () use ($payments) {
             $file = fopen('php://output', 'w');
-            
+
             // UTF-8 BOM for Excel compatibility
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
             // Header
             fputcsv($file, [
                 'No',
@@ -133,10 +125,11 @@ class KeuanganController extends Controller
                 'Nama Lengkap',
                 'Email',
                 'Program Studi',
+                'Jenjang',
                 'Tipe Pembayaran',
                 'Metode Pembayaran',
                 'Status',
-                'Jumlah (Rp)'
+                'Jumlah (Rp)',
             ]);
 
             // Data
@@ -149,10 +142,11 @@ class KeuanganController extends Controller
                     $payment->user->nama_lengkap ?? '-',
                     $payment->user->email ?? '-',
                     $payment->user->programStudiPilihan1->namaProdi ?? '-',
+                    strtoupper($payment->user->programStudiPilihan1->jenjang ?? '-'),
                     ucfirst($payment->tipe_pembayaran),
                     ucfirst($payment->metode_pembayaran ?? 'Online'),
                     ucfirst($payment->status_transaksi),
-                    number_format($payment->jumlah, 0, ',', '.')
+                    number_format($payment->jumlah, 0, ',', '.'),
                 ]);
             }
 

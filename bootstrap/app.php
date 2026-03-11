@@ -26,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.wawancara'   => \App\Http\Middleware\StepWawancara::class,
             'check.ukt'         => \App\Http\Middleware\StepBayarUkt::class,
             'check.daftarulang' => \App\Http\Middleware\StepDaftarUlang::class,
+            'check.fakultas' => \App\Http\Middleware\CheckFakultasAccess::class,
         ]);
 
     })

@@ -67,85 +67,229 @@
     <!-- Search & Filter Section -->
     <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
         <form method="GET" action="{{ route('admin.user.index') }}" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+            <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+
                 <!-- Search Input -->
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         🔍 Cari Camaba
                     </label>
+
                     <div class="relative">
-                        <input type="text" 
-                                name="search" 
-                                value="{{ request('search') }}"
-                                placeholder="Cari nama, username, email, NIK, WA, atau no registrasi..."
-                                class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        <input type="text"
+                            name="search"
+                            value="{{ request('search') }}"
+                            placeholder="Cari nama, username, email, NIK, WA, atau no registrasi..."
+                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+
+                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                            <path stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+
                         </svg>
                     </div>
                 </div>
-            
+
+
                 <!-- Role Filter -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Role
                     </label>
-                    <select name="role" 
-                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+
+                    <select name="role"
+                        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+
                         <option value="">Semua Role</option>
-                        <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
-                        <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                        <option value="keuangan" {{ request('role') == 'keuangan' ? 'selected' : '' }}>Keuangan</option>
-                        <option value="wr-3" {{ request('role') == 'wr-3' ? 'selected' : '' }}>Wakil Rektor 3</option>
-                        <option value="admisi" {{ request('role') == 'admisi' ? 'selected' : '' }}>Admisi</option>
+
+                        <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>
+                            User
+                        </option>
+
+                        <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>
+                            Admin
+                        </option>
+
+                        <option value="keuangan" {{ request('role') == 'keuangan' ? 'selected' : '' }}>
+                            Keuangan
+                        </option>
+
+                        <option value="wr-3" {{ request('role') == 'wr-3' ? 'selected' : '' }}>
+                            Wakil Rektor 3
+                        </option>
+
+                        <option value="admisi" {{ request('role') == 'admisi' ? 'selected' : '' }}>
+                            Admisi
+                        </option>
+
+                        <option value="dekan" {{ request('role') == 'dekan' ? 'selected' : '' }}>
+                            Dekan
+                        </option>
+
                     </select>
                 </div>
-            
+
+
+                <!-- Filter Fakultas -->
+                @if(in_array(auth()->user()->role, ['admin','wr-3','admisi']))
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Fakultas
+                    </label>
+
+                    <select name="fakultas"
+                        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+
+                        <option value="">Semua Fakultas</option>
+
+                        @foreach(\App\Models\Fakultas::where('is_active', true)->get() as $fak)
+
+                            <option value="{{ $fak->id }}"
+                                {{ request('fakultas') == $fak->id ? 'selected' : '' }}>
+
+                                {{ $fak->nama_fakultas }}
+
+                            </option>
+
+                        @endforeach
+
+                    </select>
+                </div>
+                @endif
+
+
+                <!-- Filter Prodi -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Program Studi
+                    </label>
+
+                    <select name="prodi"
+                        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+
+                        <option value="">Semua Prodi</option>
+
+                        @foreach(\App\Models\ProgramStudy::all() as $prodi)
+
+                            <option value="{{ $prodi->kodeProdi }}"
+                                {{ request('prodi') == $prodi->kodeProdi ? 'selected' : '' }}>
+
+                                {{ $prodi->namaProdi }}
+
+                            </option>
+
+                        @endforeach
+
+                    </select>
+                </div>
+
+
                 <!-- Verification Filter -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Status
                     </label>
-                    <select name="verified" 
-                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+
+                    <select name="verified"
+                        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+
                         <option value="">Semua Status</option>
-                        <option value="1" {{ request('verified') === '1' ? 'selected' : '' }}>Verified</option>
-                        <option value="0" {{ request('verified') === '0' ? 'selected' : '' }}>Unverified</option>
+
+                        <option value="1" {{ request('verified') === '1' ? 'selected' : '' }}>
+                            Verified
+                        </option>
+
+                        <option value="0" {{ request('verified') === '0' ? 'selected' : '' }}>
+                            Unverified
+                        </option>
+
                     </select>
                 </div>
+
             </div>
-        
+
+
             <!-- Action Buttons -->
             <div class="flex flex-wrap gap-3">
-                <button type="submit" 
-                        class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/30">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+
+                <button type="submit"
+                    class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/30">
+
+                    <svg class="w-5 h-5 mr-2"
+                        fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+
+                        <path stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+
                     </svg>
+
                     Cari
+
                 </button>
-                
-                @if(request('search') || request('role') || request('verified') !== null)
-                    <a href="{{ route('admin.user.index') }}" 
-                        class="inline-flex items-center bg-gray-500 hover:bg-gray-600 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
-                        Reset Filter
-                    </a>
+
+
+                @if(request('search') || request('role') || request('verified') !== null || request('fakultas') || request('prodi'))
+
+                <a href="{{ route('admin.user.index') }}"
+                    class="inline-flex items-center bg-gray-500 hover:bg-gray-600 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg">
+
+                    <svg class="w-5 h-5 mr-2"
+                        fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+
+                        <path stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+
+                    </svg>
+
+                    Reset Filter
+
+                </a>
+
                 @endif
-                
-                @if(request('search') || request('role') || request('verified') !== null)
-                    <div class="flex items-center text-sm text-gray-600 bg-blue-50 px-4 py-2.5 rounded-xl border border-blue-200">
-                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span class="font-semibold">{{ $users->count() }}</span>&nbsp;hasil ditemukan
-                    </div>
+
+
+                @if(request('search') || request('role') || request('verified') !== null || request('fakultas') || request('prodi'))
+
+                <div class="flex items-center text-sm text-gray-600 bg-blue-50 px-4 py-2.5 rounded-xl border border-blue-200">
+
+                    <svg class="w-5 h-5 mr-2 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+
+                        <path stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+
+                    </svg>
+
+                    <span class="font-semibold">
+                        {{ $users->count() }}
+                    </span>
+
+                    &nbsp;hasil ditemukan
+
+                </div>
+
                 @endif
+
             </div>
+
         </form>
     </div>
+
 
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -298,6 +442,10 @@
                                 @elseif($user->role === 'admisi')
                                 <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-full">
                                         ADMISI
+                                    </span>
+                                @elseif($user->role === 'dekan')
+                                <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-full">
+                                        DEKAN
                                     </span>
                                 @else
                                     <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-full">
