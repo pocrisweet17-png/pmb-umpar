@@ -6,6 +6,7 @@
 @section('content')
 @php
     $isAdmin = auth()->user()->role === 'admin';
+    $isAdmisi = auth()->user()->role === 'admisi';
 @endphp
 <div class="space-y-6">
 
@@ -64,7 +65,7 @@
             </a>
         </div>
     </div>
-    <!-- Search & Filter Section -->
+        <!-- Search & Filter Section -->
     <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
         <form method="GET" action="{{ route('admin.user.index') }}" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -74,8 +75,8 @@
                         🔍 Cari Camaba
                     </label>
                     <div class="relative">
-                        <input type="text" 
-                                name="search" 
+                        <input type="text"
+                                name="search"
                                 value="{{ request('search') }}"
                                 placeholder="Cari nama, username, email, NIK, WA, atau no registrasi..."
                                 class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
@@ -84,13 +85,11 @@
                         </svg>
                     </div>
                 </div>
-            
+
                 <!-- Role Filter -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Role
-                    </label>
-                    <select name="role" 
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                    <select name="role"
                             class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                         <option value="">Semua Role</option>
                         <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
@@ -98,44 +97,83 @@
                         <option value="keuangan" {{ request('role') == 'keuangan' ? 'selected' : '' }}>Keuangan</option>
                         <option value="wr-3" {{ request('role') == 'wr-3' ? 'selected' : '' }}>Wakil Rektor 3</option>
                         <option value="admisi" {{ request('role') == 'admisi' ? 'selected' : '' }}>Admisi</option>
+                        <option value="dekan" {{ request('role') == 'dekan' ? 'selected' : '' }}>Dekan</option>
                     </select>
                 </div>
-            
-                <!-- Verification Filter -->
+
+                <!-- Status / Progress Filter -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Status
-                    </label>
-                    <select name="verified" 
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status / Progress</label>
+                    <select name="verified"
                             class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                         <option value="">Semua Status</option>
-                        <option value="1" {{ request('verified') === '1' ? 'selected' : '' }}>Verified</option>
-                        <option value="0" {{ request('verified') === '0' ? 'selected' : '' }}>Unverified</option>
+                        <optgroup label="── Status Verifikasi ──">
+                            <option value="1" {{ request('verified') === '1' ? 'selected' : '' }}>Verified</option>
+                            <option value="0" {{ request('verified') === '0' ? 'selected' : '' }}>Unverified</option>
+                        </optgroup>
+                        <optgroup label="── Progress PMB ──">
+                            <option value="step_prodi"        {{ request('verified') === 'step_prodi'        ? 'selected' : '' }}>1. Sudah Pilih Prodi</option>
+                            <option value="step_bayar"        {{ request('verified') === 'step_bayar'        ? 'selected' : '' }}>2. Sudah Bayar Pendaftaran</option>
+                            <option value="step_data"         {{ request('verified') === 'step_data'         ? 'selected' : '' }}>3. Data Pribadi Lengkap</option>
+                            <option value="step_dokumen"      {{ request('verified') === 'step_dokumen'      ? 'selected' : '' }}>4. Dokumen Terupload</option>
+                            <option value="step_tes"          {{ request('verified') === 'step_tes'          ? 'selected' : '' }}>5. Tes Selesai</option>
+                            <option value="step_wawancara"    {{ request('verified') === 'step_wawancara'    ? 'selected' : '' }}>6. Wawancara Selesai</option>
+                            <option value="step_ukt"          {{ request('verified') === 'step_ukt'          ? 'selected' : '' }}>7. Sudah Bayar Pendaftaran Ulang</option>
+                            <option value="step_daftar_ulang" {{ request('verified') === 'step_daftar_ulang' ? 'selected' : '' }}>8. Sudah Daftar Ulang</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- Filter Fakultas -->
+                @if(in_array(auth()->user()->role, ['admin','wr-3','admisi']))
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Fakultas</label>
+                    <select name="fakultas"
+                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        <option value="">Semua Fakultas</option>
+                        @foreach(\App\Models\Fakultas::where('is_active', true)->get() as $fak)
+                            <option value="{{ $fak->id }}" {{ request('fakultas') == $fak->id ? 'selected' : '' }}>
+                                {{ $fak->nama_fakultas }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
+
+                <!-- Filter Prodi -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Program Studi</label>
+                    <select name="prodi"
+                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        <option value="">Semua Prodi</option>
+                        @foreach(\App\Models\ProgramStudy::all() as $prodi)
+                            <option value="{{ $prodi->kodeProdi }}" {{ request('prodi') == $prodi->kodeProdi ? 'selected' : '' }}>
+                                {{ $prodi->namaProdi }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
             </div>
-        
+
             <!-- Action Buttons -->
             <div class="flex flex-wrap gap-3">
-                <button type="submit" 
+                <button type="submit"
                         class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/30">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                     Cari
                 </button>
-                
-                @if(request('search') || request('role') || request('verified') !== null)
-                    <a href="{{ route('admin.user.index') }}" 
+
+                @if(request('search') || request('role') || request('verified') !== null || request('fakultas') || request('prodi'))
+                    <a href="{{ route('admin.user.index') }}"
                         class="inline-flex items-center bg-gray-500 hover:bg-gray-600 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>
                         Reset Filter
                     </a>
-                @endif
-                
-                @if(request('search') || request('role') || request('verified') !== null)
+
                     <div class="flex items-center text-sm text-gray-600 bg-blue-50 px-4 py-2.5 rounded-xl border border-blue-200">
                         <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -217,6 +255,9 @@
                                 <p><strong>Email:</strong> {{ $user->email }}</p>
                                 <p><strong>NIK:</strong> {{ $user->nik }}</p>
                                 <p><strong>WhatsApp:</strong> {{ $user->no_whatsapp }}</p>
+                                <p><strong>Prodi Pilihan 1:</strong> {{ $user->programStudiPilihan1?->namaProdi ?? '-'  }}</p>
+                                <p><strong>Prodi Pilihan 2:</strong> {{ $user->programStudiPilihan2?->namaProdi ?? '-'  }}</p>
+                                
                             </div>
                         </div>
                     </div>
@@ -256,22 +297,44 @@
                         </div>
                     </div>
                     <div class="flex gap-2">
-                        <a href="{{ route('admin.user.edit', $user->id) }}"
-                           class="flex-1 bg-amber-500 text-white px-4 py-2.5 rounded-lg hover:bg-amber-600 transition-colors text-center font-medium text-sm shadow-sm">
-                            Edit
-                        </a>
-
-                        @if($user->id !== auth()->id() && $isAdmin)
-                            <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST" class="flex-1"
-                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                        class="w-full bg-red-500 text-white px-4 py-2.5 rounded-lg hover:bg-red-600 transition-colors font-medium text-sm shadow-sm">
-                                    Hapus
+                        @if($isAdmisi)
+                            <div class="flex-1 relative group/btn">
+                                <button disabled
+                                        class="w-full inline-flex items-center justify-center bg-gray-200 text-gray-400 px-4 py-2.5 rounded-lg cursor-not-allowed font-medium text-sm border border-gray-300">
+                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                    </svg>
+                                    Edit
                                 </button>
-                            </form>
+                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none
+                                            opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200">
+                                    <div class="bg-gray-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
+                                        Akses ditolak — Role Admisi
+                                    </div>
+                                    <div class="w-2 h-2 bg-gray-900 rotate-45 mx-auto -mt-1"></div>
+                                </div>
+                            </div>
+                        @else
+                            <a href="{{ route('admin.user.edit', $user->id) }}"
+                            class="flex-1 bg-amber-500 text-white px-4 py-2.5 rounded-lg hover:bg-amber-600 transition-colors text-center font-medium text-sm shadow-sm">
+                                Edit
+                            </a>
                         @endif
+
+                            @if($user->id !== auth()->id() && $isAdmin)
+                                <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST"
+                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="inline-flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all shadow-sm font-medium text-sm">
+                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        Hapus
+                                    </button>
+                                </form>
+                            @endif
                     </div>
                 </div>
             @empty
@@ -289,18 +352,20 @@
 
         <!-- Desktop Table View -->
         <div class="hidden lg:block overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table class="min-w-full divide-y divide-gray-200 table-fixed">
                 <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
                     <tr>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nama</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Username</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Email</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">NIK</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">WhatsApp</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Role</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Progres</th>
-                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
+                        <th class="px-4 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-40">Nama</th>
+                        <th class="px-4 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-28">Username</th>
+                        <th class="px-4 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-44">Email</th>
+                        <th class="px-4 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-36">NIK</th>
+                        <th class="px-4 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-32">WhatsApp</th>
+                        <th class="px-4 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-40">Prodi Pilihan 1</th>
+                        <th class="px-4 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-40">Prodi Pilihan 2</th>
+                        <th class="px-4 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-24">Role</th>
+                        <th class="px-4 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-24">Status</th>
+                        <th class="px-4 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-52">Progres</th>
+                        <th class="px-4 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider w-36">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
@@ -318,6 +383,8 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $user->email }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $user->nik }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $user->no_whatsapp }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $user->programStudiPilihan1?->namaProdi ?? '-' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $user->programStudiPilihan2?->namaProdi ?? '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($user->role === 'admin')
                                     <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-purple-800 bg-purple-100 rounded-full">
@@ -398,22 +465,40 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex gap-2">
-                                    <a href="{{ route('admin.user.edit', $user->id) }}"
-                                       class="inline-flex items-center bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-all shadow-sm hover:shadow font-medium text-sm">
-                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                        </svg>
-                                        Lihat / Edit
-                                    </a>
-                                    @if($user->id !== auth()->id())
+                                    @if($isAdmisi)
+                                    {{-- disable admisi --}}
+                                        <div class="relative group/btn">
+                                            <button disabled
+                                                    class="inline-flex items-center bg-gray-200 text-gray-400 px-4 py-2 rounded-lg cursor-not-allowed font-medium text-sm border border-gray-300">
+                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                                </svg>
+                                                Lihat / Edit
+                                            </button>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none
+                                                        opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200">
+                                                <div class="bg-gray-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
+                                                    Akses ditolak — Role Admisi
+                                                </div>
+                                                <div class="w-2 h-2 bg-gray-900 rotate-45 mx-auto -mt-1"></div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <a href="{{ route('admin.user.edit', $user->id) }}"
+                                        class="inline-flex items-center bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-all shadow-sm hover:shadow font-medium text-sm">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                            Lihat / Edit
+                                        </a>
+                                    @endif
+                                    @if($user->id !== auth()->id() && $isAdmin)
                                         <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST"
-                                              onsubmit="return {{ $isAdmin ? "confirm('Apakah Anda yakin ingin menghapus user ini?')" : 'false' }}">
+                                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                    {{ !$isAdmin ? 'disabled' : '' }}
-                                                    class="inline-flex items-center bg-red-500 text-white px-4 py-2 rounded-lg transition-all shadow-sm font-medium text-sm
-                                                           {{ !$isAdmin ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-600 hover:shadow' }}">
+                                                    class="inline-flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all shadow-sm font-medium text-sm">
                                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>
@@ -421,7 +506,6 @@
                                             </button>
                                         </form>
                                     @endif
-                                </div>
                             </td>
                         </tr>
                     @empty

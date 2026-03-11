@@ -18,6 +18,7 @@ return new class extends Migration
     $table->string('fakultas');
     $table->integer('kuota');
     $table->double('passingGrade', 8, 2)->nullable();
+    $table->integer('fakultas_id')->unsigned();
     $table->timestamps();
 });
     }

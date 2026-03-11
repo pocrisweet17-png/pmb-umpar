@@ -39,18 +39,25 @@ php artisan storage:link
 # KITA DI SURUH MENAMBAH FITUR oleh pak wr 3:
 
 - ketika sudah lulus test (step 8), dia akan masuk ke halaman web masing masing PRODINYA(nanti dia akan bisa tahu
-berapa yang lulus di prodinya) dan datanya bisa di cetak berdasarkan EXCEL atau PDF.
+berapa yang lulus di prodinya) dan datanya bisa di cetak berdasarkan EXCEL atau PDF.  ❌
 
-- siapkan admin untuk pimpinan.
-- yang mengeksekusi wawancara langsung di prodi.
+- siapkan admin untuk pimpinan (cuma bisa ceklis wawancara) yang mengeksekusi wawancara langsung di prodi. ❌
+
+
 
 
 # PERMINTAAN PAK UNTUNG
-- SKRIPSI SAYA TENTANG RPL untuk PMB (kategori WEB).
-- manempilkan jumlah bayar ofline dan online
-- perbaiki masalah virtual account
-- step mahasiswa di kolom mahasiswa (prioritas).
+- SKRIPSI SAYA TENTANG RPL untuk PMB (kategori WEB). 
+- manempilkan jumlah bayar ofline dan online.
+- perbaiki masalah virtual account.
+- step mahasiswa di kolom mahasiswa (prioritas). ✅
 - buat halaman supaya orang fakultas bisa lihat 
+
+# permintaan kak hj jasman
+- menampilkan semua data mahasiswa. (p1)  ✅
+- tambah filter untuk step yang ada di dashboard.(p1)  ✅
+- hilangkan verifiaksi di navbar kelola data mahasiswa.
+
 
 
 

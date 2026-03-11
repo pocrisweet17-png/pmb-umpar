@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             BiayaPmbSeeder::class,      // Seeder baru untuk biaya
             SoalSeeder::class,
             PertanyaanWawancaraSeeder::class,
+            FakultasSeeder::class,     // Seeder baru untuk fakultas
         ]);
     }
 }

@@ -33,9 +33,44 @@ class UserController extends Controller
                 $query->where('role', $request->role);
             }
         
-            // Filter by verifikasi status
+            // Filter by verifikasi status atau progress step
             if ($request->filled('verified')) {
-                $query->where('is_verified', (int)$request->verified);
+                $stepMap = [
+                    'step_prodi'        => 'is_prodi_selected',
+                    'step_bayar'        => 'is_bayar_pendaftaran',
+                    'step_data'         => 'is_data_completed',
+                    'step_dokumen'      => 'is_dokumen_uploaded',
+                    'step_tes'          => 'is_tes_selesai',
+                    'step_wawancara'    => 'is_wawancara_selesai',
+                    'step_ukt'          => 'is_ukt_paid',
+                    'step_daftar_ulang' => 'is_daftar_ulang',
+                ];
+
+                $verifiedVal = $request->verified;
+
+                if (array_key_exists($verifiedVal, $stepMap)) {
+                    $query->where($stepMap[$verifiedVal], true);
+                } else {
+                    $query->where('is_verified', (int)$verifiedVal);
+                }
+            }
+
+            if ($request->filled('fakultas')) {
+                $kodeProdiList = \App\Models\ProgramStudy::where('fakultas_id', $request->fakultas)
+                    ->pluck('kodeProdi')
+                    ->toArray();
+
+                $query->where(function($q) use ($kodeProdiList) {
+                    $q->whereIn('pilihan_1', $kodeProdiList)
+                    ->orWhereIn('pilihan_2', $kodeProdiList);
+                });
+            }
+
+            if ($request->filled('prodi')) {
+                $query->where(function($q) use ($request) {
+                    $q->where('pilihan_1', $request->prodi)
+                    ->orWhere('pilihan_2', $request->prodi);
+                });
             }
         
             $users = $query->orderBy('created_at', 'desc')->get();

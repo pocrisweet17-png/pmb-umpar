@@ -1,3 +1,25 @@
+@php
+    $authRole = auth()->user()->role;
+    $isAdminFull = $authRole === 'admin';
+    $isKeuangan = $authRole === 'keuangan';
+    $isWR3 = $authRole === 'wr3';
+    $isAdmisi = $authRole === 'admisi';
+
+    $navAccess = [
+        'admin.dashboard'       => true,   
+        'admin.soal.*'          => false,  
+        'admin.user.index'      => true,   
+        'admin.wawancara.*'     => false,  
+        'admin.landing-page.*'  => false,  
+        'admin.user.daftar-ulang' => true, 
+        'admin.program-studi.*' => false,  
+        'admin.biaya-pmb.*'     => false,  
+        'admin.keuangan.*'      => false,   
+    ];
+@endphp
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,138 +69,164 @@
             </div>
 
             <nav class="flex-1 overflow-y-auto py-8 px-4 space-y-2">
-                <a href="{{ route('admin.dashboard') }}"
-                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.dashboard') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.dashboard') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                        </svg>
-                    </div>
-                    <span class="ml-3 font-medium">Dashboard</span>
-                </a>
+                    {{-- Dashboard --}}
+                    @php $canAccess = $isAdminFull; @endphp
+                    @if($canAccess)
+                        <a href="{{ route('admin.dashboard') }}"
+                        class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.dashboard') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    @else
+                        <div title="Anda tidak memiliki akses ke menu ini"
+                            class="group flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                    @endif
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.dashboard') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                                </svg>
+                            </div>
+                            <span class="ml-3 font-medium">Dashboard</span>
+                    @if($canAccess) </a> @else </div> @endif
 
-                <a href="{{ route('admin.soal.index') }}"
-                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.soal.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.soal.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                    </div>
-                    <span class="ml-3 font-medium">Kelola Soal</span>
-                </a>
-                {{-- nav untuk kelola calon maba --}}
-                <a href="{{ route('admin.user.index') }}"
-                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.index') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.index') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                        </svg>
-                    </div>
-                    <span class="ml-3 font-medium">Kelola Camaba</span>
-                </a>
-                {{-- nav kelola pertanyaan wawancara --}}
-                <a href="{{ route('admin.wawancara.index') }}"
-                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.wawancara.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.wawancara.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-                        </svg>
-                    </div>
-                    <span class="ml-3 font-medium">Kelola Wawancara</span>
-                </a>
+                    {{-- Kelola Soal --}}
+                    @php $canAccess = $isAdminFull; @endphp
+                    @if($canAccess)
+                        <a href="{{ route('admin.soal.index') }}"
+                        class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.soal.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    @else
+                        <div title="Anda tidak memiliki akses ke menu ini"
+                            class="group flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                    @endif
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.soal.*') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                            </div>
+                            <span class="ml-3 font-medium">Kelola Soal</span>
+                    @if($canAccess) </a> @else </div> @endif
 
-                <!-- Kelola Landing Page -->
-                <a href="{{ route('admin.landing-page.index') }}"
-                    class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.landing-page.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.landing-page.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
-                        </svg>
-                    </div>
-                    <span class="ml-3 font-medium">Landing Page</span>
-                </a>
+                   {{-- Kelola Camaba --}}
+                        @php $canAccess = $isAdminFull || $isAdmisi || $isWR3; @endphp
+                        @if($canAccess)
+                            <a href="{{ route('admin.user.index') }}"
+                            class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.index') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                        @else
+                            <div title="Anda tidak memiliki akses ke menu ini"
+                                class="flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                        @endif
+                                <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.index') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                    </svg>
+                                </div>
+                                <span class="ml-3 font-medium">Kelola Camaba</span>
+                        @if($canAccess)
+                            </a> 
+                        @else 
+                        </div>
+                        @endif
+                    {{-- Kelola Wawancara --}}
+                    @php $canAccess = $isAdminFull || $isWR3; @endphp
+                    @if($canAccess)
+                        <a href="{{ route('admin.wawancara.index') }}"
+                        class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.wawancara.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    @else
+                        <div title="Anda tidak memiliki akses ke menu ini"
+                            class="group flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                    @endif
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.wawancara.*') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                                </svg>
+                            </div>
+                            <span class="ml-3 font-medium">Kelola Wawancara</span>
+                    @if($canAccess) </a> @else </div> @endif
 
-                {{-- nav untuk kelola calon Data Mahasiswa --}}
-                <a href="{{ route('admin.user.daftar-ulang') }}"
-                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.daftar-ulang') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.daftar-ulang') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                        </svg>
-                    </div>
-                    <span class="ml-3 font-medium">Data Mahasiswa</span>
-                </a>
-                
-                 <!-- Kelola Program Studi -->
-                <a href="{{ route('admin.program-studi.index') }}" 
-                class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl
-                {{ request()->routeIs('admin.program-studi.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    {{-- Landing Page --}}
+                    @php $canAccess = $isAdminFull; @endphp
+                    @if($canAccess)
+                        <a href="{{ route('admin.landing-page.index') }}"
+                        class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.landing-page.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    @else
+                        <div title="Anda tidak memiliki akses ke menu ini"
+                            class="group flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                    @endif
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.landing-page.*') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+                                </svg>
+                            </div>
+                            <span class="ml-3 font-medium">Landing Page</span>
+                    @if($canAccess) </a> @else </div> @endif
 
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center
-                        {{ request()->routeIs('admin.program-studi.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }}
-                        transition-colors">
-
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5
-                                S4.168 5.477 3 6.253v13
-                                C4.168 18.477 5.754 18 7.5 18
-                                s3.332.477 4.5 1.253m0-13
-                                C13.168 5.477 14.754 5 16.5 5
-                                c1.747 0 3.332.477 4.5 1.253v13
-                                C19.832 18.477 18.247 18 16.5 18
-                                c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                    </div>
-
-                    <span class="ml-3 font-medium">Kelola Program Studi</span>
-                </a>
-                {{-- Kelola Biaya PMB --}}
-                <a href="{{ route('admin.biaya-pmb.index') }}"
-                class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl
-                {{ request()->routeIs('admin.biaya-pmb.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
                     
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center
-                        {{ request()->routeIs('admin.biaya-pmb.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }}
-                        transition-colors">
-                        
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2
-                                3 .895 3 2-1.343 2-3 2
-                                m0-8c1.11 0 2.08.402 2.599 1
-                                M12 8V7m0 1v8m0 0v1
-                                m0-1c-1.11 0-2.08-.402-2.599-1
-                                M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
+                    {{-- Kelola data mahasiswa --}}
+                    @php $canAccess = $isAdminFull || $isWR3; @endphp
+                    @if($canAccess)
+                        <a href="{{ route('admin.user.daftar-ulang') }}"
+                        class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.daftar-ulang*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    @else
+                        <div title="Anda tidak memiliki akses ke menu ini"
+                            class="flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                    @endif
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.daftar-ulang') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <span class="ml-3 font-medium">Kelola Data Mahasiswa</span>
+                    @if($canAccess) </a> @else </div> @endif
 
-                    <span class="ml-3 font-medium">Kelola Biaya PMB</span>
-                </a>
+                    {{-- Kelola Program Studi --}}
+                    @php $canAccess = $isAdminFull; @endphp
+                    @if($canAccess)
+                        <a href="{{ route('admin.program-studi.index') }}"
+                        class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.program-studi.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    @else
+                        <div title="Anda tidak memiliki akses ke menu ini"
+                            class="group flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                    @endif
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.program-studi.*') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                            </div>
+                            <span class="ml-3 font-medium">Kelola Program Studi</span>
+                    @if($canAccess) </a> @else </div> @endif
 
-                {{-- Kelola Keuangan --}}
-                <a href="{{ route('admin.keuangan.index') }}"
-                class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl
-                {{ request()->routeIs('admin.keuangan.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
-                    
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center
-                        {{ request()->routeIs('admin.keuangan.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }}
-                        transition-colors">
-                        
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 7h6m0 10v-3m-3 3h.01
-                                M9 17h.01M9 14h.01
-                                M12 14h.01M15 11h.01
-                                M12 11h.01M9 11h.01
-                                M7 21h10a2 2 0 002-2V5
-                                a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                        </svg>
-                    </div>
+                    {{-- Kelola Biaya PMB --}}
+                    @php $canAccess = $isAdminFull; @endphp
+                    @if($canAccess)
+                        <a href="{{ route('admin.biaya-pmb.index') }}"
+                        class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.biaya-pmb.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    @else
+                        <div title="Anda tidak memiliki akses ke menu ini"
+                            class="group flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                    @endif
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.biaya-pmb.*') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <span class="ml-3 font-medium">Kelola Biaya PMB</span>
+                    @if($canAccess) </a> @else </div> @endif
 
-                    <span class="ml-3 font-medium">Kelola Keuangan</span>
-                </a>
-            </nav>
+                    {{-- Kelola Keuangan --}}
+                    @php $canAccess = $isAdminFull || $isKeuangan; @endphp
+                    @if($canAccess)
+                        <a href="{{ route('admin.keuangan.index') }}"
+                        class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.keuangan.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    @else
+                        <div title="Anda tidak memiliki akses ke menu ini"
+                            class="flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                    @endif
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.keuangan.*') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <span class="ml-3 font-medium">Kelola Keuangan</span>
+                    @if($canAccess) </a> @else </div> @endif
+
+                </nav>
 
             <div class="p-6 border-t border-gray-800/50">
                 <form method="POST" action="{{ route('logout') }}">
@@ -235,48 +283,89 @@
             </div>
 
             <nav class="flex-1 overflow-y-auto py-8 px-4 space-y-2">
-                <a href="{{ route('admin.dashboard') }}"
-                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.dashboard') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.dashboard') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                        </svg>
-                    </div>
-                    <span class="ml-3 font-medium">Dashboard</span>
-                </a>
 
-                <a href="{{ route('admin.soal.index') }}"
-                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.soal.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.soal.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                    </div>
-                    <span class="ml-3 font-medium">Kelola Soal</span>
-                </a>
+                {{-- Dashboard --}}
+                @php $canAccess = $isAdminFull; @endphp
+                @if($canAccess)
+                    <a href="{{ route('admin.dashboard') }}"
+                    class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.dashboard') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                @else
+                    <div title="Anda tidak memiliki akses ke menu ini"
+                        class="flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                @endif
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.dashboard') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            </svg>
+                        </div>
+                        <span class="ml-3 font-medium">Dashboard</span>
+                @if($canAccess) </a> @else </div> @endif
 
+                {{-- Kelola Soal --}}
+                @php $canAccess = $isAdminFull; @endphp
+                @if($canAccess)
+                    <a href="{{ route('admin.soal.index') }}"
+                    class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.soal.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                @else
+                    <div title="Anda tidak memiliki akses ke menu ini"
+                        class="flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                @endif
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.soal.*') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <span class="ml-3 font-medium">Kelola Soal</span>
+                @if($canAccess) </a> @else </div> @endif
+
+                {{-- Kelola Camaba --}}
                 <a href="{{ route('admin.user.index') }}"
-                  class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.index') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
-                   <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.index') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
+                class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.index') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.index') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
                     </div>
-                    <span class="ml-3 font-medium">Kelola User</span>
-                {{-- kelola pertanyaan wawancara --}}
+                    <span class="ml-3 font-medium">Kelola Camaba</span>
+                </a>
+
+                {{-- Kelola Wawancara --}}
+                @php $canAccess = $isAdminFull; @endphp
+                @if($canAccess)
                     <a href="{{ route('admin.wawancara.index') }}"
-                       class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.wawancara.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.wawancara.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
+                    class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.wawancara.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                @else
+                    <div title="Anda tidak memiliki akses ke menu ini"
+                        class="flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                @endif
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.wawancara.*') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                             </svg>
                         </div>
                         <span class="ml-3 font-medium">Kelola Wawancara</span>
-                    </a>
+                @if($canAccess) </a> @else </div> @endif
 
-                </a>
+                {{-- Landing Page --}}
+                @php $canAccess = $isAdminFull; @endphp
+                @if($canAccess)
+                    <a href="{{ route('admin.landing-page.index') }}"
+                    class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.landing-page.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                @else
+                    <div title="Anda tidak memiliki akses ke menu ini"
+                        class="flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                @endif
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.landing-page.*') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+                            </svg>
+                        </div>
+                        <span class="ml-3 font-medium">Landing Page</span>
+                @if($canAccess) </a> @else </div> @endif
+
+                {{-- Data Mahasiswa --}}
                 <a href="{{ route('admin.user.daftar-ulang') }}"
-                   class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.daftar-ulang') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.daftar-ulang') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
                     <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.user.daftar-ulang') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
@@ -284,6 +373,52 @@
                     </div>
                     <span class="ml-3 font-medium">Data Mahasiswa</span>
                 </a>
+
+                {{-- Kelola Program Studi --}}
+                @php $canAccess = $isAdminFull; @endphp
+                @if($canAccess)
+                    <a href="{{ route('admin.program-studi.index') }}"
+                    class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.program-studi.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                @else
+                    <div title="Anda tidak memiliki akses ke menu ini"
+                        class="flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                @endif
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.program-studi.*') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                        </div>
+                        <span class="ml-3 font-medium">Kelola Program Studi</span>
+                @if($canAccess) </a> @else </div> @endif
+
+                {{-- Kelola Biaya PMB --}}
+                @php $canAccess = $isAdminFull; @endphp
+                @if($canAccess)
+                    <a href="{{ route('admin.biaya-pmb.index') }}"
+                    class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.biaya-pmb.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                @else
+                    <div title="Anda tidak memiliki akses ke menu ini"
+                        class="flex items-center px-4 py-3.5 text-gray-600 cursor-not-allowed rounded-xl opacity-50 select-none">
+                @endif
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.biaya-pmb.*') ? 'bg-white/20' : 'bg-gray-800/50' }} transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <span class="ml-3 font-medium">Kelola Biaya PMB</span>
+                @if($canAccess) </a> @else </div> @endif
+
+                {{-- Kelola Keuangan --}}
+                <a href="{{ route('admin.keuangan.index') }}"
+                class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.keuangan.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center {{ request()->routeIs('admin.keuangan.*') ? 'bg-white/20' : 'bg-gray-800/50 group-hover:bg-gray-700/50' }} transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <span class="ml-3 font-medium">Kelola Keuangan</span>
+                </a>
+
             </nav>
 
             <div class="p-6 border-t border-gray-800/50">
