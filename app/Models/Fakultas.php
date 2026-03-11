@@ -37,4 +37,8 @@ class Fakultas extends Model
         return $this->hasMany(User::class, 'fakultas_id')
                     ->where('role', 'dekan');
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> c725232840e4de2ca89c207adcd8c9dee52d0523

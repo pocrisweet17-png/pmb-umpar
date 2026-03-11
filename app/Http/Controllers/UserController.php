@@ -18,6 +18,7 @@ class UserController extends Controller
         if ($request->filled('search')) {
             $search = trim($request->search);
 
+<<<<<<< HEAD
             $query->where(function($q) use ($search) {
                 $q->where('nama_lengkap', 'LIKE', '%' . $search . '%')
                   ->orWhere('username', 'LIKE', '%' . $search . '%')
@@ -26,6 +27,66 @@ class UserController extends Controller
                   ->orWhere('no_whatsapp', 'LIKE', '%' . $search . '%')
                   ->orWhere('nomor_registrasi', 'LIKE', '%' . $search . '%');
             });
+=======
+                $query->where(function($q) use ($search) {
+                    $q->where('nama_lengkap', 'LIKE', '%' . $search . '%')
+                      ->orWhere('username', 'LIKE', '%' . $search . '%')
+                      ->orWhere('email', 'LIKE', '%' . $search . '%')
+                      ->orWhere('nik', 'LIKE', '%' . $search . '%')
+                      ->orWhere('no_whatsapp', 'LIKE', '%' . $search . '%')
+                      ->orWhere('nomor_registrasi', 'LIKE', '%' . $search . '%');
+                });
+            }
+        
+            // Filter by role 
+            if ($request->filled('role')) {
+                $query->where('role', $request->role);
+            }
+        
+            // Filter by verifikasi status atau progress step
+            if ($request->filled('verified')) {
+                $stepMap = [
+                    'step_prodi'        => 'is_prodi_selected',
+                    'step_bayar'        => 'is_bayar_pendaftaran',
+                    'step_data'         => 'is_data_completed',
+                    'step_dokumen'      => 'is_dokumen_uploaded',
+                    'step_tes'          => 'is_tes_selesai',
+                    'step_wawancara'    => 'is_wawancara_selesai',
+                    'step_ukt'          => 'is_ukt_paid',
+                    'step_daftar_ulang' => 'is_daftar_ulang',
+                ];
+
+                $verifiedVal = $request->verified;
+
+                if (array_key_exists($verifiedVal, $stepMap)) {
+                    $query->where($stepMap[$verifiedVal], true);
+                } else {
+                    $query->where('is_verified', (int)$verifiedVal);
+                }
+            }
+
+            if ($request->filled('fakultas')) {
+                $kodeProdiList = \App\Models\ProgramStudy::where('fakultas_id', $request->fakultas)
+                    ->pluck('kodeProdi')
+                    ->toArray();
+
+                $query->where(function($q) use ($kodeProdiList) {
+                    $q->whereIn('pilihan_1', $kodeProdiList)
+                    ->orWhereIn('pilihan_2', $kodeProdiList);
+                });
+            }
+
+            if ($request->filled('prodi')) {
+                $query->where(function($q) use ($request) {
+                    $q->where('pilihan_1', $request->prodi)
+                    ->orWhere('pilihan_2', $request->prodi);
+                });
+            }
+        
+            $users = $query->orderBy('created_at', 'desc')->get();
+        
+            return view('admin.user.index', compact('users'));
+>>>>>>> c725232840e4de2ca89c207adcd8c9dee52d0523
         }
     
         // Filter by role 

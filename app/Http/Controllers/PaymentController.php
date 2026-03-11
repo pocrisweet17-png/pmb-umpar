@@ -710,4 +710,76 @@ class PaymentController extends Controller
     
         return $biayaAdmin[$metode] ?? 0;
     }
+
+    /**
+     * Cek status transaksi langsung ke Midtrans API (fallback)
+     */
+    public function verifyAndSync(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Cari payment pending milik user
+        $pendingPayments = Payment::where('user_id', $user->id)
+            ->where('status_transaksi', 'pending')
+            ->whereNotNull('order_id')
+            ->get();
+
+        $synced = false;
+
+        foreach ($pendingPayments as $payment) {
+            try {
+                $serverKey = config('midtrans.server_key');
+                $baseUrl = config('midtrans.is_production') 
+                    ? 'https://api.midtrans.com' 
+                    : 'https://api.sandbox.midtrans.com';
+
+                $response = \Illuminate\Support\Facades\Http::withHeaders([
+                    'Authorization' => 'Basic ' . base64_encode($serverKey . ':'),
+                    'Accept' => 'application/json',
+                ])->get("{$baseUrl}/v2/{$payment->order_id}/status");
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    $status = $data['transaction_status'] ?? null;
+
+                    Log::info('Midtrans status check', [
+                        'order_id' => $payment->order_id,
+                        'status' => $status,
+                    ]);
+
+                    if (in_array($status, ['settlement', 'capture'])) {
+                        // Update payment
+                        $payment->update([
+                            'status_transaksi' => 'settlement',
+                            'id_transaksi' => $data['transaction_id'] ?? null,
+                        ]);
+
+                        // Update user status
+                        if ($payment->tipe_pembayaran === 'pendaftaran' && !$user->is_bayar_pendaftaran) {
+                            $user->is_bayar_pendaftaran = true;
+                            $user->save();
+                        } elseif ($payment->tipe_pembayaran === 'ukt' && !$user->is_ukt_paid) {
+                            $bayarUktController = app(BayarUktController::class);
+                            $bayarUktController->processSettlement($payment);
+                        }
+
+                        $synced = true;
+                    } elseif (in_array($status, ['expire', 'cancel', 'deny'])) {
+                        $payment->update(['status_transaksi' => $status]);
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('Midtrans verify error', [
+                    'order_id' => $payment->order_id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
+        return response()->json([
+            'synced' => $synced,
+            'is_bayar_pendaftaran' => $user->fresh()->is_bayar_pendaftaran,
+            'is_ukt_paid' => $user->fresh()->is_ukt_paid,
+        ]);
+    }
 }
