@@ -98,7 +98,7 @@ class UserController extends Controller
             'nama_lengkap' => 'required|string|max:255',
             'nik' => 'required|string|max:16|unique:users',
             'no_whatsapp' => 'required|string|max:15',
-            'role' => 'required|in:admin,user,keuangan,wr-3,admisi',
+            'role' => 'required|in:admin,user,keuangan,wr-3,admisi,dekan',
             'is_wawancara_selesai' => 'boolean',
         ]);
 
@@ -142,7 +142,7 @@ public function show(string $id)
                 'nama_lengkap' => 'required|string|max:255',
                 'nik' => ['required', 'string', 'max:16', Rule::unique('users')->ignore($user->id)],
                 'no_whatsapp' => 'required|string|max:15',
-                'role' => 'required|in:admin,user,keuangan,wr-3,admisi',
+                'role' => 'required|in:admin,user,keuangan,wr-3,admisi,dekan',
                 'password' => 'nullable|string|min:8|confirmed',
                 'is_verified' => 'boolean',
                 'is_prodi_selected' => 'boolean',
@@ -161,6 +161,7 @@ public function show(string $id)
             $isKeuangan = $currentUserRole === 'keuangan';
             $isWakilRektor = $currentUserRole === 'wr-3';
             $isAdmisi = $currentUserRole === 'admisi';
+            $isDekan =$currentUserRole == 'dekan';
 
             // Admin bisa update semua
             if($isAdmisi){
@@ -193,6 +194,18 @@ public function show(string $id)
             }
             // WR-3 hanya bisa update step 6 (wawancara)
             elseif ($isWakilRektor) {
+                $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
+                // Pertahankan nilai lama untuk field lainnya
+                unset($validated['is_verified']);
+                unset($validated['is_prodi_selected']);
+                unset($validated['is_bayar_pendaftaran']);
+                unset($validated['is_data_completed']);
+                unset($validated['is_dokumen_uploaded']);
+                unset($validated['is_tes_selesai']);
+                unset($validated['is_daftar_ulang']);
+                unset($validated['is_ukt_paid']);
+            }
+            elseif($isDekan){
                 $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
                 // Pertahankan nilai lama untuk field lainnya
                 unset($validated['is_verified']);
