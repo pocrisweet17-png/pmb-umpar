@@ -65,7 +65,7 @@
             </a>
         </div>
     </div>
-        <!-- Search & Filter Section -->
+    <!-- Search & Filter Section -->
     <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
         <form method="GET" action="{{ route('admin.user.index') }}" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
