@@ -397,6 +397,7 @@
                 </div>
 
                 <!-- Dokumen Upload -->
+
                 <div class="bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl p-4 sm:p-6 border-2 border-rose-200">
                     <h4 class="font-semibold text-gray-800 mb-4 flex items-center text-sm sm:text-base">
                         <svg class="w-5 h-5 mr-2 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -404,7 +405,7 @@
                         </svg>
                         Dokumen yang Diupload
                     </h4>
-
+                
                     @if($user->dokumens && $user->dokumens->count() > 0)
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             @foreach($user->dokumens as $dokumen)
@@ -439,7 +440,7 @@
                                             @endif
                                         </div>
                                     </div>
-
+                
                                     <div class="space-y-2">
                                         <h5 class="font-bold text-gray-900 text-sm">{{ $dokumen->jenisDokumen }}</h5>
                                         <p class="text-xs text-gray-600 truncate" title="{{ $dokumen->namaFile }}">{{ $dokumen->namaFile }}</p>
@@ -447,7 +448,7 @@
                                             <span class="uppercase font-semibold text-rose-600">{{ $dokumen->formatFile }}</span>
                                             <span>{{ \Carbon\Carbon::parse($dokumen->tanggalUpload)->format('d M Y') }}</span>
                                         </div>
-
+                
                                         @if($dokumen->catatanVerifikasi)
                                             <div class="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg">
                                                 <p class="text-xs text-amber-800">
@@ -456,9 +457,10 @@
                                             </div>
                                         @endif
                                     </div>
-
+                
                                     <div class="mt-3 flex space-x-2">
-                                        <a href="{{ asset('storage/' . $dokumen->urlFile) }}" target="_blank"
+                                        {{-- ✅ Gunakan asset($dokumen->urlFile) karena file disimpan di public/ --}}
+                                        <a href="{{ asset(ltrim($dokumen->urlFile, '/')) }}"  target="_blank"
                                            class="flex-1 bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors flex items-center justify-center">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -466,7 +468,7 @@
                                             </svg>
                                             Lihat
                                         </a>
-                                        <a href="{{ asset('storage/' . $dokumen->urlFile) }}" download
+                                        <a href="{{ asset(ltrim($dokumen->urlFile, '/')) }}"  download="{{ $dokumen->namaFile }}"
                                            class="flex-1 bg-gray-500 hover:bg-gray-600 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors flex items-center justify-center">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -486,7 +488,7 @@
                             <p class="text-sm text-gray-400 mt-1">Calon mahasiswa belum mengunggah dokumen persyaratan</p>
                         </div>
                     @endif
-
+                
                     <div class="mt-4 p-3 bg-white rounded-lg border border-rose-300">
                         <p class="text-xs text-rose-800 flex items-start">
                             <svg class="w-4 h-4 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -622,7 +624,7 @@
                             <label class="block text-gray-700 font-medium mb-2 text-sm">
                                 Role <span class="text-red-500">*</span>
                             </label>
-                            <select name="role" required
+                            <select name="role" id="role-select" required
                                     {{ !$isAdmin ? 'disabled' : '' }}
                                     class="w-full border-2 border-purple-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white font-medium text-sm sm:text-base {{ !$isAdmin ? 'opacity-50 cursor-not-allowed' : '' }}">
                                 <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User / Camaba</option>
@@ -630,10 +632,27 @@
                                 <option value="keuangan" {{ old('role', $user->role) == 'keuangan' ? 'selected' : '' }}>keuangan</option>
                                 <option value="wr-3" {{ old('role', $user->role) == 'wr-3' ? 'selected' : '' }}>Wakil rektor 3</option>
                                 <option value="admisi" {{ old('role', $user->role) == 'admisi' ? 'selected' : '' }}>admisi</option>
+                                <option value="dekan" {{ old('role', $user->role) == 'dekan' ? 'selected' : '' }}>Dekan Fakultas</option>
                             </select>
                             @if(!$isAdmin)
                                 <input type="hidden" name="role" value="{{ $user->role }}">
                             @endif
+                        </div>
+
+                        <!-- Fakultas (hanya untuk role dekan) -->
+                        <div id="fakultas-field" style="display: {{ old('role', $user->role) == 'dekan' ? 'block' : 'none' }}">
+                            <label class="block text-gray-700 font-medium mb-2 text-sm">
+                                Fakultas <span class="text-red-500" id="fakultas-required">*</span>
+                            </label>
+                            <select name="fakultas_id" id="fakultas-select"
+                                    class="w-full border-2 border-purple-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white font-medium text-sm sm:text-base">
+                                <option value="">-- Pilih Fakultas --</option>
+                                @foreach(\App\Models\Fakultas::where('is_active', true)->get() as $fak)
+                                    <option value="{{ $fak->id }}" {{ old('fakultas_id', $user->fakultas_id) == $fak->id ? 'selected' : '' }}>
+                                        {{ $fak->nama_fakultas }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     
                         <div>
@@ -659,6 +678,26 @@
                         Admin memiliki akses penuh ke sistem
                     </p>
                 </div>
+
+                <script>
+                // Show/hide fakultas field based on role
+                document.addEventListener('DOMContentLoaded', function() {
+                    const roleSelect = document.getElementById('role-select');
+                    const fakultasField = document.getElementById('fakultas-field');
+                    const fakultasSelect = document.getElementById('fakultas-select');
+                    
+                    roleSelect.addEventListener('change', function() {
+                        if (this.value === 'dekan') {
+                            fakultasField.style.display = 'block';
+                            fakultasSelect.setAttribute('required', 'required');
+                        } else {
+                            fakultasField.style.display = 'none';
+                            fakultasSelect.removeAttribute('required');
+                            fakultasSelect.value = '';
+                        }
+                    });
+                });
+                </script>
 
                 <!-- Additional Info -->
                 <div class="bg-blue-50 rounded-xl p-4 border-2 border-blue-200">
