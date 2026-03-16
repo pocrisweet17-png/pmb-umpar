@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
 {
@@ -36,6 +37,7 @@ class User extends Authenticatable
         'is_daftar_ulang',
         'is_ukt_paid',
         'role',
+        'fakultas_id',
         'twitter',
         'facebook',
         'tiktok',
@@ -133,5 +135,23 @@ class User extends Authenticatable
     public function getNamaProdiPilihan1Attribute()
     {
         return $this->programStudiPilihan1 ? $this->programStudiPilihan1->namaProdi : $this->pilihan_1;
+    }
+
+    public function fakultas(): BelongsTo
+    {
+        return $this->belongsTo(Fakultas::class, 'fakultas_id');
+    }
+    
+    public function getFotoMahasiswaAttribute()
+    {
+        $foto = $this->dokumens
+            ->where('jenisDokumen', 'Pas Foto 3x4')
+            ->first();
+    
+        if ($foto && file_exists(public_path($foto->urlFile))) {
+            return asset('pmb/public/'.$foto->urlFile);
+        }
+    
+        return asset('img/default-user.png');
     }
 }
