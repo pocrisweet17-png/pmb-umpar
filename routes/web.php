@@ -35,6 +35,7 @@ use App\Http\Controllers\PertanyaanWawancaraController;
 // ======================================================================
 // PUBLIC ROUTES
 // ======================================================================
+
 Route::get('/', fn() => view('welcome'));
 
 // Register & Login
@@ -43,6 +44,10 @@ Route::post('/register', [AuthRegisterController::class, 'register'])->name('reg
 Route::get('/login', [AuthLoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthLoginController::class, 'login'])->name('login.process');
 Route::post('/logout', [AuthLoginController::class, 'logout'])->name('logout');
+
+Route::get('/berita/{index}', [LandingPageContentController::class, 'showNews'])
+     ->name('news.show')
+     ->where('index', '[0-9]+');
 
 // ======================================================================
 // EMAIL VERIFICATION
@@ -180,6 +185,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 });
 
+Route::get('/brosur-pmb/download/{index?}', [LandingPageController::class, 'downloadBrosur'])
+          ->name('brosur.download')
+          ->where('index', '[0-9]+');
+
 // ======================================================================
 // ADMIN ROUTES
 // ======================================================================
@@ -241,6 +250,9 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/mahasiswa/daftar-ulang', [MahasiswaController::class, 'daftarUlang'])->name('admin.user.daftar-ulang');
     Route::post('/mahasiswa/{id}/verify-daftar-ulang', [MahasiswaController::class, 'verifyDaftarUlang'])->name('admin.mahasiswa.verify-daftar-ulang');
     Route::post('/mahasiswa/{id}/reject-daftar-ulang', [MahasiswaController::class, 'rejectDaftarUlang'])->name('admin.mahasiswa.reject-daftar-ulang');
+    Route::get('/mahasiswa/{mahasiswaId}/dokumen/{dokumenId}/download', [MahasiswaController::class, 'downloadDokumen'])->name('admin.mahasiswa.download-dokumen');
+    Route::get('/mahasiswa/{mahasiswaId}/dokumen/{dokumenId}/preview',  [MahasiswaController::class, 'previewDokumen'])->name('admin.mahasiswa.preview-dokumen');
+    Route::get('/mahasiswa/{mahasiswaId}/download-zip',                 [MahasiswaController::class, 'downloadZip'])->name('admin.mahasiswa.download-zip');
 
     // CRUD Pertanyaan Wawancara
     Route::get('/admin/wawancara', [PertanyaanWawancaraController::class, 'index'])->name('admin.wawancara.index');
@@ -254,6 +266,29 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/admin/landing-page', [LandingPageContentController::class, 'index'])->name('admin.landing-page.index');
     Route::post('/admin/landing-page/update', [LandingPageContentController::class, 'update'])->name('admin.landing-page.update');
     Route::post('/admin/landing-page/upload-image', [LandingPageContentController::class, 'uploadImage'])->name('admin.landing-page.upload-image');
+    
+    Route::post('/admin/landing-page/programs/add', 
+        [LandingPageContentController::class, 'addProgramCard'])
+        ->name('admin.landing-page.programs.add');
+
+    // Hapus program
+    Route::delete('/admin/landing-page/programs/{index}', 
+        [LandingPageContentController::class, 'deleteProgramCard'])
+        ->name('admin.landing-page.programs.delete');
+
+    Route::post('/admin/landing-page/brosur/upload',         [LandingPageContentController::class, 'uploadBrosur'])
+          ->name('admin.landing-page.brosur.upload');
+     Route::delete('/admin/landing-page/brosur/delete',       [LandingPageContentController::class, 'deleteBrosur'])
+          ->name('admin.landing-page.brosur.delete');
+     Route::delete('/admin/landing-page/brosur/delete-image/{index}', [LandingPageContentController::class, 'deleteBrosurImage'])
+          ->name('admin.landing-page.brosur.delete-image')
+          ->where('index', '[0-9]+');
+          
+    Route::post('landing-page/news/add',[LandingPageContentController::class, 'addNewsCard'])->name('admin.landing-page.news.add');
+     
+    Route::put('landing-page/news/{index}',[LandingPageContentController::class, 'updateNewsCard'])->name('admin.landing-page.news.update');
+     
+    Route::delete('landing-page/news/{index}',[LandingPageContentController::class, 'deleteNewsCard'])->name('admin.landing-page.news.delete');
         
 });
 
