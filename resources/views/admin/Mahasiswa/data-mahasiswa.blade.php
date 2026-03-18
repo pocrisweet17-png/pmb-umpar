@@ -3,6 +3,10 @@
 @section('title', 'Daftar Ulang Mahasiswa')
 @section('page-title', $isDekan ? 'Daftar Ulang – ' . $namaFakultas : 'Daftar Ulang Mahasiswa')
 
+@php
+    $isReadOnly = $isPimpinan ?? $isDekan ?? false;
+@endphp
+
 @push('styles')
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
@@ -29,6 +33,89 @@ tr.row-hidden { display:none !important; }
 
 /* MODAL FADE */
 #dokumenModal.visible { display:flex !important; }
+
+/* ── ROLE-BASED DISABLED STYLE ── */   
+.btn-disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    filter: grayscale(40%);
+    user-select: none;
+}
+.btn-disabled:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+/* Override specific button colors to gray when disabled */
+.btn-disabled.bg-emerald-500,
+.btn-disabled.bg-emerald-600 {
+    background-color: #9ca3af !important;
+}
+.btn-disabled.bg-rose-500,
+.btn-disabled.bg-rose-600 {
+    background-color: #9ca3af !important;
+}
+.btn-disabled.bg-indigo-500,
+.btn-disabled.bg-indigo-600,
+.btn-disabled.bg-indigo-700 {
+    background-color: #9ca3af !important;
+}
+/* Disabled export button */
+.btn-disabled.export-btn {
+    background-color: #9ca3af !important;
+}
+/* Disabled links inside export menu */
+.export-item-disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    color: #9ca3af !important;
+}
+/* ── BLUR DATA FOR PIMPINAN ── */
+.data-blurred td:not(:last-child) {
+    filter: blur(100px);
+    -webkit-filter: blur(100px);
+    user-select: none;
+    pointer-events: none;
+}
+/* Keep action column (last-child) unblurred so disabled buttons remain visible */
+.data-blurred td:last-child {
+    filter: none;
+}
+/* Overlay hint on blurred table */
+.blur-overlay {
+    position: relative;
+}
+.blur-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.15);
+    pointer-events: none;
+    z-index: 5;
+}
+/* Prevent text copy on blurred cells */
+.data-blurred {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Read-only badge */
+.readonly-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    background-color: #fef3c7;
+    border: 1px solid #fde68a;
+    color: #92400e;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+}
 </style>
 @endpush
 
@@ -54,6 +141,14 @@ tr.row-hidden { display:none !important; }
 <div class="mb-4 flex items-center gap-2 bg-indigo-50 border border-indigo-200 rounded-xl px-5 py-3 text-sm font-semibold text-indigo-700">
     <svg class="w-4 h-4 text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
     Menampilkan data Fakultas <span class="underline decoration-dotted ml-1">{{ $namaFakultas }}</span>
+</div>
+@endif
+
+{{-- READ-ONLY NOTICE FOR PIMPINAN --}}
+@if($isReadOnly)
+<div class="mb-4 flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-5 py-3 text-sm font-medium text-amber-800">
+    <svg class="w-4 h-4 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    Mode <b>Hanya Lihat</b> — Anda memiliki akses baca. Semua aksi (verifikasi, tolak, export) dinonaktifkan.
 </div>
 @endif
 
@@ -121,6 +216,14 @@ tr.row-hidden { display:none !important; }
         {{-- Result badge --}}
         <span id="resultCount" class="text-xs text-gray-400 mono hidden bg-gray-100 px-2.5 py-1 rounded-full"></span>
 
+        {{-- Read-only badge in toolbar --}}
+        @if($isReadOnly)
+        <span class="readonly-badge">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            Read-Only
+        </span>
+        @endif
+
         {{-- Spacer --}}
         <div class="flex-1"></div>
 
@@ -130,12 +233,14 @@ tr.row-hidden { display:none !important; }
         {{-- Export --}}
         <div class="relative">
             <button id="exportBtn"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm">
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-colors shadow-sm {{ $isReadOnly ? 'btn-disabled export-btn bg-indigo-600 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white' }}"
+                @if($isReadOnly) disabled aria-disabled="true" tabindex="-1" @endif>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 Export
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
 
+            @if(!$isReadOnly)
             <div id="exportMenu" class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none">
                 <div class="px-4 py-2 bg-gray-50 border-b border-gray-100">
                     <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Pilih Export</p>
@@ -160,6 +265,7 @@ tr.row-hidden { display:none !important; }
                     Ekspor per Prodi
                 </button>
             </div>
+            @endif
         </div>
 
     </div>
@@ -192,14 +298,22 @@ tr.row-hidden { display:none !important; }
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 {{ $pd['stats']['rejected'] }}
             </span>
+            {{-- Export Prodi Button --}}
+            @if($isReadOnly)
+            <span class="btn-disabled text-xs font-semibold bg-white text-gray-400 px-3 py-1 rounded-full flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Export Prodi
+            </span>
+            @else
             <a href="{{ route('admin.mahasiswa.export-excel', ['prodi' => $pd['kodeProdi']]) }}"
                class="text-xs font-semibold bg-white text-indigo-700 hover:bg-indigo-50 px-3 py-1 rounded-full transition-colors flex items-center gap-1">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 Export Prodi
             </a>
+            @endif
         </div>
     </div>
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto {{ $isReadOnly ? 'blur-overlay' : '' }}">
         <table class="w-full text-sm" data-table>
             <thead class="bg-gray-50 border-b border-gray-100">
                 <tr>
@@ -218,7 +332,7 @@ tr.row-hidden { display:none !important; }
             <tbody class="divide-y divide-gray-50">
                 @forelse($pd['mahasiswas'] as $idx => $m)
                 @php $hasDocs = $m->user && $m->user->dokumens && $m->user->dokumens->isNotEmpty(); @endphp
-                <tr class="hover:bg-indigo-50/40 transition-colors data-row"
+                <tr class="hover:bg-indigo-50/40 transition-colors data-row {{ $isReadOnly ? 'data-blurred' : '' }}"
                     data-nim="{{ strtolower($m->nim) }}"
                     data-nama="{{ strtolower($m->namaLengkap) }}"
                     data-email="{{ strtolower($m->user->email ?? '') }}"
@@ -245,23 +359,47 @@ tr.row-hidden { display:none !important; }
                     <td class="px-4 py-3">
                         <div class="flex items-center justify-center gap-1.5">
                             @if($m->status_daftar_ulang === 'pending')
-                            <form action="{{ route('admin.mahasiswa.verify-daftar-ulang',$m->id) }}" method="POST" class="inline">@csrf
-                                <button onclick="return confirm('Verifikasi mahasiswa ini?')" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium rounded-lg transition-colors">
+                                @if($isReadOnly)
+                                {{-- Disabled Verify --}}
+                                <button type="button" disabled
+                                    class="btn-disabled inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-500 text-white text-xs font-medium rounded-lg"
+                                    title="Aksi tidak tersedia untuk role pimpinan">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Verify
                                 </button>
-                            </form>
-                            <form action="{{ route('admin.mahasiswa.reject-daftar-ulang',$m->id) }}" method="POST" class="inline">@csrf
-                                <button onclick="return confirm('Tolak mahasiswa ini?')" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-500 hover:bg-rose-600 text-white text-xs font-medium rounded-lg transition-colors">
+                                {{-- Disabled Reject --}}
+                                <button type="button" disabled
+                                    class="btn-disabled inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-500 text-white text-xs font-medium rounded-lg"
+                                    title="Aksi tidak tersedia untuk role pimpinan">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Reject
                                 </button>
-                            </form>
+                                @else
+                                <form action="{{ route('admin.mahasiswa.verify-daftar-ulang',$m->id) }}" method="POST" class="inline">@csrf
+                                    <button onclick="return confirm('Verifikasi mahasiswa ini?')" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium rounded-lg transition-colors">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Verify
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.mahasiswa.reject-daftar-ulang',$m->id) }}" method="POST" class="inline">@csrf
+                                    <button onclick="return confirm('Tolak mahasiswa ini?')" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-500 hover:bg-rose-600 text-white text-xs font-medium rounded-lg transition-colors">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Reject
+                                    </button>
+                                </form>
+                                @endif
                             @endif
                             @if($hasDocs)
-                            <button type="button" onclick="openDokumenModal({{ $m->id }},'{{ addslashes($m->namaLengkap) }}')"
-                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium rounded-lg transition-colors">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                Dokumen
-                            </button>
+                                @if($isReadOnly)
+                                <button type="button" disabled
+                                    class="btn-disabled inline-flex items-center gap-1 px-2.5 py-1.5 bg-indigo-500 text-white text-xs font-medium rounded-lg"
+                                    title="Aksi tidak tersedia untuk role pimpinan">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    Dokumen
+                                </button>
+                                @else
+                                <button type="button" onclick="openDokumenModal({{ $m->id }},'{{ addslashes($m->namaLengkap) }}')"
+                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium rounded-lg transition-colors">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    Dokumen
+                                </button>
+                                @endif
                             @endif
                             @if($m->status_daftar_ulang === 'verified' && !$hasDocs)
                             <span class="inline-flex items-center gap-1 text-xs text-emerald-600 font-medium">
@@ -303,7 +441,7 @@ tr.row-hidden { display:none !important; }
         </h3>
         <span id="tableRowCount" class="text-blue-200 text-xs mono"></span>
     </div>
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto {{ $isReadOnly ? 'blur-overlay' : '' }}">
         <table class="w-full text-sm" data-table>
             <thead class="bg-gray-50 border-b border-gray-100">
                 <tr>
@@ -323,7 +461,7 @@ tr.row-hidden { display:none !important; }
             <tbody class="divide-y divide-gray-50">
                 @forelse($mahasiswas as $index => $m)
                 @php $hasDocs = $m->user && $m->user->dokumens && $m->user->dokumens->isNotEmpty(); @endphp
-                <tr class="hover:bg-indigo-50/40 transition-colors data-row"
+                <tr class="hover:bg-indigo-50/40 transition-colors data-row {{ $isReadOnly ? 'data-blurred' : '' }}"
                     data-nim="{{ strtolower($m->nim) }}"
                     data-nama="{{ strtolower($m->namaLengkap) }}"
                     data-email="{{ strtolower($m->user->email ?? '') }}"
@@ -351,23 +489,47 @@ tr.row-hidden { display:none !important; }
                     <td class="px-4 py-3">
                         <div class="flex items-center justify-center gap-1.5">
                             @if($m->status_daftar_ulang === 'pending')
-                            <form action="{{ route('admin.mahasiswa.verify-daftar-ulang',$m->id) }}" method="POST" class="inline">@csrf
-                                <button onclick="return confirm('Verifikasi mahasiswa ini?')" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium rounded-lg transition-colors">
+                                @if($isReadOnly)
+                                {{-- Disabled Verify --}}
+                                <button type="button" disabled
+                                    class="btn-disabled inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-500 text-white text-xs font-medium rounded-lg"
+                                    title="Aksi tidak tersedia untuk role pimpinan">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Verify
                                 </button>
-                            </form>
-                            <form action="{{ route('admin.mahasiswa.reject-daftar-ulang',$m->id) }}" method="POST" class="inline">@csrf
-                                <button onclick="return confirm('Tolak mahasiswa ini?')" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-500 hover:bg-rose-600 text-white text-xs font-medium rounded-lg transition-colors">
+                                {{-- Disabled Reject --}}
+                                <button type="button" disabled
+                                    class="btn-disabled inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-500 text-white text-xs font-medium rounded-lg"
+                                    title="Aksi tidak tersedia untuk role pimpinan">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Reject
                                 </button>
-                            </form>
+                                @else
+                                <form action="{{ route('admin.mahasiswa.verify-daftar-ulang',$m->id) }}" method="POST" class="inline">@csrf
+                                    <button onclick="return confirm('Verifikasi mahasiswa ini?')" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium rounded-lg transition-colors">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Verify
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.mahasiswa.reject-daftar-ulang',$m->id) }}" method="POST" class="inline">@csrf
+                                    <button onclick="return confirm('Tolak mahasiswa ini?')" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-500 hover:bg-rose-600 text-white text-xs font-medium rounded-lg transition-colors">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Reject
+                                    </button>
+                                </form>
+                                @endif
                             @endif
                             @if($hasDocs)
-                            <button type="button" onclick="openDokumenModal({{ $m->id }},'{{ addslashes($m->namaLengkap) }}')"
-                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium rounded-lg transition-colors">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                Dokumen
-                            </button>
+                                @if($isReadOnly)
+                                <button type="button" disabled
+                                    class="btn-disabled inline-flex items-center gap-1 px-2.5 py-1.5 bg-indigo-500 text-white text-xs font-medium rounded-lg"
+                                    title="Aksi tidak tersedia untuk role pimpinan">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    Dokumen
+                                </button>
+                                @else
+                                <button type="button" onclick="openDokumenModal({{ $m->id }},'{{ addslashes($m->namaLengkap) }}')"
+                                        class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-medium rounded-lg transition-colors">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    Dokumen
+                                </button>
+                                @endif
                             @endif
                             @if($m->status_daftar_ulang === 'verified' && !$hasDocs)
                             <span class="inline-flex items-center gap-1 text-xs text-emerald-600 font-medium">
@@ -409,6 +571,7 @@ tr.row-hidden { display:none !important; }
 
 
 {{-- ══════════ MODAL DOKUMEN ══════════ --}}
+@if(!$isReadOnly)
 <div id="dokumenModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-gray-950/70 backdrop-blur-sm" onclick="closeDokumenModal()"></div>
     <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl z-10 overflow-hidden flex flex-col" style="max-height:90vh">
@@ -467,9 +630,13 @@ tr.row-hidden { display:none !important; }
         </div>
     </div>
 </div>
+@endif
 
 
 <script>
+// ── ROLE FLAG ──
+const IS_READ_ONLY = {{ $isReadOnly ? 'true' : 'false' }};
+
 // ── STATE ──
 let currentDocs  = [];
 let currentMhsId = null;
@@ -572,20 +739,24 @@ document.querySelectorAll('th[data-sort]').forEach(th => {
 });
 
 
-// ── EXPORT MENU ──
-document.getElementById('exportBtn')?.addEventListener('click', e => {
-    e.stopPropagation();
-    const menu = document.getElementById('exportMenu');
-    const isOpen = menu.classList.contains('open');
-    menu.style.display = 'block';
-    setTimeout(() => menu.classList.toggle('open', !isOpen), 10);
-});
-document.addEventListener('click', () => {
-    const menu = document.getElementById('exportMenu');
-    if(menu) { menu.classList.remove('open'); setTimeout(()=>{ if(!menu.classList.contains('open')) menu.style.display='none'; },160); }
-});
+// ── EXPORT MENU (only active for non-read-only) ──
+if (!IS_READ_ONLY) {
+    document.getElementById('exportBtn')?.addEventListener('click', e => {
+        e.stopPropagation();
+        const menu = document.getElementById('exportMenu');
+        if (!menu) return;
+        const isOpen = menu.classList.contains('open');
+        menu.style.display = 'block';
+        setTimeout(() => menu.classList.toggle('open', !isOpen), 10);
+    });
+    document.addEventListener('click', () => {
+        const menu = document.getElementById('exportMenu');
+        if(menu) { menu.classList.remove('open'); setTimeout(()=>{ if(!menu.classList.contains('open')) menu.style.display='none'; },160); }
+    });
+}
 
 function exportFiltered() {
+    if (IS_READ_ONLY) return;
     const p = new URLSearchParams();
     if($search?.value.trim())  p.set('q',       $search.value.trim());
     if($status?.value)         p.set('status',  $status.value);
@@ -594,13 +765,15 @@ function exportFiltered() {
     window.location.href = exportBase + '?' + p.toString();
 }
 function exportByProdi() {
+    if (IS_READ_ONLY) return;
     const kode = $prodi?.value || prompt('Masukkan kode prodi:');
     if(kode) window.location.href = exportBase + '?prodi=' + kode;
     return false;
 }
 
 
-// ── MODAL DOKUMEN ──
+// ── MODAL DOKUMEN (only for non-read-only) ──
+@if(!$isReadOnly)
 const ICON_DOC  = `<svg class="w-9 h-9 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`;
 const ICON_IMG  = `<svg class="w-9 h-9 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
 const ICON_PDF  = `<svg class="w-9 h-9 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>`;
@@ -615,6 +788,7 @@ const getIcon = (j,n) => {
 };
 
 function openDokumenModal(mhsId, nama) {
+    if (IS_READ_ONLY) return;
     currentMhsId = mhsId;
     const row  = document.getElementById('dokumen-data-' + mhsId);
     const json = row?.querySelector('.dokumen-json')?.textContent?.trim() || '[]';
@@ -633,6 +807,7 @@ function openDokumenModal(mhsId, nama) {
 
 function closeDokumenModal() {
     const modal = document.getElementById('dokumenModal');
+    if (!modal) return;
     modal.classList.add('hidden');
     modal.classList.remove('visible');
     document.body.style.overflow = '';
@@ -641,6 +816,7 @@ function closeDokumenModal() {
 
 function renderDocList() {
     const list = document.getElementById('modal-dokumen-list');
+    if(!list) return;
     if(!currentDocs.length) {
         list.innerHTML = `<div class="px-6 py-10 text-center text-sm text-gray-400">Tidak ada dokumen ditemukan.</div>`;
         return;
@@ -682,6 +858,7 @@ function previewDoc(idx) {
     const doc = currentDocs[idx];
     if(!doc) return;
     const c = document.getElementById('previewContainer');
+    if (!c) return;
     c.innerHTML = `
         <div class="w-full">
             <div class="flex items-center justify-between mb-3 px-1">
@@ -707,6 +884,7 @@ function switchTab(tab) {
     const pp = document.getElementById('panel-preview');
     const tl = document.getElementById('tab-list');
     const tp = document.getElementById('tab-preview');
+    if (!lp || !pp || !tl || !tp) return;
     if(tab === 'list') {
         lp.classList.remove('hidden'); pp.classList.add('hidden');
         tl.className = 'inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold border-b-2 border-indigo-600 text-indigo-700 transition-colors';
@@ -720,6 +898,7 @@ function switchTab(tab) {
 
 // Download semua (ZIP dulu, fallback sequential)
 function downloadAllDocs() {
+    if (IS_READ_ONLY) return;
     if(!currentDocs.length) return;
     const zipUrl = `/admin/mahasiswa/${currentMhsId}/download-zip`;
     fetch(zipUrl, {method:'HEAD'})
@@ -733,10 +912,14 @@ function fallbackDownload() {
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
     }, i * 700));
 }
+@endif
 
 // Keyboard
 document.addEventListener('keydown', e => {
-    if(e.key === 'Escape') { closeDokumenModal(); document.getElementById('exportMenu')?.classList.remove('open'); }
+    if(e.key === 'Escape') {
+        if (typeof closeDokumenModal === 'function') closeDokumenModal();
+        document.getElementById('exportMenu')?.classList.remove('open');
+    }
 });
 
 // Init row count
@@ -744,6 +927,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const n = document.querySelectorAll('tr.data-row').length;
     const el = document.getElementById('tableRowCount');
     if(el) el.textContent = n + ' baris';
+
+    // ── BLUR ANTI-TAMPER (read-only mode) ──
+    if (IS_READ_ONLY) {
+        // Re-apply blur every 2s in case user removes class via DevTools
+        setInterval(() => {
+            document.querySelectorAll('tr.data-row').forEach(row => {
+                if (!row.classList.contains('data-blurred')) {
+                    row.classList.add('data-blurred');
+                }
+            });
+            document.querySelectorAll('.blur-overlay').forEach(el => {
+                if (!el.classList.contains('blur-overlay')) {
+                    el.classList.add('blur-overlay');
+                }
+            });
+        }, 2000);
+
+        // Prevent right-click on blurred data
+        document.querySelectorAll('.data-blurred td:not(:last-child)').forEach(td => {
+            td.addEventListener('contextmenu', e => e.preventDefault());
+        });
+
+        // Prevent copy on blurred data
+        document.addEventListener('copy', e => {
+            const sel = window.getSelection();
+            if (sel && sel.anchorNode) {
+                const row = sel.anchorNode.closest ? sel.anchorNode.closest('.data-blurred') : sel.anchorNode.parentElement?.closest('.data-blurred');
+                if (row) {
+                    e.preventDefault();
+                    e.clipboardData?.setData('text/plain', '');
+                }
+            }
+        });
+
+        // Prevent drag on blurred cells
+        document.querySelectorAll('.data-blurred td').forEach(td => {
+            td.setAttribute('draggable', 'false');
+            td.addEventListener('dragstart', e => e.preventDefault());
+        });
+    }
 });
 </script>
 @endsection

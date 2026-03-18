@@ -21,6 +21,7 @@ class MahasiswaController extends Controller
     {
         $user    = auth()->user()->loadMissing('fakultas');
         $isDekan = $user->role === 'dekan';
+        $isPimpinan = $user->role === 'pimpinan';
 
         // ── Base query ────────────────────────────────────────────────────────────
         $baseQuery = Mahasiswa::with(['user', 'user.dokumens', 'programStudi', 'registrasi'])
@@ -101,6 +102,7 @@ class MahasiswaController extends Controller
             'mahasiswaPerProdi',
             'stats',
             'isDekan',
+            'isPimpinan',    
             'namaFakultas',
             'kodeDekan',
             'prodiList',

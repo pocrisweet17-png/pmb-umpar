@@ -9,6 +9,8 @@
     $isWakilRektor = auth()->user()->role === 'wr-3';
     $isAdmin = auth()->user()->role === 'admin';
     $isAdmisi = auth()->user()->role === 'admisi';
+    $isDekan = auth()->user()->role === 'dekan';
+    $isPimpinan = auth()->user()->role === 'pimpinan';
 @endphp
 <div class="max-w-6xl mx-auto">
 
@@ -459,8 +461,8 @@
                                     </div>
                 
                                     <div class="mt-3 flex space-x-2">
-                                        {{-- ✅ Gunakan asset($dokumen->urlFile) karena file disimpan di public/ --}}
-                                        <a href="{{ asset(ltrim($dokumen->urlFile, '/')) }}"  target="_blank"
+                                        {{-- Gunakan asset($dokumen->urlFile) karena file disimpan di public/ --}}
+                                        <a href="{{ asset('storage/' . $dokumen->urlFile) }}"  target="_blank"
                                            class="flex-1 bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors flex items-center justify-center">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -468,7 +470,7 @@
                                             </svg>
                                             Lihat
                                         </a>
-                                        <a href="{{ asset(ltrim($dokumen->urlFile, '/')) }}"  download="{{ $dokumen->namaFile }}"
+                                        <a href="{{ asset('storage/' . $dokumen->urlFile) }}"  download="{{ $dokumen->namaFile }}"
                                            class="flex-1 bg-gray-500 hover:bg-gray-600 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors flex items-center justify-center">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -633,6 +635,7 @@
                                 <option value="wr-3" {{ old('role', $user->role) == 'wr-3' ? 'selected' : '' }}>Wakil rektor 3</option>
                                 <option value="admisi" {{ old('role', $user->role) == 'admisi' ? 'selected' : '' }}>admisi</option>
                                 <option value="dekan" {{ old('role', $user->role) == 'dekan' ? 'selected' : '' }}>Dekan Fakultas</option>
+                                <option value="pimpinan" {{ old('role', $user->role) == 'pimpinan' ? 'selected' : '' }}>Pimpinan</option>
                             </select>
                             @if(!$isAdmin)
                                 <input type="hidden" name="role" value="{{ $user->role }}">
