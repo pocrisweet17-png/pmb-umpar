@@ -330,6 +330,17 @@ tr.row-hidden { display:none !important; }
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
+                @if($isReadOnly)
+                <tr>
+                    <td colspan="10" class="px-6 py-14 text-center">
+                        <div class="flex flex-col items-center gap-3 text-gray-400">
+                            <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            <p class="text-sm font-semibold text-gray-500">Akses Data Dibatasi</p>
+                            <p class="text-xs text-gray-400">Role Anda tidak memiliki izin untuk melihat detail data mahasiswa.</p>
+                        </div>
+                    </td>
+                </tr>
+                @else
                 @forelse($pd['mahasiswas'] as $idx => $m)
                 @php $hasDocs = $m->user && $m->user->dokumens && $m->user->dokumens->isNotEmpty(); @endphp
                 <tr class="hover:bg-indigo-50/40 transition-colors data-row {{ $isReadOnly ? 'data-blurred' : '' }}"
@@ -417,9 +428,10 @@ tr.row-hidden { display:none !important; }
                     </td>
                 </tr>
                 <tr class="hidden" id="dokumen-data-{{ $m->id }}"><td colspan="10"><span class="dokumen-json">{{ $hasDocs ? $m->user->dokumens->map(fn($d)=>['id'=>$d->idDokumen,'jenis'=>$d->jenisDokumen,'nama'=>$d->namaFile,'url'=>route('admin.mahasiswa.download-dokumen',[$m->id,$d->idDokumen]),'preview'=>route('admin.mahasiswa.preview-dokumen',[$m->id,$d->idDokumen])])->toJson() : '[]' }}</span></td></tr>
-                @empty
+               @empty
                 <tr><td colspan="10" class="px-6 py-10 text-center text-sm text-gray-400">Belum ada mahasiswa di prodi ini.</td></tr>
                 @endforelse
+                @endif
             </tbody>
         </table>
     </div>
@@ -459,6 +471,17 @@ tr.row-hidden { display:none !important; }
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
+                @if($isReadOnly)
+                <tr>
+                    <td colspan="11" class="px-6 py-14 text-center">
+                        <div class="flex flex-col items-center gap-3 text-gray-400">
+                            <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            <p class="text-sm font-semibold text-gray-500">Akses Data Dibatasi</p>
+                            <p class="text-xs text-gray-400">Role Anda tidak memiliki izin untuk melihat detail data mahasiswa.</p>
+                        </div>
+                    </td>
+                </tr>
+                @else
                 @forelse($mahasiswas as $index => $m)
                 @php $hasDocs = $m->user && $m->user->dokumens && $m->user->dokumens->isNotEmpty(); @endphp
                 <tr class="hover:bg-indigo-50/40 transition-colors data-row {{ $isReadOnly ? 'data-blurred' : '' }}"
@@ -550,6 +573,7 @@ tr.row-hidden { display:none !important; }
                 @empty
                 <tr><td colspan="11" class="px-6 py-14 text-center text-sm text-gray-400">Belum ada mahasiswa yang daftar ulang</td></tr>
                 @endforelse
+                @endif
             </tbody>
         </table>
     </div>
