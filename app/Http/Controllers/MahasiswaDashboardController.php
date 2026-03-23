@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\ProgramStudy;
 use App\Models\BiayaPmb;
 use App\Models\FormulirPendaftaran;
+use App\Models\Mahasiswa;
+use Illuminate\Support\Facades\Auth;
 
 class MahasiswaDashboardController extends Controller
 {
@@ -122,5 +124,43 @@ class MahasiswaDashboardController extends Controller
             'biaya_pendaftaran',
             'biaya_ukt'
         ));
+    }
+
+    public function selamatLulus()
+    {
+        $user = Auth::user();
+    
+        // ── Cari data mahasiswa berdasarkan user_id ──────────────────
+        $mahasiswa = Mahasiswa::with('programStudi')
+            ->where('user_id', $user->id)
+            ->first();
+    
+        // ── Tentukan kodeProdi dari berbagai sumber ──────────────────
+        //    Prioritas: mahasiswas.kodeProdi → users.pilihan_1 → deteksi NIM
+        $programStudi = null;
+    
+        if ($mahasiswa?->kodeProdi) {
+            $programStudi = ProgramStudy::find($mahasiswa->kodeProdi);
+        }
+    
+        if (!$programStudi && $user->pilihan_1) {
+            $programStudi = ProgramStudy::find($user->pilihan_1);
+        }
+    
+        // ── Fallback: deteksi dari NIM (kodeProdi sebagai substring) ─
+        //    Contoh: NIM 226280001 → kodeProdi 280 (Teknik Informatika)
+        if (!$programStudi && $user->nim) {
+            // Urutkan dari kodeProdi terpanjang agar lebih presisi
+            $allProdi = ProgramStudy::orderByRaw('LENGTH(kodeProdi) DESC')->get();
+    
+            foreach ($allProdi as $prodi) {
+                if (str_contains($user->nim, $prodi->kodeProdi)) {
+                    $programStudi = $prodi;
+                    break;
+                }
+            }
+        }
+    
+        return view('mahasiswa.selamat-lulus', compact('user', 'mahasiswa', 'programStudi'));
     }
 }

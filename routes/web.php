@@ -183,6 +183,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/daftar-ulang', [DaftarUlangController::class, 'store'])->name('daftar-ulang.store');
     });
 
+    Route::get('/mahasiswa/selamat-lulus', [MahasiswaDashboardController::class, 'selamatLulus'])
+    ->name('mahasiswa.selamat-lulus')
+    ->middleware(['auth']);
+
 });
 
 Route::get('/brosur-pmb/download/{index?}', [LandingPageController::class, 'downloadBrosur'])
@@ -289,6 +293,10 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::put('landing-page/news/{index}',[LandingPageContentController::class, 'updateNewsCard'])->name('admin.landing-page.news.update');
      
     Route::delete('landing-page/news/{index}',[LandingPageContentController::class, 'deleteNewsCard'])->name('admin.landing-page.news.delete');
+
+    // coba buat halaman welcome
+
+
         
 });
 
