@@ -44,8 +44,16 @@ class AuthLoginController extends Controller
         $request->session()->regenerate();
 
         // Redirect admin
-        if (in_array($user->role, ['admin', 'keuangan', 'wr-3','admisi','dekan','pimpinan'])) {
+        if (in_array($user->role, ['admin'])) {
             return redirect()->route('admin.dashboard');
+        }
+        if(in_array($user->role, ['keuangan'])){
+            return redirect()->route('admin.keuangan.index');
+        }
+        if(in_array($user->role, ['wr-3','admisi'])){
+            return redirect()->route('admin.user.index');
+        }if(in_array($user->role, ['dekan','pimpinan'])){
+            return redirect()->route('admin.user.daftar-ulang');
         }
 
         // Redirect mahasiswa
