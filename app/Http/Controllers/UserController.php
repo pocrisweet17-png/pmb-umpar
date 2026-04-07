@@ -73,7 +73,7 @@ class UserController extends Controller
                 });
             }
         
-            $users = $query->orderBy('created_at', 'desc')->get();
+            $users = $query->orderBy('created_at', 'desc')->paginate(4);
         
             return view('admin.user.index', compact('users'));
         }
