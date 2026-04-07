@@ -150,12 +150,16 @@
                             <label class="block text-gray-700 font-medium mb-2 text-sm">
                                 Role <span class="text-red-500">*</span>
                             </label>
-                            <select name="role" required
-                                    class="w-full border-2 border-purple-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white font-medium text-sm sm:text-base">
-                                <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
-                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                                <option value="keuangan" {{ old('role') == 'keuangan' ? 'selected' : '' }}>Keuangan</option>
-                                <option value="wr-3" {{ old('role') == 'wr-3' ? 'selected' : '' }}>Wakil Rektor 3</option>
+                            <select name="role"
+                                    class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                <option value="">Semua Role</option>
+                                <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
+                                <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="keuangan" {{ request('role') == 'keuangan' ? 'selected' : '' }}>Keuangan</option>
+                                <option value="wr-3" {{ request('role') == 'wr-3' ? 'selected' : '' }}>Wakil Rektor 3</option>
+                                <option value="admisi" {{ request('role') == 'admisi' ? 'selected' : '' }}>Admisi</option>
+                                <option value="dekan" {{ request('role') == 'dekan' ? 'selected' : '' }}>Dekan</option>
+                                <option value="pimpinan" {{ request('role') == 'pimpinan' ? 'selected' : '' }}>Pimpinan</option>
                             </select>
                         </div>
 
