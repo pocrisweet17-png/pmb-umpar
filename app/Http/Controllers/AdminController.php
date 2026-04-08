@@ -9,6 +9,7 @@ use App\Models\Ujian;
 use App\Models\PertanyaanWawancara;
 use App\Models\Registrasi;
 use App\Models\ProgramStudy;
+use App\Models\Mahasiswa;
 use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
@@ -17,10 +18,13 @@ class AdminController extends Controller
     {
         $user = auth()->user();
         
+        // Cek apakah user adalah pimpinan
+        $isPimpinan = ($user->role === 'pimpinan');
+        
         // ── Base Query dengan Filter Role ──────────────────────────────────────
         $baseQuery = User::query();
         
-        // Filter untuk role Dekan - hanya lihat data fakultasnya
+        // Filter untuk role dekan - hanya lihat data fakultasnya
         if ($user->role === 'dekan' && $user->fakultas_id) {
             $kodeProdiFakultas = ProgramStudy::where('fakultas_id', $user->fakultas_id)
                                             ->pluck('kodeProdi')
@@ -32,14 +36,39 @@ class AdminController extends Controller
             });
         }
         
+        // Filter untuk role pimpinan - lihat semua data
+        // (tidak ada filter tambahan untuk pimpinan karena dia bisa lihat semua)
+        
         // ── Statistik Dasar ─────────────────────────────────────────────────────
         $totalSoal = Soal::count();
         $totalUser = (clone $baseQuery)->where('role', 'user')->count();
-        $totalAdmin = User::where('role', 'admin')->count(); // Admin tetap global
+        $totalAdmin = User::where('role', 'admin')->count();
+        $totalPimpinan = User::where('role', 'pimpinan')->count();
         $totalUserVerified = (clone $baseQuery)->where('is_verified', true)->count();
         $totalUjian = Ujian::count();
         $ujianSelesai = Ujian::where('status', 'selesai')->count();
         $totalPertanyaanWawancara = PertanyaanWawancara::where('is_active', true)->count();
+
+        // ── Statistik Mahasiswa (sudah punya NIM) ───────────────────────────────
+        // Statistik Mahasiswa berdasarkan Fakultas
+        $mahasiswaPerFakultas = Mahasiswa::join('program_studis', 'mahasiswas.kodeProdi', '=', 'program_studis.kodeProdi')
+            ->select('program_studis.fakultas', DB::raw('COUNT(*) as total'))
+            ->whereNotNull('mahasiswas.nim')
+            ->where('mahasiswas.nim', '!=', '')
+            ->groupBy('program_studis.fakultas')
+            ->orderByDesc('total')
+            ->pluck('total', 'fakultas')
+            ->toArray();
+        
+        // Statistik Mahasiswa berdasarkan Program Studi
+        $mahasiswaPerProdi = Mahasiswa::join('program_studis', 'mahasiswas.kodeProdi', '=', 'program_studis.kodeProdi')
+            ->select('program_studis.namaProdi', DB::raw('COUNT(*) as total'))
+            ->whereNotNull('mahasiswas.nim')
+            ->where('mahasiswas.nim', '!=', '')
+            ->groupBy('program_studis.namaProdi')
+            ->orderByDesc('total')
+            ->pluck('total', 'namaProdi')
+            ->toArray();
 
         // ── Statistik Asal Daerah ───────────────────────────────────────────────
         $userIds = (clone $baseQuery)->where('role', 'user')->pluck('id')->toArray();
@@ -142,6 +171,7 @@ class AdminController extends Controller
             'totalSoal',
             'totalUser',
             'totalAdmin',
+            'totalPimpinan',
             'totalUserVerified',
             'totalUjian',
             'ujianSelesai',
@@ -152,6 +182,9 @@ class AdminController extends Controller
             'fakultasStats',
             'fakultasStats2',
             'totalPertanyaanWawancara',
+            'mahasiswaPerFakultas',
+            'mahasiswaPerProdi',
+            'isPimpinan'
         ));
     }
 

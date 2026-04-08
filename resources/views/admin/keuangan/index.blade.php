@@ -42,23 +42,24 @@
                 <input type="hidden" name="start_date" value="{{ request('start_date') }}">
                 <input type="hidden" name="end_date" value="{{ request('end_date') }}">
 
-                <!-- <button type="submit"
-                   class="inline-flex items-center justify-center bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3.5 rounded-xl shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 hover:from-green-700 hover:to-green-800 transition-all duration-200 font-semibold group">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                    Export ke Excel
-                </button> -->
+                <!--<button type="submit"-->
+                <!--   class="inline-flex items-center justify-center bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3.5 rounded-xl shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 hover:from-green-700 hover:to-green-800 transition-all duration-200 font-semibold group">-->
+                <!--    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
+                <!--        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>-->
+                <!--    </svg>-->
+                <!--    Export ke Excel-->
+                <!--</button>-->
             </form>
         </div>
     </div>
 
-    <!-- Statistics Cards -->
+    <!-- Statistics Cards - Dinamis sesuai filter -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Total Pendapatan Card -->
         <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-6 text-white">
             <div class="flex items-center justify-between mb-3">
                 <div>
-                    <p class="text-sm text-blue-100 font-medium">Total Pendapatan</p>
+                    <p class="text-sm text-blue-100 font-medium">Total</p>
                     <p class="text-3xl font-bold mt-2">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</p>
                 </div>
                 <div class="w-14 h-14 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
@@ -67,9 +68,18 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-sm text-blue-100">{{ $payments->where('status_transaksi', 'settlement')->count() }} transaksi berhasil</p>
+            <p class="text-sm text-blue-100">{{ $totalSuccessfulTransactions }} transaksi berhasil</p>
+            @if(request()->anyFilled(['tipe_pembayaran', 'status_transaksi', 'metode_pembayaran', 'jenjang', 'search', 'start_date', 'end_date']))
+                <div class="mt-2 text-xs text-blue-200">
+                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    Berdasarkan filter
+                </div>
+            @endif
         </div>
 
+        <!-- Biaya Pendaftaran Card -->
         <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg p-6 text-white">
             <div class="flex items-center justify-between mb-3">
                 <div>
@@ -82,9 +92,18 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-sm text-green-100">{{ $payments->where('tipe_pembayaran', 'pendaftaran')->where('status_transaksi', 'settlement')->count() }} pembayaran</p>
+            <p class="text-sm text-green-100">{{ $totalPendaftaranTransactions }} pembayaran</p>
+            @if(request()->anyFilled(['tipe_pembayaran', 'status_transaksi', 'metode_pembayaran', 'jenjang', 'search', 'start_date', 'end_date']))
+                <div class="mt-2 text-xs text-green-200">
+                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    Berdasarkan filter
+                </div>
+            @endif
         </div>
 
+        <!-- Biaya Daftar Ulang Card -->
         <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg p-6 text-white">
             <div class="flex items-center justify-between mb-3">
                 <div>
@@ -97,7 +116,15 @@
                     </svg>
                 </div>
             </div>
-            <p class="text-sm text-orange-100">{{ $payments->where('tipe_pembayaran', 'ukt')->where('status_transaksi', 'settlement')->count() }} pembayaran</p>
+            <p class="text-sm text-orange-100">{{ $totalUktTransactions }} pembayaran</p>
+            @if(request()->anyFilled(['tipe_pembayaran', 'status_transaksi', 'metode_pembayaran', 'jenjang', 'search', 'start_date', 'end_date']))
+                <div class="mt-2 text-xs text-orange-200">
+                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    Berdasarkan filter
+                </div>
+            @endif
         </div>
     </div>
 
@@ -224,7 +251,7 @@
                         @php
                             $jenjang = strtoupper($payment->user->programStudiPilihan1->jenjang ?? '');
                         @endphp
-                        <tr class="hover:bg-blue-50/50 transition-colors">
+                        <tr class="hover:bg-blue-50/50 transition-colors cursor-pointer" onclick="window.location='{{ route('admin.keuangan.show', $payment->id) }}'">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $index + 1 }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                 {{ $payment->created_at->format('d/m/Y H:i') }}

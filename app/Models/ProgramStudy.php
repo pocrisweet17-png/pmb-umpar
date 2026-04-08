@@ -24,11 +24,8 @@ class ProgramStudy extends Model
         'kuota',
     ];
     
-<<<<<<< HEAD
     public $timestamps = false; // jika tidak pakai created_at/updated_at
-=======
     public $timestamps = false;
->>>>>>> c725232840e4de2ca89c207adcd8c9dee52d0523
 
      public function fakultasRelation(): BelongsTo
     {

@@ -66,26 +66,56 @@ class KeuanganController extends Controller
      */
     public function index(Request $request)
     {
+        // Query untuk data transaksi (dengan filter)
         $query = Payment::with(['user.programStudiPilihan1']);
-
         $this->applyFilters($query, $request);
-
         $payments = $query->orderBy('created_at', 'desc')->get();
 
-        // Statistik
-        $totalPendapatan = Payment::where('status_transaksi', 'settlement')->sum('jumlah');
-        $totalPendaftaran = Payment::where('status_transaksi', 'settlement')
-                                   ->where('tipe_pembayaran', 'pendaftaran')
-                                   ->sum('jumlah');
-        $totalUkt = Payment::where('status_transaksi', 'settlement')
-                           ->where('tipe_pembayaran', 'ukt')
-                           ->sum('jumlah');
+        // Query untuk statistik (dengan filter yang sama)
+        // Total Pendapatan (settlement only)
+        $statQuery = Payment::query();
+        $this->applyFilters($statQuery, $request);
+        $totalPendapatan = (clone $statQuery)->where('status_transaksi', 'settlement')->sum('jumlah');
+
+        // Total Biaya Pendaftaran (settlement only)
+        $statPendaftaranQuery = Payment::query();
+        $this->applyFilters($statPendaftaranQuery, $request);
+        $totalPendaftaran = (clone $statPendaftaranQuery)
+            ->where('status_transaksi', 'settlement')
+            ->where('tipe_pembayaran', 'pendaftaran')
+            ->sum('jumlah');
+
+        // Total Biaya Daftar Ulang / UKT (settlement only)
+        $statUktQuery = Payment::query();
+        $this->applyFilters($statUktQuery, $request);
+        $totalUkt = (clone $statUktQuery)
+            ->where('status_transaksi', 'settlement')
+            ->where('tipe_pembayaran', 'ukt')
+            ->sum('jumlah');
+
+        // Hitung jumlah transaksi berhasil untuk ditampilkan di card
+        $totalSuccessfulTransactions = (clone $statQuery)
+            ->where('status_transaksi', 'settlement')
+            ->count();
+
+        $totalPendaftaranTransactions = (clone $statPendaftaranQuery)
+            ->where('status_transaksi', 'settlement')
+            ->where('tipe_pembayaran', 'pendaftaran')
+            ->count();
+
+        $totalUktTransactions = (clone $statUktQuery)
+            ->where('status_transaksi', 'settlement')
+            ->where('tipe_pembayaran', 'ukt')
+            ->count();
 
         return view('admin.keuangan.index', compact(
             'payments',
             'totalPendapatan',
             'totalPendaftaran',
-            'totalUkt'
+            'totalUkt',
+            'totalSuccessfulTransactions',
+            'totalPendaftaranTransactions',
+            'totalUktTransactions'
         ));
     }
 
