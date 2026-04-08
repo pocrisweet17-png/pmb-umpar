@@ -35,7 +35,7 @@ class UserController extends Controller
         
             // Filter by verifikasi status atau progress step
             if ($request->filled('verified')) {
-                $stepMap = [
+                $stepOrder = [
                     'step_prodi'        => 'is_prodi_selected',
                     'step_bayar'        => 'is_bayar_pendaftaran',
                     'step_data'         => 'is_data_completed',
@@ -48,8 +48,18 @@ class UserController extends Controller
 
                 $verifiedVal = $request->verified;
 
-                if (array_key_exists($verifiedVal, $stepMap)) {
-                    $query->where($stepMap[$verifiedVal], true);
+                if (array_key_exists($verifiedVal, $stepOrder)) {
+                    $stepKeys = array_keys($stepOrder);
+                    $currentIndex = array_search($verifiedVal, $stepKeys);
+                    $currentField = $stepOrder[$verifiedVal];
+
+                    $query->where($currentField, true);
+
+                    if ($currentIndex < count($stepKeys) - 1) {
+                        $nextStepKey = $stepKeys[$currentIndex + 1];
+                        $nextField = $stepOrder[$nextStepKey];
+                        $query->where($nextField, false);
+                    }
                 } else {
                     $query->where('is_verified', (int)$verifiedVal);
                 }
