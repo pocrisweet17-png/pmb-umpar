@@ -27,65 +27,34 @@ $footer = LandingPageContent::getSection('footer');
 
   <style>
     :root {
-      /* MUHAMMADIYAH & UMPAR Color Palette */
-      /* Biru Tua */
       --blue-dark: #0a1628;
       --blue-900: #0c2340;
       --blue-800: #0f3460;
       --blue-700: #1a4a7a;
-      /* Biru Muda / Light Blue */
       --blue-light: #4da8da;
       --blue-400: #5dade2;
       --blue-300: #85c1e9;
       --blue-200: #aed6f1;
       --blue-100: #d6eaf8;
-      /* Hijau Muhammadiyah */
       --green-muhammadiyah: #00a651;
       --green-dark: #008c44;
       --green-light: #2ecc71;
-      /* Kuning/Emas (Matahari Muhammadiyah) */
       --gold: #f4d03f;
       --gold-dark: #d4ac0d;
       --gold-light: #f7dc6f;
-      /* Putih */
       --white: #ffffff;
     }
 
-    * {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
+    * { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-display { font-family: 'Playfair Display', serif; }
+    html { scroll-behavior: smooth; }
 
-    .font-display {
-      font-family: 'Playfair Display', serif;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    /* =====================================================
-       ANIMATED BACKGROUND EFFECTS
-       ===================================================== */
-
-    /* Hero gradient dengan warna Muhammadiyah */
     .hero-overlay {
-      background: linear-gradient(
-        135deg,
-        rgba(10, 22, 40, 0.92) 0%,
-        rgba(15, 52, 96, 0.88) 30%,
-        rgba(0, 166, 81, 0.75) 70%,
-        rgba(77, 168, 218, 0.8) 100%
-      );
+      background: linear-gradient(135deg, rgba(10,22,40,0.92) 0%, rgba(15,52,96,0.88) 30%, rgba(0,166,81,0.75) 70%, rgba(77,168,218,0.8) 100%);
     }
 
-    /* Animated gradient background */
     .gradient-muhammadiyah {
-      background: linear-gradient(-45deg,
-        var(--blue-900),
-        var(--blue-800),
-        var(--green-muhammadiyah),
-        var(--blue-light),
-        var(--blue-900));
+      background: linear-gradient(-45deg, var(--blue-900), var(--blue-800), var(--green-muhammadiyah), var(--blue-light), var(--blue-900));
       background-size: 400% 400%;
       animation: gradientFlow 12s ease infinite;
     }
@@ -96,51 +65,23 @@ $footer = LandingPageContent::getSection('footer');
       100% { background-position: 0% 50%; }
     }
 
-    /* Aurora effect */
-    .aurora {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-    }
-
-    .aurora::before,
-    .aurora::after {
+    .aurora { position: absolute; inset: 0; overflow: hidden; }
+    .aurora::before, .aurora::after {
       content: '';
       position: absolute;
       width: 150%;
       height: 150%;
-      background: conic-gradient(
-        from 0deg,
-        transparent 0%,
-        var(--green-muhammadiyah) 10%,
-        transparent 20%,
-        var(--blue-light) 30%,
-        transparent 40%,
-        var(--gold) 50%,
-        transparent 60%,
-        var(--green-muhammadiyah) 70%,
-        transparent 80%,
-        var(--blue-light) 90%,
-        transparent 100%
-      );
+      background: conic-gradient(from 0deg, transparent 0%, var(--green-muhammadiyah) 10%, transparent 20%, var(--blue-light) 30%, transparent 40%, var(--gold) 50%, transparent 60%, var(--green-muhammadiyah) 70%, transparent 80%, var(--blue-light) 90%, transparent 100%);
       animation: auroraRotate 20s linear infinite;
       opacity: 0.15;
       filter: blur(80px);
     }
-
-    .aurora::after {
-      animation-delay: -10s;
-      animation-direction: reverse;
-    }
+    .aurora::after { animation-delay: -10s; animation-direction: reverse; }
 
     @keyframes auroraRotate {
       from { transform: translate(-25%, -25%) rotate(0deg); }
       to { transform: translate(-25%, -25%) rotate(360deg); }
     }
-
-    /* =====================================================
-       FLOATING ELEMENTS
-       ===================================================== */
 
     .floating-orb {
       position: absolute;
@@ -150,30 +91,13 @@ $footer = LandingPageContent::getSection('footer');
     }
 
     @keyframes floatOrb {
-      0%, 100% {
-        transform: translate(0, 0) scale(1);
-        opacity: 0.6;
-      }
-      25% {
-        transform: translate(30px, -40px) scale(1.1);
-        opacity: 0.8;
-      }
-      50% {
-        transform: translate(-20px, -60px) scale(0.9);
-        opacity: 0.5;
-      }
-      75% {
-        transform: translate(40px, -20px) scale(1.05);
-        opacity: 0.7;
-      }
+      0%, 100% { transform: translate(0,0) scale(1); opacity: 0.6; }
+      25% { transform: translate(30px,-40px) scale(1.1); opacity: 0.8; }
+      50% { transform: translate(-20px,-60px) scale(0.9); opacity: 0.5; }
+      75% { transform: translate(40px,-20px) scale(1.05); opacity: 0.7; }
     }
 
-    /* Geometric shapes animation */
-    .geo-shape {
-      position: absolute;
-      opacity: 0.1;
-      animation: geoFloat 20s ease-in-out infinite;
-    }
+    .geo-shape { position: absolute; opacity: 0.1; animation: geoFloat 20s ease-in-out infinite; }
 
     @keyframes geoFloat {
       0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -182,84 +106,28 @@ $footer = LandingPageContent::getSection('footer');
       75% { transform: translateY(-20px) rotate(270deg); }
     }
 
-    /* =====================================================
-       PARTICLE SYSTEM
-       ===================================================== */
-
-    .particles-container {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .particle {
-      position: absolute;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      opacity: 0;
-      animation: particleFloat 10s ease-in-out infinite;
-    }
-
+    .particles-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .particle { position: absolute; width: 6px; height: 6px; border-radius: 50%; opacity: 0; animation: particleFloat 10s ease-in-out infinite; }
     .particle-green { background: var(--green-muhammadiyah); }
     .particle-blue { background: var(--blue-light); }
     .particle-gold { background: var(--gold); }
     .particle-white { background: white; }
 
     @keyframes particleFloat {
-      0% {
-        opacity: 0;
-        transform: translateY(100vh) scale(0);
-      }
-      10% {
-        opacity: 0.8;
-      }
-      90% {
-        opacity: 0.8;
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-100vh) scale(1);
-      }
+      0% { opacity: 0; transform: translateY(100vh) scale(0); }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.8; }
+      100% { opacity: 0; transform: translateY(-100vh) scale(1); }
     }
 
-    /* =====================================================
-       GLOWING EFFECTS
-       ===================================================== */
-
-    .glow-green {
-      box-shadow: 0 0 40px rgba(0, 166, 81, 0.4);
-    }
-
-    .glow-blue {
-      box-shadow: 0 0 40px rgba(77, 168, 218, 0.4);
-    }
-
-    .glow-gold {
-      box-shadow: 0 0 40px rgba(244, 208, 63, 0.4);
-    }
-
-    /* Text glow */
-    .text-glow-green {
-      text-shadow: 0 0 30px rgba(0, 166, 81, 0.5);
-    }
-
-    .text-glow-gold {
-      text-shadow: 0 0 30px rgba(244, 208, 63, 0.5);
-    }
-
-    /* =====================================================
-       GRADIENT TEXT ANIMATIONS
-       ===================================================== */
+    .glow-green { box-shadow: 0 0 40px rgba(0,166,81,0.4); }
+    .glow-blue { box-shadow: 0 0 40px rgba(77,168,218,0.4); }
+    .glow-gold { box-shadow: 0 0 40px rgba(244,208,63,0.4); }
+    .text-glow-green { text-shadow: 0 0 30px rgba(0,166,81,0.5); }
+    .text-glow-gold { text-shadow: 0 0 30px rgba(244,208,63,0.5); }
 
     .text-gradient-muhammadiyah {
-      background: linear-gradient(90deg,
-        var(--blue-light),
-        var(--green-muhammadiyah),
-        var(--gold),
-        var(--green-muhammadiyah),
-        var(--blue-light));
+      background: linear-gradient(90deg, var(--blue-light), var(--green-muhammadiyah), var(--gold), var(--green-muhammadiyah), var(--blue-light));
       background-size: 300% auto;
       -webkit-background-clip: text;
       background-clip: text;
@@ -279,102 +147,59 @@ $footer = LandingPageContent::getSection('footer');
       -webkit-text-fill-color: transparent;
     }
 
-    /* =====================================================
-       BUTTON ANIMATIONS
-       ===================================================== */
-
     .btn-muhammadiyah {
       position: relative;
       background: linear-gradient(135deg, var(--green-muhammadiyah), var(--green-dark));
       overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
     }
-
     .btn-muhammadiyah::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
       animation: btnShine 3s ease-in-out infinite;
     }
-
-    @keyframes btnShine {
-      0%, 100% { left: -100%; }
-      50% { left: 100%; }
-    }
-
-    .btn-muhammadiyah:hover {
-      transform: translateY(-4px) scale(1.02);
-      box-shadow: 0 20px 40px rgba(0, 166, 81, 0.4);
-    }
+    @keyframes btnShine { 0%, 100% { left: -100%; } 50% { left: 100%; } }
+    .btn-muhammadiyah:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 20px 40px rgba(0,166,81,0.4); }
 
     .btn-blue {
       position: relative;
       background: linear-gradient(135deg, var(--blue-800), var(--blue-900));
       overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
     }
-
     .btn-blue::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(77, 168, 218, 0.4), transparent);
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(77,168,218,0.4), transparent);
       animation: btnShine 3s ease-in-out infinite;
       animation-delay: 1.5s;
     }
-
-    .btn-blue:hover {
-      transform: translateY(-4px) scale(1.02);
-      box-shadow: 0 20px 40px rgba(15, 52, 96, 0.5);
-    }
+    .btn-blue:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 20px 40px rgba(15,52,96,0.5); }
 
     .btn-gold {
       background: linear-gradient(135deg, var(--gold), var(--gold-dark));
       color: var(--blue-900);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
     }
+    .btn-gold:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 20px 40px rgba(244,208,63,0.4); }
 
-    .btn-gold:hover {
-      transform: translateY(-4px) scale(1.02);
-      box-shadow: 0 20px 40px rgba(244, 208, 63, 0.4);
-    }
-
-    /* =====================================================
-       CARD ANIMATIONS
-       ===================================================== */
-
-    .card-hover {
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
+    .card-hover { transition: all 0.5s cubic-bezier(0.4,0,0.2,1); }
     .card-hover:hover {
       transform: translateY(-12px) rotateX(5deg);
-      box-shadow:
-        0 30px 60px -15px rgba(10, 22, 40, 0.25),
-        0 0 30px rgba(0, 166, 81, 0.1);
+      box-shadow: 0 30px 60px -15px rgba(10,22,40,0.25), 0 0 30px rgba(0,166,81,0.1);
     }
 
-    .card-glow {
-      position: relative;
-      overflow: hidden;
-    }
-
+    .card-glow { position: relative; overflow: hidden; }
     .card-glow::before {
       content: '';
       position: absolute;
       inset: -2px;
-      background: linear-gradient(45deg,
-        var(--green-muhammadiyah),
-        var(--blue-light),
-        var(--gold),
-        var(--green-muhammadiyah));
+      background: linear-gradient(45deg, var(--green-muhammadiyah), var(--blue-light), var(--gold), var(--green-muhammadiyah));
       background-size: 400% 400%;
       animation: borderGlow 6s linear infinite;
       z-index: -1;
@@ -382,10 +207,7 @@ $footer = LandingPageContent::getSection('footer');
       opacity: 0;
       transition: opacity 0.3s;
     }
-
-    .card-glow:hover::before {
-      opacity: 1;
-    }
+    .card-glow:hover::before { opacity: 1; }
 
     @keyframes borderGlow {
       0% { background-position: 0% 50%; }
@@ -393,64 +215,16 @@ $footer = LandingPageContent::getSection('footer');
       100% { background-position: 0% 50%; }
     }
 
-    /* =====================================================
-       REVEAL ANIMATIONS
-       ===================================================== */
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(50px);
-      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .reveal.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .reveal-left {
-      opacity: 0;
-      transform: translateX(-60px);
-      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .reveal-left.active {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    .reveal-right {
-      opacity: 0;
-      transform: translateX(60px);
-      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .reveal-right.active {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    .reveal-scale {
-      opacity: 0;
-      transform: scale(0.8);
-      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .reveal-scale.active {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    .reveal-rotate {
-      opacity: 0;
-      transform: rotate(-10deg) translateY(30px);
-      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .reveal-rotate.active {
-      opacity: 1;
-      transform: rotate(0deg) translateY(0);
-    }
+    .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+    .reveal-left { opacity: 0; transform: translateX(-60px); transition: all 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .reveal-left.active { opacity: 1; transform: translateX(0); }
+    .reveal-right { opacity: 0; transform: translateX(60px); transition: all 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .reveal-right.active { opacity: 1; transform: translateX(0); }
+    .reveal-scale { opacity: 0; transform: scale(0.8); transition: all 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .reveal-scale.active { opacity: 1; transform: scale(1); }
+    .reveal-rotate { opacity: 0; transform: rotate(-10deg) translateY(30px); transition: all 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .reveal-rotate.active { opacity: 1; transform: rotate(0deg) translateY(0); }
 
     .delay-1 { transition-delay: 0.1s; }
     .delay-2 { transition-delay: 0.2s; }
@@ -459,45 +233,14 @@ $footer = LandingPageContent::getSection('footer');
     .delay-5 { transition-delay: 0.5s; }
     .delay-6 { transition-delay: 0.6s; }
 
-    /* =====================================================
-       ICON ANIMATIONS
-       ===================================================== */
+    .icon-bounce { animation: iconBounce 2s ease-in-out infinite; }
+    @keyframes iconBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .icon-spin { animation: iconSpin 8s linear infinite; }
+    @keyframes iconSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .icon-pulse { animation: iconPulse 2s ease-in-out infinite; }
+    @keyframes iconPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } }
 
-    .icon-bounce {
-      animation: iconBounce 2s ease-in-out infinite;
-    }
-
-    @keyframes iconBounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    .icon-spin {
-      animation: iconSpin 8s linear infinite;
-    }
-
-    @keyframes iconSpin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    .icon-pulse {
-      animation: iconPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes iconPulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.1); opacity: 0.8; }
-    }
-
-    /* =====================================================
-       NUMBER/TIMELINE ANIMATIONS
-       ===================================================== */
-
-    .number-glow {
-      position: relative;
-    }
-
+    .number-glow { position: relative; }
     .number-glow::after {
       content: '';
       position: absolute;
@@ -508,275 +251,79 @@ $footer = LandingPageContent::getSection('footer');
       animation: numberPulse 2s ease-in-out infinite;
       z-index: -1;
     }
-
-    @keyframes numberPulse {
-      0%, 100% { opacity: 0; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.1); }
-    }
+    @keyframes numberPulse { 0%, 100% { opacity: 0; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.1); } }
 
     .timeline-connector {
-      background: linear-gradient(90deg,
-        var(--blue-light),
-        var(--green-muhammadiyah),
-        var(--gold),
-        var(--green-muhammadiyah),
-        var(--blue-light));
+      background: linear-gradient(90deg, var(--blue-light), var(--green-muhammadiyah), var(--gold), var(--green-muhammadiyah), var(--blue-light));
       background-size: 200% 100%;
       animation: timelineShimmer 3s linear infinite;
     }
+    @keyframes timelineShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-    @keyframes timelineShimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
+    .logo-container { position: relative; }
+    .logo-ring { position: absolute; inset: -8px; border: 2px solid; border-radius: 16px; opacity: 0; animation: logoRingExpand 3s ease-out infinite; }
+    .logo-ring-1 { border-color: var(--green-muhammadiyah); animation-delay: 0s; }
+    .logo-ring-2 { border-color: var(--blue-light); animation-delay: 1s; }
+    .logo-ring-3 { border-color: var(--gold); animation-delay: 2s; }
+    @keyframes logoRingExpand { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.5); opacity: 0; } }
 
-    /* =====================================================
-       LOGO ANIMATION
-       ===================================================== */
+    .wave-container { position: absolute; bottom: 0; left: 0; right: 0; height: 150px; overflow: hidden; }
+    .wave { position: absolute; bottom: 0; width: 200%; height: 100%; animation: waveMove 15s linear infinite; }
+    .wave-1 { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.3' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") repeat-x; animation-duration: 20s; }
+    .wave-2 { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.5' d='M0,64L48,80C96,96,192,128,288,128C384,128,480,96,576,90.7C672,85,768,107,864,144C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") repeat-x; animation-duration: 15s; animation-delay: -5s; }
+    .wave-3 { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='1' d='M0,256L48,240C96,224,192,192,288,181.3C384,171,480,181,576,186.7C672,192,768,192,864,181.3C960,171,1056,149,1152,154.7C1248,160,1344,192,1392,208L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") repeat-x; animation-duration: 12s; animation-delay: -2s; }
+    @keyframes waveMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-    .logo-container {
-      position: relative;
-    }
-
-    .logo-ring {
-      position: absolute;
-      inset: -8px;
-      border: 2px solid;
-      border-radius: 16px;
-      opacity: 0;
-      animation: logoRingExpand 3s ease-out infinite;
-    }
-
-    .logo-ring-1 {
-      border-color: var(--green-muhammadiyah);
-      animation-delay: 0s;
-    }
-    .logo-ring-2 {
-      border-color: var(--blue-light);
-      animation-delay: 1s;
-    }
-    .logo-ring-3 {
-      border-color: var(--gold);
-      animation-delay: 2s;
-    }
-
-    @keyframes logoRingExpand {
-      0% { transform: scale(1); opacity: 0.8; }
-      100% { transform: scale(1.5); opacity: 0; }
-    }
-
-    /* =====================================================
-       WAVE ANIMATIONS
-       ===================================================== */
-
-    .wave-container {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 150px;
-      overflow: hidden;
-    }
-
-    .wave {
-      position: absolute;
-      bottom: 0;
-      width: 200%;
-      height: 100%;
-      animation: waveMove 15s linear infinite;
-    }
-
-    .wave-1 {
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.3' d='M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") repeat-x;
-      animation-duration: 20s;
-    }
-
-    .wave-2 {
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.5' d='M0,64L48,80C96,96,192,128,288,128C384,128,480,96,576,90.7C672,85,768,107,864,144C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") repeat-x;
-      animation-duration: 15s;
-      animation-delay: -5s;
-    }
-
-    .wave-3 {
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='1' d='M0,256L48,240C96,224,192,192,288,181.3C384,171,480,181,576,186.7C672,192,768,192,864,181.3C960,171,1056,149,1152,154.7C1248,160,1344,192,1392,208L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") repeat-x;
-      animation-duration: 12s;
-      animation-delay: -2s;
-    }
-
-    @keyframes waveMove {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    /* =====================================================
-       IMAGE EFFECTS
-       ===================================================== */
-
-    .img-zoom {
-      overflow: hidden;
-    }
-
-    .img-zoom img {
-      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .img-zoom:hover img {
-      transform: scale(1.15);
-    }
-
-    /* =====================================================
-       QUOTE DECORATION
-       ===================================================== */
+    .img-zoom { overflow: hidden; }
+    .img-zoom img { transition: transform 0.8s cubic-bezier(0.4,0,0.2,1); }
+    .img-zoom:hover img { transform: scale(1.15); }
 
     .quote-mark {
-      font-size: 5rem;
-      line-height: 1;
-      font-family: Georgia, serif;
+      font-size: 5rem; line-height: 1; font-family: Georgia, serif;
       background: linear-gradient(135deg, var(--green-muhammadiyah), var(--blue-light));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      opacity: 0.2;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; opacity: 0.2;
     }
 
-    /* =====================================================
-       CUSTOM SCROLLBAR
-       ===================================================== */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: var(--blue-dark); }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(var(--green-muhammadiyah), var(--blue-light)); border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(var(--green-dark), var(--blue-800)); }
 
-    ::-webkit-scrollbar {
-      width: 10px;
-    }
+    .glass { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+    .glass-dark { background: rgba(10,22,40,0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+    .glass-green { background: rgba(0,166,81,0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
 
-    ::-webkit-scrollbar-track {
-      background: var(--blue-dark);
-    }
+    .hexagon { clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+    .star-shape { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
 
-    ::-webkit-scrollbar-thumb {
-      background: linear-gradient(var(--green-muhammadiyah), var(--blue-light));
-      border-radius: 5px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(var(--green-dark), var(--blue-800));
-    }
-
-    /* =====================================================
-       GLASS MORPHISM
-       ===================================================== */
-
-    .glass {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-
-    .glass-dark {
-      background: rgba(10, 22, 40, 0.8);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-
-    .glass-green {
-      background: rgba(0, 166, 81, 0.1);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-
-    /* =====================================================
-       DECORATIVE SHAPES
-       ===================================================== */
-
-    .hexagon {
-      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    }
-
-    .star-shape {
-      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-    }
-
-    /* Muhammadiyah sun rays */
     .sun-rays {
-      position: absolute;
-      width: 200px;
-      height: 200px;
-      background: conic-gradient(
-        from 0deg,
-        transparent 0deg,
-        var(--gold) 5deg,
-        transparent 10deg
-      );
-      animation: sunRotate 30s linear infinite;
-      opacity: 0.1;
+      position: absolute; width: 200px; height: 200px;
+      background: conic-gradient(from 0deg, transparent 0deg, var(--gold) 5deg, transparent 10deg);
+      animation: sunRotate 30s linear infinite; opacity: 0.1;
     }
-
-    @keyframes sunRotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    /* =====================================================
-       TYPING ANIMATION
-       ===================================================== */
+    @keyframes sunRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     .typing-text {
-      overflow: hidden;
-      white-space: nowrap;
+      overflow: hidden; white-space: nowrap;
       border-right: 3px solid var(--green-muhammadiyah);
       animation: typing 3s steps(30) forwards, blinkCursor 0.8s infinite;
     }
+    @keyframes typing { from { width: 0; } to { width: 100%; } }
+    @keyframes blinkCursor { 0%, 100% { border-color: transparent; } 50% { border-color: var(--green-muhammadiyah); } }
 
-    @keyframes typing {
-      from { width: 0; }
-      to { width: 100%; }
-    }
-
-    @keyframes blinkCursor {
-      0%, 100% { border-color: transparent; }
-      50% { border-color: var(--green-muhammadiyah); }
-    }
-
-    /* =====================================================
-       COUNTER ANIMATION
-       ===================================================== */
-
-    .counter-box {
-      position: relative;
-      overflow: hidden;
-    }
-
+    .counter-box { position: relative; overflow: hidden; }
     .counter-box::after {
       content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: conic-gradient(
-        from 0deg,
-        transparent,
-        rgba(0, 166, 81, 0.1),
-        transparent
-      );
+      position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: conic-gradient(from 0deg, transparent, rgba(0,166,81,0.1), transparent);
       animation: counterSpin 4s linear infinite;
     }
-
-    @keyframes counterSpin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    /* =====================================================
-       RESPONSIVE FIXES
-       ===================================================== */
+    @keyframes counterSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
     @media (max-width: 768px) {
-      .floating-orb {
-        opacity: 0.4;
-      }
-      .aurora::before,
-      .aurora::after {
-        opacity: 0.1;
-      }
+      .floating-orb { opacity: 0.4; }
+      .aurora::before, .aurora::after { opacity: 0.1; }
     }
   </style>
 </head>
@@ -790,26 +337,20 @@ $footer = LandingPageContent::getSection('footer');
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
         <!-- Logo -->
-
-          <div class="logo-container relative">
-            <div class="logo-ring logo-ring-1 rounded-xl"></div>
-            <div class="logo-ring logo-ring-2 rounded-xl"></div>
-            <div class="logo-ring logo-ring-3 rounded-xl"></div>
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-[#d9e2de] via-[#0f3460] to-[#4da8da] shadow-lg group-hover:scale-110 transition-transform duration-300">
-             <div class="w-15 h-15 rounded-xl overflow-hidden bg-white flex items-center justify-center">
-                    <img
-                        src="{{ asset('img/umpar.png') }}"
-                        alt="UMPAR"
-                        class="max-w-full max-h-full object-contain"
-                    >
-                </div>
+        <div class="logo-container relative">
+          <div class="logo-ring logo-ring-1 rounded-xl"></div>
+          <div class="logo-ring logo-ring-2 rounded-xl"></div>
+          <div class="logo-ring logo-ring-3 rounded-xl"></div>
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-[#d9e2de] via-[#0f3460] to-[#4da8da] shadow-lg group-hover:scale-110 transition-transform duration-300">
+            <div class="w-15 h-15 rounded-xl overflow-hidden bg-white flex items-center justify-center">
+              <img src="{{ asset('img/umpar.png') }}" alt="UMPAR" class="max-w-full max-h-full object-contain">
             </div>
           </div>
-          <div>
-            <h1 class="text-lg font-bold transition-colors duration-300" :class="scrolled ? 'text-[#0c2340]' : 'text-white'">UMPAR</h1>
-            <p class="text-xs transition-colors duration-300" :class="scrolled ? 'text-gray-500' : 'text-white/80'">Universitas Muhammadiyah Parepare</p>
-          </div>
-        </a>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold transition-colors duration-300" :class="scrolled ? 'text-[#0c2340]' : 'text-white'">UMPAR</h1>
+          <p class="text-xs transition-colors duration-300" :class="scrolled ? 'text-gray-500' : 'text-white/80'">Universitas Muhammadiyah Parepare</p>
+        </div>
 
         <!-- Desktop Navigation -->
         <nav class="hidden lg:flex items-center gap-1">
@@ -817,7 +358,6 @@ $footer = LandingPageContent::getSection('footer');
           <a href="#alur" class="px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-[#00a651]/10" :class="scrolled ? 'text-gray-700 hover:text-[#00a651]' : 'text-white/90 hover:text-white hover:bg-white/10'">Alur Pendaftaran</a>
           <a href="#testimoni" class="px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-[#00a651]/10" :class="scrolled ? 'text-gray-700 hover:text-[#00a651]' : 'text-white/90 hover:text-white hover:bg-white/10'">Testimoni</a>
           <a href="#berita" class="px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-[#00a651]/10" :class="scrolled ? 'text-gray-700 hover:text-[#00a651]' : 'text-white/90 hover:text-white hover:bg-white/10'">Berita</a>
-
           <div class="flex items-center gap-3 ml-4">
             <a href="/login" class="px-5 py-2.5 rounded-xl font-semibold border-2 transition-all duration-300" :class="scrolled ? 'border-[#0c2340] text-[#0c2340] hover:bg-[#0c2340]/5' : 'border-white/50 text-white hover:bg-white/10'">
               Masuk
@@ -867,40 +407,24 @@ $footer = LandingPageContent::getSection('footer');
 
     <!-- HERO -->
     <section class="relative min-h-screen flex items-center overflow-hidden">
-      <!-- Video Background -->
       <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover">
         <source src="/media/hero-campus.mp4" type="video/mp4">
       </video>
-
-      <!-- Gradient Overlay -->
       <div class="absolute inset-0 hero-overlay"></div>
-
-      <!-- Aurora Effect -->
       <div class="aurora"></div>
-
-      <!-- Floating Orbs -->
       <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <div class="floating-orb w-80 h-80 bg-[#00a651] top-10 left-10" style="animation-delay: 0s;"></div>
         <div class="floating-orb w-96 h-96 bg-[#4da8da] bottom-20 right-10" style="animation-delay: -5s;"></div>
         <div class="floating-orb w-72 h-72 bg-[#f4d03f] top-1/2 left-1/3" style="animation-delay: -10s;"></div>
       </div>
-
-      <!-- Particles -->
       <div class="particles-container" id="particles"></div>
-
-      <!-- Sun Rays (Muhammadiyah Symbol) -->
       <div class="absolute top-20 right-20 sun-rays hidden lg:block"></div>
-
-      <!-- Geometric Shapes -->
       <div class="geo-shape top-1/4 left-1/4 w-20 h-20 border-2 border-[#00a651] rotate-45" style="animation-delay: -2s;"></div>
       <div class="geo-shape bottom-1/4 right-1/4 w-16 h-16 border-2 border-[#4da8da] rounded-full" style="animation-delay: -5s;"></div>
       <div class="geo-shape top-1/3 right-1/3 w-12 h-12 bg-[#f4d03f]/20 star-shape" style="animation-delay: -8s;"></div>
 
-      <!-- Content -->
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 z-10">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-
-          <!-- Left Column -->
           <div class="text-white space-y-8">
             <div class="reveal-left">
               <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-medium">
@@ -908,17 +432,14 @@ $footer = LandingPageContent::getSection('footer');
                 <span class="text-[#f4d03f]">✦</span> {{ $hero['badge_text'] ?? 'Pendaftaran Gelombang 1 Dibuka' }}
               </span>
             </div>
-
             <h2 class="reveal-left delay-1 text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
               {{ $hero['title_line1'] ?? 'Wujudkan' }}<br>
               <span class="font-display">{{ $hero['title_line2'] ?? 'Masa Depanmu' }}</span><br>
               <span class="text-gradient-muhammadiyah">{{ $hero['title_line3'] ?? 'Bersama UMPAR' }}</span>
             </h2>
-
             <p class="reveal-left delay-2 text-lg sm:text-xl text-white/80 max-w-lg leading-relaxed">
               {{ $hero['description'] ?? 'Universitas Muhammadiyah Parepare - Kampus dengan akreditasi unggulan, nilai-nilai Islami, dan jaringan industri terluas di Sulawesi Selatan.' }}
             </p>
-
             <div class="reveal-left delay-3 flex flex-wrap gap-4">
               <a href="{{ route('register.form') }}" class="btn-gold group inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-bold shadow-2xl">
                 DAFTAR SEKARANG
@@ -933,8 +454,6 @@ $footer = LandingPageContent::getSection('footer');
                 </svg>
               </a>
             </div>
-
-            <!-- Stats with Muhammadiyah colors -->
             <div class="reveal-left delay-4 grid grid-cols-3 gap-4 pt-8 max-w-lg">
               <div class="counter-box glass-dark rounded-2xl p-4 text-center border border-[#00a651]/30">
                 <div class="relative z-10">
@@ -960,17 +479,15 @@ $footer = LandingPageContent::getSection('footer');
           <!-- Right Column - Hero Card -->
           <div class="hidden lg:block reveal-right delay-2">
             <div class="relative">
-              <!-- Decorative glow -->
               <div class="absolute -inset-4 bg-gradient-to-r from-[#00a651] via-[#4da8da] to-[#f4d03f] rounded-3xl blur-2xl opacity-30 animate-pulse"></div>
-
               <div class="relative glass rounded-3xl shadow-2xl overflow-hidden border border-white/20">
                 <div class="img-zoom relative">
                   @if(isset($hero['card_image']) && $hero['card_image'])
                     <img src="{{ Storage::url($hero['card_image']) }}" alt="Mahasiswa UMPAR" class="w-full h-72 object-cover" />
-                    @else
+                  @else
+                    {{-- ✅ DIPERBAIKI: konsisten dengan local (jpg) --}}
                     <img src="/img/UMPAR-3.jpg" alt="Mahasiswa UMPAR" class="w-full h-72 object-cover" />
                   @endif
-                  <!-- Muhammadiyah badge -->
                   <div class="absolute top-4 right-4 w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
                     <span class="text-2xl">☀️</span>
                   </div>
@@ -979,16 +496,12 @@ $footer = LandingPageContent::getSection('footer');
                   <div class="flex items-center gap-2 mb-4">
                     <span class="px-3 py-1 rounded-full bg-[#00a651]/10 text-[#00a651] text-xs font-semibold border border-[#00a651]/20">BARU</span>
                     <span class="text-sm text-gray-500">{{ $hero['card_subtitle'] ?? 'Gelombang 1 • 2025/2026' }}</span>
-                      </div>
-                      <h3 class="text-2xl font-bold text-[#0c2340] mb-3">{{ $hero['card_title'] ?? 'Pendaftaran Mahasiswa Baru' }}</h3>
-                      <p class="text-gray-600 mb-6">{{ $hero['card_description'] ?? 'Bergabunglah dengan keluarga besar Muhammadiyah dan raih masa depan gemilang.' }}</p>
+                  </div>
+                  <h3 class="text-2xl font-bold text-[#0c2340] mb-3">{{ $hero['card_title'] ?? 'Pendaftaran Mahasiswa Baru' }}</h3>
+                  <p class="text-gray-600 mb-6">{{ $hero['card_description'] ?? 'Bergabunglah dengan keluarga besar Muhammadiyah dan raih masa depan gemilang.' }}</p>
                   <div class="flex gap-3">
-                    <a href="{{ route('register.form') }}" class="flex-1 btn-muhammadiyah text-center px-6 py-3 text-white rounded-xl font-semibold">
-                      Daftar
-                    </a>
-                    <a href="/programs" class="flex-1 text-center px-6 py-3 border-2 border-[#0c2340] text-[#0c2340] rounded-xl font-semibold hover:bg-[#0c2340]/5 transition-all duration-300">
-                      Lihat Program
-                    </a>
+                    <a href="{{ route('register.form') }}" class="flex-1 btn-muhammadiyah text-center px-6 py-3 text-white rounded-xl font-semibold">Daftar</a>
+                    <a href="/programs" class="flex-1 text-center px-6 py-3 border-2 border-[#0c2340] text-[#0c2340] rounded-xl font-semibold hover:bg-[#0c2340]/5 transition-all duration-300">Lihat Program</a>
                   </div>
                 </div>
               </div>
@@ -997,7 +510,6 @@ $footer = LandingPageContent::getSection('footer');
         </div>
       </div>
 
-      <!-- Wave Divider -->
       <div class="wave-container">
         <div class="wave wave-1"></div>
         <div class="wave wave-2"></div>
@@ -1007,7 +519,6 @@ $footer = LandingPageContent::getSection('footer');
 
     <!-- KEUNGGULAN -->
     <section id="info" class="relative py-24 bg-white overflow-hidden">
-      <!-- Decorative elements -->
       <div class="absolute top-0 right-0 w-96 h-96 bg-[#00a651]/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
       <div class="absolute bottom-0 left-0 w-72 h-72 bg-[#4da8da]/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl"></div>
       <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] sun-rays opacity-5"></div>
@@ -1015,8 +526,7 @@ $footer = LandingPageContent::getSection('footer');
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
           <span class="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00a651]/10 text-[#00a651] text-sm font-semibold mb-4 border border-[#00a651]/20">
-            <span class="icon-spin">☀️</span>
-            MENGAPA MEMILIH KAMI
+            <span class="icon-spin">☀️</span> MENGAPA MEMILIH KAMI
           </span>
           <h4 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-[#0c2340] mb-4">
             {{ $features['section_title'] ?? 'Keunggulan' }} <span class="text-gradient-static">UMPAR</span>
@@ -1027,7 +537,6 @@ $footer = LandingPageContent::getSection('footer');
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          <!-- Card 1 - Akreditasi -->
           <div class="reveal delay-1 card-hover card-glow group p-8 rounded-3xl bg-white border border-gray-100 shadow-xl">
             <div class="w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] to-[#008c44] text-white mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg shadow-[#00a651]/30">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 icon-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1035,10 +544,9 @@ $footer = LandingPageContent::getSection('footer');
               </svg>
             </div>
             <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#00a651] transition-colors">{{ $features['feature1_title'] ?? 'Akreditasi Unggul' }}</h5>
-              <p class="text-gray-600">{{ $features['feature1_desc'] ?? 'Program studi terakreditasi BAN-PT dengan kurikulum terstandar industri.' }}</p>
+            <p class="text-gray-600">{{ $features['feature1_desc'] ?? 'Program studi terakreditasi BAN-PT dengan kurikulum terstandar industri.' }}</p>
           </div>
 
-          <!-- Card 2 - Beasiswa -->
           <div class="reveal delay-2 card-hover card-glow group p-8 rounded-3xl bg-white border border-gray-100 shadow-xl">
             <div class="w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#4da8da] to-[#0f3460] text-white mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg shadow-[#4da8da]/30">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 icon-pulse" style="animation-delay: 0.3s;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1046,35 +554,34 @@ $footer = LandingPageContent::getSection('footer');
               </svg>
             </div>
             <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#4da8da] transition-colors">{{ $features['feature2_title'] ?? 'Beasiswa Lengkap' }}</h5>
-              <p class="text-gray-600">{{ $features['feature2_desc'] ?? 'Berbagai skema beasiswa untuk mahasiswa berprestasi dan kurang mampu.' }}</p>
+            <p class="text-gray-600">{{ $features['feature2_desc'] ?? 'Berbagai skema beasiswa untuk mahasiswa berprestasi dan kurang mampu.' }}</p>
           </div>
 
-          <!-- Card 3 - Islami -->
           <div class="reveal delay-3 card-hover card-glow group p-8 rounded-3xl bg-white border border-gray-100 shadow-xl">
             <div class="w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#f4d03f] to-[#d4ac0d] text-[#0c2340] mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg shadow-[#f4d03f]/30">
               <span class="text-3xl icon-spin" style="animation-duration: 20s;">☀️</span>
             </div>
-              <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#d4ac0d] transition-colors">{{ $features['feature3_title'] ?? 'Nilai Islami' }}</h5>
-              <p class="text-gray-600">{{ $features['feature3_desc'] ?? 'Pendidikan berbasis nilai-nilai Islam ala Muhammadiyah yang moderat.' }}</p>
+            <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#d4ac0d] transition-colors">{{ $features['feature3_title'] ?? 'Nilai Islami' }}</h5>
+            <p class="text-gray-600">{{ $features['feature3_desc'] ?? 'Pendidikan berbasis nilai-nilai Islam ala Muhammadiyah yang moderat.' }}</p>
           </div>
 
-          <!-- Card 4 - Karir -->
           <div class="reveal delay-4 card-hover card-glow group p-8 rounded-3xl bg-white border border-gray-100 shadow-xl">
             <div class="w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#0c2340] to-[#0f3460] text-white mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg shadow-[#0c2340]/30">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 icon-pulse" style="animation-delay: 0.6s;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-              <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#0f3460] transition-colors">{{ $features['feature4_title'] ?? 'Siap Kerja' }}</h5>
-              <p class="text-gray-600">{{ $features['feature4_desc'] ?? 'Program magang dan kerja sama industri untuk karier profesional.' }}</p>
+            <h5 class="text-xl font-bold text-[#0c2340] mb-3 group-hover:text-[#0f3460] transition-colors">{{ $features['feature4_title'] ?? 'Siap Kerja' }}</h5>
+            <p class="text-gray-600">{{ $features['feature4_desc'] ?? 'Program magang dan kerja sama industri untuk karier profesional.' }}</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- PROGRAM STUDI POPULER -->
+    {{-- ============================================================
+         ✅ SECTION PROGRAM STUDI — DIAMBIL DARI LOCAL
+         ============================================================ --}}
     <section id="program" class="py-24 bg-gradient-to-b from-[#f8fafc] to-white relative overflow-hidden">
-      <!-- Decorative -->
       <div class="absolute top-20 left-10 w-32 h-32 border-2 border-[#00a651]/10 rounded-full animate-pulse"></div>
       <div class="absolute bottom-20 right-10 w-24 h-24 border-2 border-[#4da8da]/10 rotate-45"></div>
 
@@ -1111,9 +618,9 @@ $footer = LandingPageContent::getSection('footer');
           <div class="reveal delay-{{ $index }} card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 {{ $index > 3 ? 'hidden program-card-hidden' : '' }}">
             <div class="img-zoom relative h-52">
               @if(isset($program['image']) && $program['image'])
-                  <img src="{{ Storage::url($program['image']) }}" alt="{{ $program['title'] ?? 'Program' }}" class="w-full h-full object-cover">
+                <img src="{{ Storage::url($program['image']) }}" alt="{{ $program['title'] ?? 'Program' }}" class="w-full h-full object-cover">
               @else
-                  <img src="/img/default-program.jpg" alt="{{ $program['title'] ?? 'Program' }}" class="w-full h-full object-cover">
+                <img src="/img/default-program.jpg" alt="{{ $program['title'] ?? 'Program' }}" class="w-full h-full object-cover">
               @endif
               <div class="absolute inset-0 bg-gradient-to-t from-[#0c2340]/80 to-transparent"></div>
               <span class="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-[#00a651] text-white text-xs font-semibold">
@@ -1121,26 +628,25 @@ $footer = LandingPageContent::getSection('footer');
               </span>
             </div>
             <div class="p-6">
-                <h5 class="text-xl font-bold text-[#0c2340] mb-2 group-hover:text-[#00a651] transition-colors">
-                  {{ $program['title'] ?? 'Program Studi' }}
-                </h5>
-                <p class="text-gray-600 text-sm mb-6">
-                  {{ $program['desc'] ?? 'Deskripsi program studi.' }}
-                </p>
+              <h5 class="text-xl font-bold text-[#0c2340] mb-2 group-hover:text-[#00a651] transition-colors">
+                {{ $program['title'] ?? 'Program Studi' }}
+              </h5>
+              <p class="text-gray-600 text-sm mb-6">
+                {{ $program['desc'] ?? 'Deskripsi program studi.' }}
+              </p>
               <div class="flex gap-3">
                 @if(isset($program['info_url']) && $program['info_url'] !== '#')
-                <a href="{{ $program['info_url'] }}" target="_blank" 
+                <a href="{{ $program['info_url'] }}" target="_blank"
                    class="flex-1 text-center py-3 rounded-xl border-2 border-[#0c2340] text-[#0c2340] font-semibold hover:bg-[#0c2340]/5 transition-all">
                   Info Lengkap
                 </a>
                 @else
-                <a href="#" 
+                <a href="#"
                    class="flex-1 text-center py-3 rounded-xl border-2 border-[#0c2340] text-[#0c2340] font-semibold hover:bg-[#0c2340]/5 transition-all">
                   Info Lengkap
                 </a>
                 @endif
-                
-                <a href="/register?program={{ $program['kode_prodi'] ?? '' }}" 
+                <a href="/register?program={{ $program['kode_prodi'] ?? '' }}"
                    class="flex-1 btn-muhammadiyah text-center py-3 rounded-xl text-white font-semibold">
                   Daftar
                 </a>
@@ -1150,10 +656,9 @@ $footer = LandingPageContent::getSection('footer');
           @endforeach
         </div>
 
-        <!-- Toggle Button -->
         @if($totalPrograms > 3)
         <div class="text-center mt-12">
-          <button id="toggle-programs" 
+          <button id="toggle-programs"
                   class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#00a651] to-[#008c44] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
             <span id="toggle-text">Lihat Semua Program ({{ $totalPrograms }})</span>
             <svg id="toggle-icon" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1163,7 +668,6 @@ $footer = LandingPageContent::getSection('footer');
         </div>
         @endif
       </div>
-      
       <script>
       document.addEventListener('DOMContentLoaded', function() {
           const toggleBtn = document.getElementById('toggle-programs');
@@ -1175,33 +679,26 @@ $footer = LandingPageContent::getSection('footer');
           if (toggleBtn) {
               toggleBtn.addEventListener('click', function() {
                   isExpanded = !isExpanded;
-                  
                   hiddenCards.forEach(card => {
-                      if (isExpanded) {
-                          card.classList.remove('hidden');
-                      } else {
-                          card.classList.add('hidden');
-                      }
+                      if (isExpanded) { card.classList.remove('hidden'); }
+                      else { card.classList.add('hidden'); }
                   });
-
                   if (isExpanded) {
                       toggleText.textContent = 'Sembunyikan Program';
                       toggleIcon.classList.add('rotate-180');
                   } else {
                       toggleText.textContent = 'Lihat Semua Program ({{ $totalPrograms }})';
                       toggleIcon.classList.remove('rotate-180');
-                      // Scroll back to section
                       document.getElementById('program').scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }
               });
           }
       });
       </script>
-</section>
+    </section>
 
     <!-- ALUR PENDAFTARAN -->
     <section id="alur" class="py-24 bg-white relative overflow-hidden">
-      <!-- Animated background -->
       <div class="absolute inset-0">
         <div class="absolute top-20 left-1/4 w-64 h-64 bg-[#00a651]/5 rounded-full blur-3xl animate-pulse"></div>
         <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-[#4da8da]/5 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
@@ -1213,6 +710,7 @@ $footer = LandingPageContent::getSection('footer');
           <span class="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f4d03f]/10 text-[#d4ac0d] text-sm font-semibold mb-4 border border-[#f4d03f]/20">
             ⭐ LANGKAH MUDAH
           </span>
+          {{-- ✅ DIPERBAIKI: menggunakan data dari $testimonials seperti local --}}
           <h4 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-[#0c2340] mb-4">
             {{ $testimonials['section_title'] ?? 'Apa Kata' }} <span class="text-gradient-static">Alumni</span>?
           </h4>
@@ -1221,133 +719,75 @@ $footer = LandingPageContent::getSection('footer');
           </p>
         </div>
 
-        <!-- Timeline -->
         <div class="reveal delay-3 relative">
           <div class="overflow-x-auto pb-4 -mx-4 px-4">
             <div class="min-w-[900px] flex items-start gap-0 pt-10">
 
-              <!-- Step 1 -->
               <div class="flex-1 flex flex-col items-center text-center px-4 group">
-                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] to-[#008c44] text-white text-xl font-bold shadow-lg shadow-[#00a651]/30 mb-4 group-hover:scale-110 transition-transform">
-                  1
-                </div>
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] to-[#008c44] text-white text-xl font-bold shadow-lg shadow-[#00a651]/30 mb-4 group-hover:scale-110 transition-transform">1</div>
                 <h6 class="font-bold text-[#0c2340] mb-2">Buat Akun</h6>
                 <p class="text-sm text-gray-500">Daftar dengan email aktif Anda.</p>
               </div>
+              <div class="w-20 flex items-center justify-center pt-7"><div class="timeline-connector h-1.5 w-full rounded-full"></div></div>
 
-              <!-- Connector -->
-              <div class="w-20 flex items-center justify-center pt-7">
-                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
-              </div>
-
-              <!-- Step 2 -->
               <div class="flex-1 flex flex-col items-center text-center px-4 group">
-                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#4da8da] to-[#0f3460] text-white text-xl font-bold shadow-lg shadow-[#4da8da]/30 mb-4 group-hover:scale-110 transition-transform" style="--delay: 0.4s;">
-                  2
-                </div>
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#4da8da] to-[#0f3460] text-white text-xl font-bold shadow-lg shadow-[#4da8da]/30 mb-4 group-hover:scale-110 transition-transform">2</div>
                 <h6 class="font-bold text-[#0c2340] mb-2">Pilih Prodi</h6>
-                <p class="text-sm text-gray-500">Pilih program studi yang anda inginka.</p>
+                <p class="text-sm text-gray-500">Pilih program studi yang anda inginkan.</p>
               </div>
+              <div class="w-20 flex items-center justify-center pt-7"><div class="timeline-connector h-1.5 w-full rounded-full"></div></div>
 
-              <!-- Connector -->
-              <div class="w-20 flex items-center justify-center pt-7">
-                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
-              </div>
-
-              <!-- Step 3 -->
               <div class="flex-1 flex flex-col items-center text-center px-4 group">
-                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#f4d03f] to-[#d4ac0d] text-[#0c2340] text-xl font-bold shadow-lg shadow-[#f4d03f]/30 mb-4 group-hover:scale-110 transition-transform" style="--delay: 0.8s;">
-                  3
-                </div>
-                <h6 class="font-bold text-[#0c2340] mb-2">Bayar pendaftaran</h6>
-                <p class="text-sm text-gray-500">bayar pendaftaran awal</p>
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#f4d03f] to-[#d4ac0d] text-[#0c2340] text-xl font-bold shadow-lg shadow-[#f4d03f]/30 mb-4 group-hover:scale-110 transition-transform">3</div>
+                <h6 class="font-bold text-[#0c2340] mb-2">Bayar Pendaftaran</h6>
+                <p class="text-sm text-gray-500">Bayar pendaftaran awal.</p>
               </div>
-              {{-- step 4 --}}
-              <!-- Connector -->
-              <div class="w-20 flex items-center justify-center pt-7">
-                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
-              </div>
+              <div class="w-20 flex items-center justify-center pt-7"><div class="timeline-connector h-1.5 w-full rounded-full"></div></div>
 
-               <div class="flex-1 flex flex-col items-center text-center px-4 group">
-                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] to-[#008c44] text-white text-xl font-bold shadow-lg shadow-[#00a651]/30 mb-4 group-hover:scale-110 transition-transform">
-                  4
-                </div>
-                <h6 class="font-bold text-[#0c2340] mb-2">Lengkapi data</h6>
-                <p class="text-sm text-gray-500">masukkan data pribadi anda</p>
-              </div>
-
-              <!-- Connector -->
-              <div class="w-20 flex items-center justify-center pt-7">
-                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
-              </div>
-              
-              <!-- Step 5 -->
               <div class="flex-1 flex flex-col items-center text-center px-4 group">
-                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#4da8da] to-[#0f3460] text-white text-xl font-bold shadow-lg shadow-[#4da8da]/30 mb-4 group-hover:scale-110 transition-transform" style="--delay: 0.4s;">
-                  5
-                </div>
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] to-[#008c44] text-white text-xl font-bold shadow-lg shadow-[#00a651]/30 mb-4 group-hover:scale-110 transition-transform">4</div>
+                <h6 class="font-bold text-[#0c2340] mb-2">Lengkapi Data</h6>
+                <p class="text-sm text-gray-500">Masukkan data pribadi anda.</p>
+              </div>
+              <div class="w-20 flex items-center justify-center pt-7"><div class="timeline-connector h-1.5 w-full rounded-full"></div></div>
+
+              <div class="flex-1 flex flex-col items-center text-center px-4 group">
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#4da8da] to-[#0f3460] text-white text-xl font-bold shadow-lg shadow-[#4da8da]/30 mb-4 group-hover:scale-110 transition-transform">5</div>
                 <h6 class="font-bold text-[#0c2340] mb-2">Unggah Dokumen</h6>
                 <p class="text-sm text-gray-500">Ijazah, transkrip, pas foto, dsb.</p>
               </div>
-               <!-- Connector -->
-              <div class="w-20 flex items-center justify-center pt-7">
-                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
-              </div>
+              <div class="w-20 flex items-center justify-center pt-7"><div class="timeline-connector h-1.5 w-full rounded-full"></div></div>
 
-              <!-- Step 6 -->
               <div class="flex-1 flex flex-col items-center text-center px-4 group">
-                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#f4d03f] to-[#d4ac0d] text-[#0c2340] text-xl font-bold shadow-lg shadow-[#f4d03f]/30 mb-4 group-hover:scale-110 transition-transform" style="--delay: 0.8s;">
-                  6
-                </div>
-                <h6 class="font-bold text-[#0c2340] mb-2">test</h6>
-                <p class="text-sm text-gray-500">kerjakan test yang telah di sediakan</p>
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#f4d03f] to-[#d4ac0d] text-[#0c2340] text-xl font-bold shadow-lg shadow-[#f4d03f]/30 mb-4 group-hover:scale-110 transition-transform">6</div>
+                <h6 class="font-bold text-[#0c2340] mb-2">Tes</h6>
+                <p class="text-sm text-gray-500">Kerjakan tes yang telah disediakan.</p>
               </div>
+              <div class="w-20 flex items-center justify-center pt-7"><div class="timeline-connector h-1.5 w-full rounded-full"></div></div>
 
-              <div class="w-20 flex items-center justify-center pt-7">
-                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
-              </div>
-
-               <div class="flex-1 flex flex-col items-center text-center px-4 group">
-                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] to-[#008c44] text-white text-xl font-bold shadow-lg shadow-[#00a651]/30 mb-4 group-hover:scale-110 transition-transform">
-                  7
-                </div>
+              <div class="flex-1 flex flex-col items-center text-center px-4 group">
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] to-[#008c44] text-white text-xl font-bold shadow-lg shadow-[#00a651]/30 mb-4 group-hover:scale-110 transition-transform">7</div>
                 <h6 class="font-bold text-[#0c2340] mb-2">Wawancara</h6>
-                <p class="text-sm text-gray-500">Jawab pertanyaan wawancara, nanti anda akan di berikan notif</p>
+                <p class="text-sm text-gray-500">Jawab pertanyaan wawancara, anda akan diberikan notif.</p>
               </div>
+              <div class="w-20 flex items-center justify-center pt-7"><div class="timeline-connector h-1.5 w-full rounded-full"></div></div>
 
-               <!-- Connector -->
-              <div class="w-20 flex items-center justify-center pt-7">
-                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
-              </div>
-              
-              <!-- Step 9 -->
               <div class="flex-1 flex flex-col items-center text-center px-4 group">
-                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#0f3460] to-[#0c2340] text-white text-xl font-bold shadow-lg shadow-[#0f3460]/30 mb-4 group-hover:scale-110 transition-transform" style="--delay: 1.2s;">
-                  9
-                </div>
-                <h6 class="font-bold text-[#0c2340] mb-2">Pembayaran daftar ulang</h6>
-                <p class="text-sm text-gray-500">Bayar via metode yang tersedia, untuk mendapatkan nim</p>
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#0f3460] to-[#0c2340] text-white text-xl font-bold shadow-lg shadow-[#0f3460]/30 mb-4 group-hover:scale-110 transition-transform">8</div>
+                <h6 class="font-bold text-[#0c2340] mb-2">Pembayaran Daftar Ulang</h6>
+                <p class="text-sm text-gray-500">Bayar via metode yang tersedia untuk mendapatkan NIM.</p>
               </div>
+              <div class="w-20 flex items-center justify-center pt-7"><div class="timeline-connector h-1.5 w-full rounded-full"></div></div>
 
-
-              <!-- Connector -->
-              <div class="w-20 flex items-center justify-center pt-7">
-                <div class="timeline-connector h-1.5 w-full rounded-full"></div>
-              </div>
-
-              <!-- Step 10 -->
               <div class="flex-1 flex flex-col items-center text-center px-4 group">
-                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] via-[#4da8da] to-[#f4d03f] text-white text-xl font-bold shadow-lg mb-4 group-hover:scale-110 transition-transform" style="--delay: 1.6s;">
-                  ✓
-                </div>
-                <h6 class="font-bold text-[#0c2340] mb-2">Daftar ulang</h6>
-                <p class="text-sm text-gray-500">anda akan di hubungi via WA dan Email apabila lulus seleksi</p>
+                <div class="number-glow w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br from-[#00a651] via-[#4da8da] to-[#f4d03f] text-white text-xl font-bold shadow-lg mb-4 group-hover:scale-110 transition-transform">✓</div>
+                <h6 class="font-bold text-[#0c2340] mb-2">Daftar Ulang</h6>
+                <p class="text-sm text-gray-500">Anda akan dihubungi via WA dan Email apabila lulus seleksi.</p>
               </div>
 
             </div>
           </div>
 
-          <!-- CTA Button -->
           <div class="reveal delay-4 text-center mt-12">
             <a href="/register?program=ti" class="btn-muhammadiyah inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-white font-bold shadow-xl">
               Mulai Daftar Sekarang
@@ -1360,349 +800,363 @@ $footer = LandingPageContent::getSection('footer');
       </div>
     </section>
 
-    <!-- BROWSUR -->
     @php
-    $brosurSection = \App\Models\LandingPageContent::getSection('brosur');
-    $brosurImages  = isset($brosurSection['brosur_images'])
-                        ? json_decode($brosurSection['brosur_images'], true)
-                        : [];
-    $hasBrosur     = !empty($brosurImages);
-    $brosurTitle   = $brosurSection['brosur_title']       ?? 'Brosur PMB';
-    $brosurDesc    = $brosurSection['brosur_description']  ?? 'Unduh brosur PMB untuk informasi lengkap pendaftaran';
-    $previewLimit  = 4;
-    $totalImages   = count($brosurImages);
-    $hasMore       = $totalImages > $previewLimit;
-@endphp
+      $brosurSection = \App\Models\LandingPageContent::getSection('brosur');
+      $brosurImages  = isset($brosurSection['brosur_images'])
+                          ? json_decode($brosurSection['brosur_images'], true)
+                          : [];
+      $hasBrosur     = !empty($brosurImages);
+      $brosurTitle   = $brosurSection['brosur_title']       ?? 'Brosur PMB';
+      $brosurDesc    = $brosurSection['brosur_description']  ?? 'Unduh brosur PMB untuk informasi lengkap pendaftaran';
+      $previewLimit  = 4;
+      $totalImages   = count($brosurImages);
+      $hasMore       = $totalImages > $previewLimit;
+    @endphp
 
-@if($hasBrosur)
-<section id="brosur"
-         class="py-24 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 relative overflow-hidden"
-         x-data="{ showAll: false, lightbox: null, lightboxIndex: 0 }">
+    @if($hasBrosur)
+    <section id="brosur"
+             class="py-24 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 relative overflow-hidden"
+             x-data="{ showAll: false, lightbox: null, lightboxIndex: 0 }">
 
-    {{-- Decorative blobs --}}
-    <div class="absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
-    <div class="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
+      <div class="absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+      <div class="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {{-- ── Section Header ─────────────────────────────────────── --}}
         <div class="text-center mb-12">
-            <span class="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20
-                         backdrop-blur-sm text-white text-sm font-semibold mb-4 border border-white/30">
-                🖼️ BROSUR PMB
-            </span>
-            <h2 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-white mb-4">
-                {{ $brosurTitle }}
-            </h2>
-            <p class="reveal delay-2 text-white/80 max-w-2xl mx-auto text-lg">
-                {{ $brosurDesc }}
-            </p>
+          <span class="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm font-semibold mb-4 border border-white/30">
+            🖼️ BROSUR PMB
+          </span>
+          <h2 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-white mb-4">{{ $brosurTitle }}</h2>
+          <p class="reveal delay-2 text-white/80 max-w-2xl mx-auto text-lg">{{ $brosurDesc }}</p>
         </div>
 
-        {{-- ── Image Grid ──────────────────────────────────────────── --}}
-        {{--
-            Layout: 2 col mobile → 3 col sm → 4 col md+
-            First 4 always visible, rest toggled by showAll
-        --}}
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            @foreach($brosurImages as $i => $imgPath)
-            <div class="reveal delay-{{ min($i + 1, 4) }}"
-                 @if($i >= $previewLimit)
-                 x-show="showAll"
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0 scale-95"
-                 x-transition:enter-end="opacity-100 scale-100"
-                 @endif>
+          @foreach($brosurImages as $i => $imgPath)
+          <div class="reveal delay-{{ min($i + 1, 4) }}"
+               @if($i >= $previewLimit)
+               x-show="showAll"
+               x-transition:enter="transition ease-out duration-300"
+               x-transition:enter-start="opacity-0 scale-95"
+               x-transition:enter-end="opacity-100 scale-100"
+               @endif>
 
-                {{-- Square card --}}
-                <div class="group relative aspect-square rounded-2xl overflow-hidden shadow-xl
-                            cursor-pointer ring-2 ring-white/20 hover:ring-white/60 transition-all duration-300
-                            hover:shadow-2xl hover:-translate-y-1"
-                     @click="lightbox = '{{ Storage::url($imgPath) }}'; lightboxIndex = {{ $i }}">
+            <div class="group relative aspect-square rounded-2xl overflow-hidden shadow-xl
+                        cursor-pointer ring-2 ring-white/20 hover:ring-white/60 transition-all duration-300
+                        hover:shadow-2xl hover:-translate-y-1"
+                 @click="lightbox = '{{ Storage::url($imgPath) }}'; lightboxIndex = {{ $i }}">
 
-                    {{-- Image --}}
-                    <img src="{{ Storage::url($imgPath) }}"
-                         alt="{{ $brosurTitle }} – gambar {{ $i + 1 }}"
-                         loading="lazy"
-                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+              <img src="{{ Storage::url($imgPath) }}"
+                   alt="{{ $brosurTitle }} – gambar {{ $i + 1 }}"
+                   loading="lazy"
+                   class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
 
-                    {{-- Hover overlay --}}
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent
-                                opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                    {{-- Full-view icon (bottom-left) --}}
-                    <div class="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div class="flex items-center gap-1.5 bg-white/20 backdrop-blur-sm text-white
-                                    text-xs font-medium px-2.5 py-1.5 rounded-full border border-white/30">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                            Lihat
+              <div class="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div class="flex items-center gap-1.5 bg-white/20 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1.5 rounded-full border border-white/30">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                  </svg>
+                  Lihat
+                </div>
+              </div>
+
+              <a href="{{ route('brosur.download', $i) }}"
+                 download
+                 @click.stop
+                 title="Download gambar {{ $i + 1 }}"
+                 class="absolute top-2.5 right-2.5 w-8 h-8 bg-black/40 backdrop-blur-sm rounded-full
+                        flex items-center justify-center text-white hover:bg-black/70 transition-colors
+                        shadow-lg border border-white/20 z-10">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          @endforeach
+        </div>
+
+        @if($hasMore)
+        <div class="mt-8 text-center">
+          <button @click="showAll = !showAll"
+                  class="inline-flex items-center gap-2 px-8 py-3 bg-white/15 backdrop-blur-sm text-white
+                         font-semibold rounded-full border border-white/30 hover:bg-white/25 transition-all shadow-lg hover:shadow-xl">
+            <svg class="w-5 h-5 transition-transform duration-300" :class="showAll ? 'rotate-180' : ''"
+                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+            <span x-text="showAll ? 'Sembunyikan' : 'Tampilkan semua {{ $totalImages }} gambar'"></span>
+          </button>
+        </div>
+        @endif
+      </div>
+
+      <!-- LIGHTBOX -->
+      <div x-show="lightbox"
+           x-cloak
+           @click.self="lightbox = null"
+           @keydown.escape.window="lightbox = null"
+           @keydown.arrow-left.window="navigateLightbox(-1)"
+           @keydown.arrow-right.window="navigateLightbox(1)"
+           class="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 sm:p-8"
+           x-transition:enter="transition ease-out duration-200"
+           x-transition:enter-start="opacity-0"
+           x-transition:enter-end="opacity-100"
+           x-transition:leave="transition ease-in duration-150"
+           x-transition:leave-start="opacity-100"
+           x-transition:leave-end="opacity-0">
+
+        <button @click="lightbox = null"
+                class="absolute top-4 right-4 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10 text-xl leading-none">
+          ×
+        </button>
+
+        <button @click="navigateLightbox(-1)"
+                class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
+                x-show="{{ $totalImages }} > 1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+
+        <div class="relative max-w-3xl max-h-full flex flex-col items-center gap-4">
+          <img :src="lightbox" class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl select-none">
+          <div class="flex items-center gap-4">
+            @if($totalImages > 1)
+            <span class="text-white/70 text-sm" x-text="(lightboxIndex + 1) + ' / {{ $totalImages }}'"></span>
+            @endif
+            <a :href="'/brosur-pmb/download/' + lightboxIndex"
+               download
+               class="inline-flex items-center gap-2 px-5 py-2 bg-white/15 backdrop-blur-sm text-white text-sm font-medium rounded-full border border-white/30 hover:bg-white/25 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              Download
+            </a>
+          </div>
+        </div>
+
+        <button @click="navigateLightbox(1)"
+                class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
+                x-show="{{ $totalImages }} > 1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+
+      <script>
+      document.addEventListener('alpine:init', () => {
+          const images = @json(array_values(array_map(fn($p) => Storage::url($p), $brosurImages)));
+          window._brosurImages = images;
+      });
+      </script>
+    </section>
+
+    <script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('brosurNav', () => ({
+            images: [],
+            init() { this.images = window._brosurImages || []; },
+            navigateLightbox(dir) {
+                const total = this.images.length;
+                if (total <= 1) return;
+                this.lightboxIndex = (this.lightboxIndex + dir + total) % total;
+                this.lightbox = this.images[this.lightboxIndex];
+            }
+        }));
+    });
+    </script>
+    @endif
+
+
+    @php
+    $newsList = [];
+    foreach ($news as $key => $value) {
+        if (preg_match('/^news(\d+)_title$/', $key, $matches)) {
+            $newsList[(int)$matches[1]]['title'] = $value;
+        } elseif (preg_match('/^news(\d+)_(.+)$/', $key, $matches)) {
+            $newsList[(int)$matches[1]][$matches[2]] = $value;
+        }
+    }
+    ksort($newsList);
+    $totalNews = count($newsList);
+    $initialShow = 3;
+@endphp
+ 
+ 
+ <!-- berita Section -->
+<section id="berita" class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+ 
+        {{-- Header --}}
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
+            <div>
+                <span class="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#4da8da]/10
+                             text-[#0f3460] text-sm font-semibold mb-4 border border-[#4da8da]/20">
+                    📰 BERITA TERBARU
+                </span>
+                <h4 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-[#0c2340]">
+                    {{ $news['section_title'] ?? 'Berita &' }}
+                    <span class="text-gradient-static">Kegiatan</span>
+                </h4>
+            </div>
+        </div>
+ 
+        @if ($totalNews > 0)
+ 
+        {{-- Grid Berita --}}
+        <div id="news-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+ 
+            @foreach ($newsList as $idx => $item)
+            @php
+                $badgeColors = ['bg-[#00a651]', 'bg-[#4da8da]', 'bg-[#f4d03f] text-[#0c2340]'];
+                $titleHoverColors = ['group-hover:text-[#00a651]', 'group-hover:text-[#4da8da]', 'group-hover:text-[#d4ac0d]'];
+                $linkColors = ['text-[#00a651]', 'text-[#4da8da]', 'text-[#d4ac0d]'];
+                $colorIndex = ($idx - 1) % 3;   // 0-based dalam loop; $idx mulai 1
+                $badge      = $badgeColors[$colorIndex];
+                $titleHover = $titleHoverColors[$colorIndex];
+                $linkColor  = $linkColors[$colorIndex];
+ 
+                $loopIndex  = array_search($idx, array_keys($newsList));  // posisi di-array (0-based)
+                $isHidden   = $loopIndex >= $initialShow;
+            @endphp
+ 
+            <article class="reveal delay-{{ min($loopIndex + 1, 6) }}
+                            card-hover card-glow group bg-white rounded-3xl shadow-xl
+                            overflow-hidden border border-gray-100
+                            {{ $isHidden ? 'news-card-hidden hidden' : '' }}">
+ 
+                {{-- Gambar --}}
+                <div class="img-zoom relative h-52">
+                    @if(isset($item['image']) && $item['image'])
+                        <img src="{{ Storage::url($item['image']) }}"
+                             alt="{{ $item['title'] ?? 'Berita' }}"
+                             class="w-full h-full object-cover">
+                    @else
+                        <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300
+                                    flex items-center justify-center text-5xl text-gray-400">
+                            📰
                         </div>
+                    @endif
+                    <div class="absolute top-4 left-4 px-3 py-1 rounded-full text-white text-xs font-semibold
+                                {{ $badge }}">
+                        {{ $item['category'] ?? 'Berita' }}
                     </div>
-
-                    {{-- Download button (top-right always visible) --}}
-                    <a href="{{ route('brosur.download', $i) }}"
-                       download
-                       @click.stop
-                       title="Download gambar {{ $i + 1 }}"
-                       class="absolute top-2.5 right-2.5 w-8 h-8 bg-black/40 backdrop-blur-sm rounded-full
-                              flex items-center justify-center text-white hover:bg-black/70 transition-colors
-                              shadow-lg border border-white/20 z-10">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                </div>
+ 
+                {{-- Konten --}}
+                <div class="p-6">
+                    <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5
+                                     a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        {{ $item['date'] ?? '' }}
+                    </div>
+ 
+                    <h5 class="text-lg font-bold text-[#0c2340] mb-2 {{ $titleHover }} transition-colors">
+                        {{ $item['title'] ?? 'Judul Berita' }}
+                    </h5>
+ 
+                    <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                        {{ $item['desc'] ?? '' }}
+                    </p>
+ 
+                    <a href="{{ route('news.show', $idx) }}" class="inline-flex items-center gap-2 {{ $linkColor }} font-semibold
+                                      group-hover:gap-3 transition-all text-sm">
+                        Baca Selengkapnya
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
                 </div>
-            </div>
+            </article>
             @endforeach
+ 
         </div>
-
-        {{-- ── Show More / Less ────────────────────────────────────── --}}
-        @if($hasMore)
-        <div class="mt-8 text-center">
-            <button @click="showAll = !showAll"
-                    class="inline-flex items-center gap-2 px-8 py-3 bg-white/15 backdrop-blur-sm text-white
-                           font-semibold rounded-full border border-white/30 hover:bg-white/25 transition-all
-                           shadow-lg hover:shadow-xl">
-                <svg class="w-5 h-5 transition-transform duration-300"
-                     :class="showAll ? 'rotate-180' : ''"
-                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-                <span x-text="showAll
-                    ? 'Sembunyikan'
-                    : 'Tampilkan semua {{ $totalImages }} gambar'">
+ 
+        {{-- Toggle button (hanya muncul jika berita > 3) --}}
+        @if ($totalNews > $initialShow)
+        <div class="text-center mt-12">
+            <button id="toggle-news"
+                    class="inline-flex items-center gap-2 px-8 py-4
+                           bg-gradient-to-r from-[#4da8da] to-[#0f3460]
+                           text-white font-bold rounded-xl shadow-lg
+                           hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                <span id="toggle-news-text">
+                    Lihat Semua Berita ({{ $totalNews }})
                 </span>
+                <svg id="toggle-news-icon" class="w-5 h-5 transition-transform duration-300"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 9l-7 7-7-7"/>
+                </svg>
             </button>
         </div>
         @endif
-
-    </div>
-
-    {{-- ────────────────────────────────────────────────────────────
-         LIGHTBOX
-         ──────────────────────────────────────────────────────────── --}}
-    <div x-show="lightbox"
-         x-cloak
-         @click.self="lightbox = null"
-         @keydown.escape.window="lightbox = null"
-         @keydown.arrow-left.window="navigateLightbox(-1)"
-         @keydown.arrow-right.window="navigateLightbox(1)"
-         class="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 sm:p-8"
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0">
-
-        {{-- Close --}}
-        <button @click="lightbox = null"
-                class="absolute top-4 right-4 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center
-                       text-white hover:bg-white/20 transition-colors z-10 text-xl leading-none">
-            ×
-        </button>
-
-        {{-- Prev --}}
-        <button @click="navigateLightbox(-1)"
-                class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full
-                       flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
-                x-show="{{ $totalImages }} > 1">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-        </button>
-
-        {{-- Image --}}
-        <div class="relative max-w-3xl max-h-full flex flex-col items-center gap-4">
-            <img :src="lightbox"
-                 class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl select-none">
-
-            {{-- Counter & download --}}
-            <div class="flex items-center gap-4">
-                @if($totalImages > 1)
-                <span class="text-white/70 text-sm" x-text="(lightboxIndex + 1) + ' / {{ $totalImages }}'"></span>
-                @endif
-                <a :href="'/brosur-pmb/download/' + lightboxIndex"
-                   download
-                   class="inline-flex items-center gap-2 px-5 py-2 bg-white/15 backdrop-blur-sm text-white
-                          text-sm font-medium rounded-full border border-white/30 hover:bg-white/25 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                    </svg>
-                    Download
-                </a>
-            </div>
+ 
+        @else
+        {{-- Fallback jika belum ada berita --}}
+        <div class="text-center py-16 text-gray-400">
+            <div class="text-6xl mb-4">📭</div>
+            <p class="text-lg font-medium">Belum ada berita yang dipublikasikan.</p>
         </div>
-
-        {{-- Next --}}
-        <button @click="navigateLightbox(1)"
-                class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full
-                       flex items-center justify-center text-white hover:bg-white/20 transition-colors z-10"
-                x-show="{{ $totalImages }} > 1">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-        </button>
+        @endif
+ 
     </div>
-
-    {{-- Alpine lightbox nav – injected images array --}}
-    <script>
-    document.addEventListener('alpine:init', () => {
-        const images = @json(array_values(array_map(fn($p) => Storage::url($p), $brosurImages)));
-
-        // Patch the section's x-data when it mounts
-        document.querySelector('#brosur').__x && (function(){})();
-
-        // Expose helper on the component
-        window._brosurImages = images;
-    });
-    </script>
-
 </section>
-
+ 
 <script>
-// navigateLightbox is called on the x-data component
-// We extend it here so the function is available inside the section's scope
-document.addEventListener('alpine:init', () => {
-    Alpine.data('brosurNav', () => ({
-        images: [],
-        init() { this.images = window._brosurImages || []; },
-        navigateLightbox(dir) {
-            const total = this.images.length;
-            if (total <= 1) return;
-            this.lightboxIndex = (this.lightboxIndex + dir + total) % total;
-            this.lightbox = this.images[this.lightboxIndex];
+document.addEventListener('DOMContentLoaded', function () {
+    const toggleBtn  = document.getElementById('toggle-news');
+    const toggleText = document.getElementById('toggle-news-text');
+    const toggleIcon = document.getElementById('toggle-news-icon');
+    const hiddenCards = document.querySelectorAll('.news-card-hidden');
+    let isExpanded = false;
+ 
+    if (!toggleBtn) return;
+ 
+    toggleBtn.addEventListener('click', function () {
+        isExpanded = !isExpanded;
+ 
+        hiddenCards.forEach(function (card) {
+            if (isExpanded) {
+                card.classList.remove('hidden');
+                // Trigger reveal animation untuk kartu yang baru muncul
+                setTimeout(function () { card.classList.add('active'); }, 50);
+            } else {
+                card.classList.add('hidden');
+                card.classList.remove('active');
+            }
+        });
+ 
+        if (isExpanded) {
+            toggleText.textContent = 'Sembunyikan';
+            toggleIcon.classList.add('rotate-180');
+        } else {
+            toggleText.textContent = 'Lihat Semua Berita ({{ $totalNews }})';
+            toggleIcon.classList.remove('rotate-180');
+            // Scroll kembali ke awal section berita
+            document.getElementById('berita').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-    }));
+    });
 });
 </script>
-@endif
-
-    <!-- BERITA -->
-    <section id="berita" class="py-24 bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
-          <div>
-            <span class="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#4da8da]/10 text-[#0f3460] text-sm font-semibold mb-4 border border-[#4da8da]/20">
-              📰 BERITA TERBARU
-            </span>
-            <h4 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-[#0c2340]">
-              {{ $news['section_title'] ?? 'Berita &' }} <span class="text-gradient-static">Kegiatan</span>
-            </h4>
-          </div>
-          <a href="/news" class="reveal delay-2 group inline-flex items-center gap-2 text-[#00a651] font-semibold hover:text-[#008c44] transition-colors">
-            Lihat Semua Berita
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </a>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <!-- News 1 -->
-          <article class="reveal delay-1 card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-            <div class="img-zoom relative h-52">
-              @if(isset($news['news1_image']) && $news['news1_image'])
-                  <img src="{{ Storage::url($news['news1_image']) }}" alt="Berita 1" class="w-full h-full object-cover">
-              @else
-                  <img src="/img/workshop-wirausaha.jpg" alt="Berita 1" class="w-full h-full object-cover">
-              @endif
-              <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#00a651] text-white text-xs font-semibold">{{ $news['news1_category'] ?? 'Kegiatan' }}</div>
-            </div>
-            <div class="p-6">
-              <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                {{ $news['news1_date'] ?? '12 November 2025' }}
-              </div>
-                <h5 class="text-lg font-bold text-[#0c2340] mb-2 group-hover:text-[#00a651] transition-colors">{{ $news['news1_title'] ?? 'Workshop Kewirausahaan Mahasiswa' }}</h5>
-                <p class="text-gray-600 text-sm mb-4">{{ $news['news1_desc'] ?? 'Mahasiswa belajar strategi bisnis modern dari praktisi industri.' }}</p>
-              <a href="/news/1" class="inline-flex items-center gap-2 text-[#00a651] font-semibold group-hover:gap-3 transition-all">
-                Baca Selengkapnya
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-          </article>
-
-          <!-- News 2 -->
-          <article class="reveal delay-2 card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-            <div class="img-zoom relative h-52">
-              @if(isset($news['news2_image']) && $news['news2_image'])
-                  <img src="{{ Storage::url($news['news2_image']) }}" alt="Berita 2" class="w-full h-full object-cover">
-              @else
-                  <img src="/img/MoU-industri.jpg" alt="Berita 2" class="w-full h-full object-cover">
-              @endif
-              <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#4da8da] text-white text-xs font-semibold">{{ $news['news2_category'] ?? 'Kerjasama' }}</div>
-            </div>
-            <div class="p-6">
-              <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                {{ $news['news2_date'] ?? '2 Oktober 2025' }}
-              </div>
-              <h5 class="text-lg font-bold text-[#0c2340] mb-2 group-hover:text-[#4da8da] transition-colors">{{ $news['news2_title'] ?? 'Penandatanganan MoU Industri' }}</h5>
-              <p class="text-gray-600 text-sm mb-4">{{ $news['news2_desc'] ?? 'Penguatan kerja sama riset dan program magang mahasiswa.' }}</p>
-              <a href="/news/2" class="inline-flex items-center gap-2 text-[#4da8da] font-semibold group-hover:gap-3 transition-all">
-                Baca Selengkapnya
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-          </article>
-
-          <!-- News 3 -->
-          <article class="reveal delay-3 card-hover card-glow group bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-            <div class="img-zoom relative h-52">
-              @if(isset($news['news3_image']) && $news['news3_image'])
-                  <img src="{{ Storage::url($news['news3_image']) }}" alt="Berita 3" class="w-full h-full object-cover">
-              @else
-                  <img src="/img/milad-muhammadiyah-113.jpg" alt="Berita 3" class="w-full h-full object-cover">
-              @endif
-              <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#f4d03f] text-[#0c2340] text-xs font-semibold">{{ $news['news3_category'] ?? 'Milad' }}</div>
-            </div>
-            <div class="p-6">
-              <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                {{ $news['news3_date'] ?? '25 September 2025' }}
-              </div>
-              <h5 class="text-lg font-bold text-[#0c2340] mb-2 group-hover:text-[#d4ac0d] transition-colors">{{ $news['news3_title'] ?? 'Milad Muhammadiyah ke-113' }}</h5>
-              <p class="text-gray-600 text-sm mb-4">{{ $news['news3_desc'] ?? 'Perayaan milad dengan berbagai kegiatan sosial dan keagamaan.' }}</p>
-              <a href="/news/3" class="inline-flex items-center gap-2 text-[#d4ac0d] font-semibold group-hover:gap-3 transition-all">
-                Baca Selengkapnya
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
     <!-- CTA Section -->
     <section class="py-24 relative overflow-hidden">
       <div class="absolute inset-0 gradient-muhammadiyah"></div>
       <div class="aurora"></div>
-
-      <!-- Sun rays decoration -->
       <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 sun-rays w-[600px] h-[600px] opacity-10"></div>
 
       <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
-        <div class="reveal inline-block mb-6">
-          <span class="text-6xl">☀️</span>
-        </div>
+        <div class="reveal inline-block mb-6"><span class="text-6xl">☀️</span></div>
         <h4 class="reveal delay-1 text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
           Siap Bergabung dengan<br>
           <span class="text-[#f4d03f] text-glow-gold">Keluarga Muhammadiyah?</span>
@@ -1730,12 +1184,11 @@ document.addEventListener('alpine:init', () => {
   <footer class="bg-[#0a1628] text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-        <!-- About -->
         <div class="lg:col-span-1">
           <div class="flex items-center gap-3 mb-6">
             <div class="w-11 h-11 rounded-full flex items-center justify-center bg-gradient-to-br from-[#00a651] via-[#4da8da] to-[#f4d03f] p-0.5">
               <div class="w-full h-full bg-[#0a1628] rounded-[30px] flex items-center justify-center">
-                <span class="text-white font-bold text-lg"><img src="img/umpar.png" alt=""></span>
+                <span class="text-white font-bold text-lg"><img src="{{ asset('img/umpar.png') }}" alt=""></span>
               </div>
             </div>
             <div>
@@ -1753,13 +1206,12 @@ document.addEventListener('alpine:init', () => {
             <a href="{{ $footer['instagram_url'] ?? '#' }}" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-[#4da8da] transition-colors border border-white/10">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
             </a>
-              <a href="{{ $footer['youtube_url'] ?? '#' }}" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-[#f4d03f] hover:text-[#0a1628] transition-colors border border-white/10">
+            <a href="{{ $footer['youtube_url'] ?? '#' }}" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-[#f4d03f] hover:text-[#0a1628] transition-colors border border-white/10">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
             </a>
           </div>
         </div>
 
-        <!-- Quick Links -->
         <div>
           <h6 class="font-bold text-lg mb-6 text-[#00a651]">Link Cepat</h6>
           <ul class="space-y-3">
@@ -1770,7 +1222,6 @@ document.addEventListener('alpine:init', () => {
           </ul>
         </div>
 
-        <!-- Contact -->
         <div>
           <h6 class="font-bold text-lg mb-6 text-[#4da8da]">Kontak</h6>
           <ul class="space-y-4 text-gray-400">
@@ -1796,7 +1247,6 @@ document.addEventListener('alpine:init', () => {
           </ul>
         </div>
 
-        <!-- Newsletter -->
         <div>
           <h6 class="font-bold text-lg mb-6 text-[#f4d03f]">Newsletter</h6>
           <p class="text-gray-400 text-sm mb-4">Dapatkan informasi terbaru seputar kampus dan pendaftaran.</p>
@@ -1812,7 +1262,6 @@ document.addEventListener('alpine:init', () => {
       </div>
     </div>
 
-    <!-- Bottom Footer -->
     <div class="border-t border-white/10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p class="text-gray-500 text-sm flex items-center gap-2">
@@ -1828,10 +1277,8 @@ document.addEventListener('alpine:init', () => {
     </div>
   </footer>
 
-  <!-- Scripts -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Create particles
       const particlesContainer = document.getElementById('particles');
       if (particlesContainer) {
         const colors = ['particle-green', 'particle-blue', 'particle-gold', 'particle-white'];
@@ -1845,36 +1292,22 @@ document.addEventListener('alpine:init', () => {
         }
       }
 
-      // Intersection Observer for reveal animations
-      const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-      };
-
+      const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('active');
-          }
+          if (entry.isIntersecting) { entry.target.classList.add('active'); }
         });
       }, observerOptions);
 
-      // Observe all elements with reveal classes
       document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-rotate').forEach(el => {
         observer.observe(el);
       });
 
-      // Smooth scroll for anchor links
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
           e.preventDefault();
           const target = document.querySelector(this.getAttribute('href'));
-          if (target) {
-            target.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
+          if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         });
       });
     });

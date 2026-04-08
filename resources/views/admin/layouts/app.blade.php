@@ -2,8 +2,10 @@
     $authRole = auth()->user()->role;
     $isAdminFull = $authRole === 'admin';
     $isKeuangan = $authRole === 'keuangan';
-    $isWR3 = $authRole === 'wr3';
+    $isWR3 = $authRole === 'wr-3';
     $isAdmisi = $authRole === 'admisi';
+    $isDekan = $authRole === 'dekan';
+    $isPimpinan = $authRole === 'pimpinan';
 
     $navAccess = [
         'admin.dashboard'       => true,   
@@ -160,7 +162,7 @@
 
                     
                     {{-- Kelola data mahasiswa --}}
-                    @php $canAccess = $isAdminFull || $isWR3; @endphp
+                    @php $canAccess = $isAdminFull || $isWR3 || $isDekan || $isPimpinan; @endphp
                     @if($canAccess)
                         <a href="{{ route('admin.user.daftar-ulang') }}"
                         class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.daftar-ulang*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">

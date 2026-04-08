@@ -1050,136 +1050,403 @@ function brosurUpload() {
 
             <!-- NEWS SECTION -->
             <div x-show="activeTab === 'news'" x-cloak>
-                <form action="{{ route('admin.landing-page.update') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" name="section" value="news">
-                    
-                    <div class="space-y-6">
-                        <h3 class="text-lg font-bold text-gray-900 border-b pb-2">Berita & Kegiatan</h3>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Section Title</label>
-                                <input type="text" name="updates[section_title]" 
-                                       value="{{ $sections['news']['section_title'] ?? 'Berita & Kegiatan' }}"
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            </div>
-                        </div>
-
-                        <!-- News 1 -->
-                        <div class="p-4 bg-green-50 rounded-lg border border-green-200">
-                            <h4 class="font-medium text-green-800 mb-3">Berita 1</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input type="text" name="updates[news1_title]" 
-                                       value="{{ $sections['news']['news1_title'] ?? 'Workshop Kewirausahaan Mahasiswa' }}"
-                                       placeholder="Judul"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                <input type="text" name="updates[news1_category]" 
-                                       value="{{ $sections['news']['news1_category'] ?? 'Kegiatan' }}"
-                                       placeholder="Kategori"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                <input type="text" name="updates[news1_date]" 
-                                       value="{{ $sections['news']['news1_date'] ?? '12 November 2025' }}"
-                                       placeholder="Tanggal"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                <textarea name="updates[news1_desc]" rows="2" placeholder="Deskripsi"
-                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm md:col-span-2">{{ $sections['news']['news1_desc'] ?? 'Mahasiswa belajar strategi bisnis modern dari praktisi industri.' }}
-                                </textarea>
-                                <!-- Upload Gambar Berita 1 -->
-                                <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Berita</label>
-                                    @if(isset($sections['news']['news1_image']) && $sections['news']['news1_image'])
-                                    <div class="mb-2">
-                                        <img src="{{ Storage::url($sections['news']['news1_image']) }}" alt="Berita 1" class="h-24 w-auto rounded-lg object-cover">
-                                        <p class="text-xs text-gray-500 mt-1">Gambar saat ini</p>
-                                    </div>
-                                    @endif
-                                    <input type="file" name="updates[news1_image]" accept="image/*"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                    <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG. Max: 5MB</p>
+ 
+            {{-- ── 1. Pengaturan Section ───────────────────────────────── --}}
+            <form action="{{ route('admin.landing-page.update') }}" method="POST" class="mb-8">
+                @csrf
+                <input type="hidden" name="section" value="news">
+                <div class="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm space-y-4">
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0
+                                     002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0
+                                     001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0
+                                     00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0
+                                     00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0
+                                     00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0
+                                     00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0
+                                     001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07
+                                     2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Pengaturan Section
+                    </h3>
+                    <div class="max-w-md">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Judul Section</label>
+                        <input type="text" name="updates[section_title]"
+                               value="{{ $sections['news']['section_title'] ?? 'Berita & Kegiatan' }}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit"
+                                class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm">
+                            Simpan Judul
+                        </button>
+                    </div>
+                </div>
+            </form>
+         
+            {{-- ── 2. Daftar Berita yang Ada ────────────────────────────── --}}
+            <div class="mb-8 space-y-4">
+                <h3 class="text-lg font-bold text-gray-900 border-b pb-2 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2
+                                 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9
+                                 M7 16h6M7 8h6v4H7V8z"/>
+                    </svg>
+                    Daftar Berita
+                    <span class="ml-1 text-sm font-normal text-gray-500">({{ count($newsList) }} berita)</span>
+                </h3>
+         
+                @forelse ($newsList as $idx => $item)
+                @php
+                    $palettes = [
+                        1 => ['bg' => 'bg-green-50',  'border' => 'border-green-200',  'badge' => 'bg-green-500'],
+                        2 => ['bg' => 'bg-blue-50',   'border' => 'border-blue-200',   'badge' => 'bg-blue-500'],
+                        3 => ['bg' => 'bg-yellow-50', 'border' => 'border-yellow-200', 'badge' => 'bg-yellow-500'],
+                    ];
+                    $c = $palettes[$idx % 3 === 0 ? 3 : $idx % 3];
+                    $hasContent = !empty($item['content']);
+                @endphp
+         
+                <div class="{{ $c['bg'] }} {{ $c['border'] }} border rounded-2xl overflow-hidden"
+                     x-data="{ editOpen: false }">
+         
+                    {{-- Header kartu --}}
+                    <div class="flex items-start gap-4 p-4">
+                        {{-- Thumbnail --}}
+                        <div class="flex-shrink-0 w-24 h-20 rounded-xl overflow-hidden bg-gray-200">
+                            @if(isset($item['image']) && $item['image'])
+                                <img src="{{ Storage::url($item['image']) }}" alt="img" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2
+                                                 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0
+                                                 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
                                 </div>
-                            </div>
+                            @endif
                         </div>
-
-                        <!-- News 2 -->
-                        <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                            <h4 class="font-medium text-blue-800 mb-3">Berita 2</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input type="text" name="updates[news2_title]" 
-                                       value="{{ $sections['news']['news2_title'] ?? 'Penandatanganan MoU Industri' }}"
-                                       placeholder="Judul"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                <input type="text" name="updates[news2_category]" 
-                                       value="{{ $sections['news']['news2_category'] ?? 'Kerjasama' }}"
-                                       placeholder="Kategori"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                <input type="text" name="updates[news2_date]" 
-                                       value="{{ $sections['news']['news2_date'] ?? '2 Oktober 2025' }}"
-                                       placeholder="Tanggal"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                <textarea name="updates[news2_desc]" rows="2" placeholder="Deskripsi"
-                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm md:col-span-2">{{ $sections['news']['news2_desc'] ?? 'Penguatan kerja sama riset dan program magang mahasiswa.' }}
-                                </textarea>
-                                <!-- Upload Gambar Berita 2 -->
-                                <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Berita</label>
-                                    @if(isset($sections['news']['news2_image']) && $sections['news']['news2_image'])
-                                    <div class="mb-2">
-                                        <img src="{{ Storage::url($sections['news']['news2_image']) }}" alt="Berita 2" class="h-24 w-auto rounded-lg object-cover">
-                                        <p class="text-xs text-gray-500 mt-1">Gambar saat ini</p>
-                                    </div>
-                                    @endif
-                                    <input type="file" name="updates[news2_image]" accept="image/*"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                    <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG. Max: 5MB</p>
-                                </div>
+         
+                        {{-- Info --}}
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                                <span class="inline-block px-2 py-0.5 rounded-full text-white text-xs font-semibold {{ $c['badge'] }}">
+                                    {{ $item['category'] ?? '–' }}
+                                </span>
+                                <span class="text-xs text-gray-500">{{ $item['date'] ?? '–' }}</span>
+                                {{-- Indikator konten lengkap --}}
+                                @if($hasContent)
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
+                                             bg-green-100 text-green-700 border border-green-200">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0
+                                                 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Ada konten lengkap
+                                </span>
+                                @else
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
+                                             bg-orange-100 text-orange-700 border border-orange-200">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Belum ada konten lengkap
+                                </span>
+                                @endif
+                                <span class="ml-auto text-xs text-gray-400 font-mono">#{{ $idx }}</span>
                             </div>
+                            <p class="font-semibold text-gray-800 truncate">{{ $item['title'] ?? '(tanpa judul)' }}</p>
+                            <p class="text-sm text-gray-500 line-clamp-2 mt-0.5">{{ $item['desc'] ?? '' }}</p>
                         </div>
-
-                        <!-- News 3 -->
-                        <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                            <h4 class="font-medium text-yellow-800 mb-3">Berita 3</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input type="text" name="updates[news3_title]" 
-                                       value="{{ $sections['news']['news3_title'] ?? 'Milad Muhammadiyah ke-113' }}"
-                                       placeholder="Judul"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                <input type="text" name="updates[news3_category]" 
-                                       value="{{ $sections['news']['news3_category'] ?? 'Milad' }}"
-                                       placeholder="Kategori"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                <input type="text" name="updates[news3_date]" 
-                                       value="{{ $sections['news']['news3_date'] ?? '25 September 2025' }}"
-                                       placeholder="Tanggal"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                <textarea name="updates[news3_desc]" rows="2" placeholder="Deskripsi"
-                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm md:col-span-2">{{ $sections['news']['news3_desc'] ?? 'Perayaan milad dengan berbagai kegiatan sosial dan keagamaan.' }}
-                                </textarea>
-                                <!-- Upload Gambar Berita 3 -->
-                                <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Berita</label>
-                                    @if(isset($sections['news']['news3_image']) && $sections['news']['news3_image'])
-                                    <div class="mb-2">
-                                        <img src="{{ Storage::url($sections['news']['news3_image']) }}" alt="Berita 3" class="h-24 w-auto rounded-lg object-cover">
-                                        <p class="text-xs text-gray-500 mt-1">Gambar saat ini</p>
-                                    </div>
-                                    @endif
-                                    <input type="file" name="updates[news3_image]" accept="image/*"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                    <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG. Max: 5MB</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end">
-                            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                                Simpan Perubahan
+         
+                        {{-- Tombol Aksi --}}
+                        <div class="flex-shrink-0 flex flex-col gap-2">
+                            <button @click="editOpen = !editOpen"
+                                    class="px-3 py-1.5 text-xs font-medium rounded-lg bg-white border border-gray-300
+                                           hover:bg-gray-50 transition-colors flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5
+                                             m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                                Edit
                             </button>
+                            <form action="{{ route('admin.landing-page.news.delete', $idx) }}"
+                                  method="POST" onsubmit="return confirm('Hapus berita ini?')">
+                                @csrf @method('DELETE')
+                                <button type="submit"
+                                        class="w-full px-3 py-1.5 text-xs font-medium rounded-lg bg-red-500 text-white
+                                               hover:bg-red-600 transition-colors flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7
+                                                 m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                    Hapus
+                                </button>
+                            </form>
                         </div>
+                    </div>
+         
+                    {{-- Form Edit (collapsible) --}}
+                    <div x-show="editOpen"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 -translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-cloak
+                         class="border-t {{ $c['border'] }} px-4 pb-5 pt-4">
+         
+                        <form action="{{ route('admin.landing-page.news.update', $idx) }}"
+                              method="POST" enctype="multipart/form-data">
+                            @csrf @method('PUT')
+         
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+         
+                                {{-- Judul --}}
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Judul Berita *</label>
+                                    <input type="text" name="news_title" value="{{ $item['title'] ?? '' }}" required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
+                                                  focus:ring-2 focus:ring-blue-400 focus:border-blue-400">
+                                </div>
+         
+                                {{-- Kategori --}}
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Kategori *</label>
+                                    <input type="text" name="news_category" value="{{ $item['category'] ?? '' }}" required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
+                                                  focus:ring-2 focus:ring-blue-400">
+                                </div>
+         
+                                {{-- Tanggal --}}
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Tanggal *</label>
+                                    <input type="text" name="news_date" value="{{ $item['date'] ?? '' }}" required
+                                           placeholder="cth: 12 November 2025"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
+                                                  focus:ring-2 focus:ring-blue-400">
+                                </div>
+         
+                                {{-- Deskripsi Singkat --}}
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">
+                                        Deskripsi Singkat *
+                                        <span class="font-normal text-gray-400">— tampil di kartu berita (ringkas)</span>
+                                    </label>
+                                    <textarea name="news_desc" rows="2" required
+                                              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm resize-none
+                                                     focus:ring-2 focus:ring-blue-400">{{ $item['desc'] ?? '' }}</textarea>
+                                </div>
+         
+                                {{-- ══ KONTEN LENGKAP ══ --}}
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">
+                                        Konten Lengkap
+                                        <span class="font-normal text-gray-400">— isi artikel di halaman baca berita</span>
+                                    </label>
+                                    <div class="relative rounded-xl overflow-hidden border-2 border-blue-200
+                                                focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+                                        <div class="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border-b border-blue-100">
+                                            <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M4 6h16M4 10h16M4 14h10"/>
+                                            </svg>
+                                            <span class="text-xs text-blue-500 font-medium">Pisahkan paragraf dengan baris kosong (Enter 2×)</span>
+                                            @if($hasContent)
+                                            <span class="ml-auto text-[10px] font-semibold bg-green-100 text-green-700
+                                                         px-2 py-0.5 rounded-full border border-green-200">✓ Terisi</span>
+                                            @else
+                                            <span class="ml-auto text-[10px] font-semibold bg-orange-100 text-orange-600
+                                                         px-2 py-0.5 rounded-full border border-orange-200">Kosong</span>
+                                            @endif
+                                        </div>
+                                        <textarea name="news_content" rows="10"
+                                                  placeholder="Tulis isi lengkap artikel di sini...&#10;&#10;Paragraf baru dimulai setelah baris kosong."
+                                                  class="w-full px-3 py-2 text-sm leading-relaxed bg-white
+                                                         focus:outline-none resize-y"
+                                                  style="min-height: 200px;">{{ $item['content'] ?? '' }}</textarea>
+                                    </div>
+                                    <p class="text-xs text-gray-400 mt-1">
+                                        Jika dikosongkan, halaman baca berita menampilkan Deskripsi Singkat.
+                                    </p>
+                                </div>
+         
+                                {{-- Gambar --}}
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">
+                                        Ganti Gambar
+                                        <span class="text-gray-400 font-normal">(kosongkan jika tidak diganti)</span>
+                                    </label>
+                                    @if(isset($item['image']) && $item['image'])
+                                    <div class="mb-2 flex items-center gap-3">
+                                        <img src="{{ Storage::url($item['image']) }}" alt="current"
+                                             class="h-16 w-24 object-cover rounded-lg border border-gray-200">
+                                        <span class="text-xs text-gray-500">Gambar saat ini</span>
+                                    </div>
+                                    @endif
+                                    <input type="file" name="news_image" accept="image/*"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                    <p class="text-xs text-gray-400 mt-1">Format: JPG, PNG, WebP. Maks: 5MB</p>
+                                </div>
+         
+                            </div>
+         
+                            <div class="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-200">
+                                <button type="button" @click="editOpen = false"
+                                        class="px-4 py-2 text-sm rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
+                                    Batal
+                                </button>
+                                <button type="submit"
+                                        class="px-5 py-2 text-sm rounded-lg bg-blue-600 text-white
+                                               hover:bg-blue-700 transition-colors font-semibold flex items-center gap-1.5">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Simpan Perubahan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                @empty
+                <div class="text-center py-12 text-gray-400">
+                    <div class="flex justify-center mb-3">
+                        <svg class="w-14 h-14 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0
+                                     00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <p class="font-medium">Belum ada berita. Tambahkan berita pertama di bawah!</p>
+                </div>
+                @endforelse
+            </div>
+         
+            {{-- ── 3. Form Tambah Berita Baru ──────────────────────────── --}}
+            <div class="p-5 bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 rounded-2xl shadow-sm">
+                <h3 class="text-lg font-bold text-indigo-900 border-b border-indigo-200 pb-2 mb-5 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Tambah Berita Baru
+                </h3>
+         
+                <form action="{{ route('admin.landing-page.news.add') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+         
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+         
+                        {{-- Judul --}}
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Judul Berita *</label>
+                            <input type="text" name="news_title" required
+                                   placeholder="Contoh: Workshop Kewirausahaan Mahasiswa"
+                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm
+                                          focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400">
+                        </div>
+         
+                        {{-- Kategori --}}
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Kategori *</label>
+                            <input type="text" name="news_category" required
+                                   placeholder="Kegiatan, Kerjasama, Prestasi …"
+                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm
+                                          focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400">
+                        </div>
+         
+                        {{-- Tanggal --}}
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Tanggal *</label>
+                            <input type="text" name="news_date" required
+                                   placeholder="Contoh: 12 November 2025"
+                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm
+                                          focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400">
+                        </div>
+         
+                        {{-- Deskripsi Singkat --}}
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                Deskripsi Singkat *
+                                <span class="font-normal text-gray-400 text-xs ml-1">— tampil di kartu berita landing page</span>
+                            </label>
+                            <textarea name="news_desc" rows="2" required
+                                      placeholder="Tulis ringkasan singkat berita (1–2 kalimat) …"
+                                      class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm resize-none
+                                             focus:ring-2 focus:ring-indigo-500 focus:border-indigo-400"></textarea>
+                        </div>
+         
+                        {{-- ══ KONTEN LENGKAP ══ --}}
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                Konten Lengkap
+                                <span class="font-normal text-gray-400 text-xs ml-1">— isi artikel penuh di halaman baca berita</span>
+                            </label>
+                            <div class="rounded-xl overflow-hidden border-2 border-indigo-200
+                                        focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
+         
+                                {{-- Toolbar label --}}
+                                <div class="flex items-center gap-2 px-3 py-2 bg-indigo-50 border-b border-indigo-100">
+                                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M4 6h16M4 10h16M4 14h10"/>
+                                    </svg>
+                                    <span class="text-xs text-indigo-500 font-medium">
+                                        Pisahkan paragraf dengan baris kosong (Enter 2×)
+                                    </span>
+                                    <span class="ml-auto text-xs text-indigo-400 italic">opsional</span>
+                                </div>
+         
+                                <textarea name="news_content" rows="12"
+                                          placeholder="Tulis isi lengkap artikel di sini...&#10;&#10;Gunakan baris kosong untuk memisahkan paragraf.&#10;&#10;Contoh:&#10;&#10;UMPAR menggelar Workshop Kewirausahaan yang dihadiri lebih dari 200 mahasiswa pada Jumat (12/11). Acara ini bertujuan membekali mahasiswa dengan keterampilan bisnis yang relevan di era digital.&#10;&#10;Narasumber utama adalah Bapak Ahmad Fauzi, CEO PT Teknologi Nusantara, yang berbagi pengalaman membangun startup dari nol hingga berhasil meraih pendanaan Series A.&#10;&#10;Peserta antusias mengikuti sesi tanya jawab dan simulasi pitching bisnis yang dipandu oleh tim fasilitator berpengalaman."
+                                          class="w-full px-4 py-3 text-sm leading-relaxed bg-white resize-y focus:outline-none"
+                                          style="min-height: 280px;"></textarea>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1.5 flex items-start gap-1">
+                                <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Jika dikosongkan, halaman baca berita akan menampilkan Deskripsi Singkat saja.
+                                Isi field ini untuk artikel yang lebih panjang dan informatif.
+                            </p>
+                        </div>
+         
+                        {{-- Gambar --}}
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                Gambar Berita
+                                <span class="text-gray-400 font-normal text-xs ml-1">(opsional)</span>
+                            </label>
+                            <input type="file" name="news_image" accept="image/*"
+                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm">
+                            <p class="text-xs text-gray-400 mt-1">Format: JPG, PNG, WebP. Maks: 5MB</p>
+                        </div>
+         
+                    </div>
+         
+                    <div class="flex justify-end mt-6">
+                        <button type="submit"
+                                class="inline-flex items-center gap-2 px-7 py-3 bg-indigo-600 text-white rounded-xl
+                                       hover:bg-indigo-700 transition-colors font-semibold shadow-md
+                                       hover:shadow-lg hover:-translate-y-0.5 transform">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            Tambah Berita
+                        </button>
                     </div>
                 </form>
             </div>
-
+         
+        </div>
             <!-- FOOTER SECTION -->
             <div x-show="activeTab === 'footer'" x-cloak>
                 <form action="{{ route('admin.landing-page.update') }}" method="POST">

@@ -9,6 +9,8 @@
     $isWakilRektor = auth()->user()->role === 'wr-3';
     $isAdmin = auth()->user()->role === 'admin';
     $isAdmisi = auth()->user()->role === 'admisi';
+    $isDekan = auth()->user()->role === 'dekan';
+    $isPimpinan = auth()->user()->role === 'pimpinan';
 @endphp
 <div class="max-w-6xl mx-auto">
 
@@ -397,6 +399,7 @@
                 </div>
 
                 <!-- Dokumen Upload -->
+
                 <div class="bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl p-4 sm:p-6 border-2 border-rose-200">
                     <h4 class="font-semibold text-gray-800 mb-4 flex items-center text-sm sm:text-base">
                         <svg class="w-5 h-5 mr-2 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -404,7 +407,7 @@
                         </svg>
                         Dokumen yang Diupload
                     </h4>
-
+                
                     @if($user->dokumens && $user->dokumens->count() > 0)
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             @foreach($user->dokumens as $dokumen)
@@ -439,7 +442,7 @@
                                             @endif
                                         </div>
                                     </div>
-
+                
                                     <div class="space-y-2">
                                         <h5 class="font-bold text-gray-900 text-sm">{{ $dokumen->jenisDokumen }}</h5>
                                         <p class="text-xs text-gray-600 truncate" title="{{ $dokumen->namaFile }}">{{ $dokumen->namaFile }}</p>
@@ -447,7 +450,7 @@
                                             <span class="uppercase font-semibold text-rose-600">{{ $dokumen->formatFile }}</span>
                                             <span>{{ \Carbon\Carbon::parse($dokumen->tanggalUpload)->format('d M Y') }}</span>
                                         </div>
-
+                
                                         @if($dokumen->catatanVerifikasi)
                                             <div class="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg">
                                                 <p class="text-xs text-amber-800">
@@ -456,9 +459,10 @@
                                             </div>
                                         @endif
                                     </div>
-
+                
                                     <div class="mt-3 flex space-x-2">
-                                        <a href="{{ asset('storage/' . $dokumen->urlFile) }}" target="_blank"
+                                        {{-- Gunakan asset($dokumen->urlFile) karena file disimpan di public/ --}}
+                                        <a href="{{ asset('storage/' . $dokumen->urlFile) }}"  target="_blank"
                                            class="flex-1 bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors flex items-center justify-center">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -466,7 +470,7 @@
                                             </svg>
                                             Lihat
                                         </a>
-                                        <a href="{{ asset('storage/' . $dokumen->urlFile) }}" download
+                                        <a href="{{ asset('storage/' . $dokumen->urlFile) }}"  download="{{ $dokumen->namaFile }}"
                                            class="flex-1 bg-gray-500 hover:bg-gray-600 text-white text-xs font-semibold py-2 px-3 rounded-lg transition-colors flex items-center justify-center">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -486,7 +490,7 @@
                             <p class="text-sm text-gray-400 mt-1">Calon mahasiswa belum mengunggah dokumen persyaratan</p>
                         </div>
                     @endif
-
+                
                     <div class="mt-4 p-3 bg-white rounded-lg border border-rose-300">
                         <p class="text-xs text-rose-800 flex items-start">
                             <svg class="w-4 h-4 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -631,6 +635,10 @@
                                 <option value="wr-3" {{ old('role', $user->role) == 'wr-3' ? 'selected' : '' }}>Wakil rektor 3</option>
                                 <option value="admisi" {{ old('role', $user->role) == 'admisi' ? 'selected' : '' }}>admisi</option>
                                 <option value="dekan" {{ old('role', $user->role) == 'dekan' ? 'selected' : '' }}>Dekan Fakultas</option>
+<<<<<<< HEAD
+=======
+                                <option value="pimpinan" {{ old('role', $user->role) == 'pimpinan' ? 'selected' : '' }}>Pimpinan</option>
+>>>>>>> 9db52b5e897ec25cc55c1649dd149a4dee1c2672
                             </select>
                             @if(!$isAdmin)
                                 <input type="hidden" name="role" value="{{ $user->role }}">

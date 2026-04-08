@@ -470,10 +470,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const total = values.reduce((a, b) => a + b, 0);
         labels.forEach((label, i) => {
+
             if (showPercentage) {
                 const pct = ((values[i] / total) * 100).toFixed(1);
                 legend.innerHTML += `
-                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors">
                         <div class="flex items-center gap-3">
                             <span class="w-3 h-3 rounded-md flex-shrink-0" style="background:${palette[i % palette.length]}"></span>
                             <span class="text-sm text-gray-700">${label}</span>
@@ -538,7 +538,7 @@ function switchTab(group, num) {
             }
         });
     }
-}
-</script>
 
-@endsection
+            const pct = ((values[i] / total) * 100).toFixed(1);
+            legend.innerHTML += `
+                <div class="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors">

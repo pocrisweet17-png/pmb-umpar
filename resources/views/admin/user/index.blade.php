@@ -7,6 +7,9 @@
 @php
     $isAdmin = auth()->user()->role === 'admin';
     $isAdmisi = auth()->user()->role === 'admisi';
+    $isWr3 = auth()->user()->role === 'wr-3';
+    $isDekan = auth()->user()->role === 'dekan';
+    $isPimpinan = auth()->user()->role === 'pimpinan';
 @endphp
 <div class="space-y-6">
 
@@ -65,7 +68,7 @@
             </a>
         </div>
     </div>
-        <!-- Search & Filter Section -->
+    <!-- Search & Filter Section -->
     <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
         <form method="GET" action="{{ route('admin.user.index') }}" class="space-y-4">
 
@@ -232,6 +235,7 @@
                         <option value="wr-3" {{ request('role') == 'wr-3' ? 'selected' : '' }}>Wakil Rektor 3</option>
                         <option value="admisi" {{ request('role') == 'admisi' ? 'selected' : '' }}>Admisi</option>
                         <option value="dekan" {{ request('role') == 'dekan' ? 'selected' : '' }}>Dekan</option>
+                        <option value="pimpinan" {{ request('role') == 'pimpinan' ? 'selected' : '' }}>Pimpinan</option>
                     </select>
                 </div>
 
@@ -608,6 +612,14 @@
                                 @elseif($user->role === 'wr-3')
                                 <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-yellow-800 bg-yellow-100 rounded-full">
                                         Wakil Rektor 3
+                                    </span>
+                                @elseif($user->role === 'dekan')
+                                <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-red-800 bg-red-100 rounded-full">
+                                        Dekan
+                                    </span>
+                                @elseif($user->role === 'pimpinan')
+                                <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-indigo-800 bg-indigo-100 rounded-full">
+                                        Pimpinan
                                     </span>
                                 @elseif($user->role === 'admisi')
                                 <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-full">

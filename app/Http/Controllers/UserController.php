@@ -18,16 +18,6 @@ class UserController extends Controller
         if ($request->filled('search')) {
             $search = trim($request->search);
 
-<<<<<<< HEAD
-            $query->where(function($q) use ($search) {
-                $q->where('nama_lengkap', 'LIKE', '%' . $search . '%')
-                  ->orWhere('username', 'LIKE', '%' . $search . '%')
-                  ->orWhere('email', 'LIKE', '%' . $search . '%')
-                  ->orWhere('nik', 'LIKE', '%' . $search . '%')
-                  ->orWhere('no_whatsapp', 'LIKE', '%' . $search . '%')
-                  ->orWhere('nomor_registrasi', 'LIKE', '%' . $search . '%');
-            });
-=======
                 $query->where(function($q) use ($search) {
                     $q->where('nama_lengkap', 'LIKE', '%' . $search . '%')
                       ->orWhere('username', 'LIKE', '%' . $search . '%')
@@ -86,7 +76,6 @@ class UserController extends Controller
             $users = $query->orderBy('created_at', 'desc')->get();
         
             return view('admin.user.index', compact('users'));
->>>>>>> c725232840e4de2ca89c207adcd8c9dee52d0523
         }
     
         // Filter by role 
@@ -124,8 +113,7 @@ class UserController extends Controller
             'nama_lengkap' => 'required|string|max:255',
             'nik' => 'required|string|max:16|unique:users',
             'no_whatsapp' => 'required|string|max:15',
-            'role' => 'required|in:admin,user,keuangan,wr-3,admisi,dekan',
-            'fakultas_id' => 'required_if:role,dekan|nullable|exists:fakultas,id',
+            'role' => 'required|in:admin,user,keuangan,wr-3,admisi,dekan,pimpinan',
             'is_wawancara_selesai' => 'boolean',
         ]);
 
@@ -159,56 +147,108 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        $user = User::findOrFail($id);
-    
-        $validated = $request->validate([
-            'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'nama_lengkap' => 'required|string|max:255',
-            'nik' => ['required', 'string', 'max:16', Rule::unique('users')->ignore($user->id)],
-            'no_whatsapp' => 'required|string|max:15',
-            'role' => 'required|in:admin,user,keuangan,wr-3,admisi,dekan', // ← SUDAH ADA dekan
-            'fakultas_id' => 'required_if:role,dekan|nullable|exists:fakultas,id', // ← TAMBAHAN untuk fakultas
-            'password' => 'nullable|string|min:8|confirmed',
-            'is_verified' => 'boolean',
-            'is_prodi_selected' => 'boolean',
-            'is_bayar_pendaftaran' => 'boolean',
-            'is_data_completed' => 'boolean',
-            'is_dokumen_uploaded' => 'boolean',
-            'is_tes_selesai' => 'boolean',
-            'is_wawancara_selesai' => 'boolean',
-            'is_daftar_ulang' => 'boolean',
-            'is_ukt_paid' => 'boolean',
-        ]);
-    
-        // Cek role user yang sedang login
-        $currentUserRole = auth()->user()->role;
-        $isAdmin = $currentUserRole === 'admin';
-        $isKeuangan = $currentUserRole === 'keuangan';
-        $isWakilRektor = $currentUserRole === 'wr-3';
-        $isAdmisi = $currentUserRole === 'admisi';
+            public function update(Request $request, string $id)
+        {
+            $user = User::findOrFail($id);
+        
+            $validated = $request->validate([
+                'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
+                'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+                'nama_lengkap' => 'required|string|max:255',
+                'nik' => ['required', 'string', 'max:16', Rule::unique('users')->ignore($user->id)],
+                'no_whatsapp' => 'required|string|max:15',
+                'role' => 'required|in:admin,user,keuangan,wr-3,admisi,dekan,pimpinan',
+                'password' => 'nullable|string|min:8|confirmed',
+                'is_verified' => 'boolean',
+                'is_prodi_selected' => 'boolean',
+                'is_bayar_pendaftaran' => 'boolean',
+                'is_data_completed' => 'boolean',
+                'is_dokumen_uploaded' => 'boolean',
+                'is_tes_selesai' => 'boolean',
+                'is_wawancara_selesai' => 'boolean',
+                'is_daftar_ulang' => 'boolean',
+                'is_ukt_paid' => 'boolean',
+            ]);
+        
+            // Cek role user yang sedang login
+            $currentUserRole = auth()->user()->role;
+            $isAdmin = $currentUserRole === 'admin';
+            $isKeuangan = $currentUserRole === 'keuangan';
+            $isWakilRektor = $currentUserRole === 'wr-3';
+            $isAdmisi = $currentUserRole === 'admisi';
+            $isDekan = $currentUserRole == 'dekan';
+            $isPimpinan = $currentUserRole == 'pimpinan';
 
-        // Admin bisa update semua
-        if($isAdmisi){
-            return redirect()->route('admin.user.index')
-            ->with('error', 'Role Admisi hanya memiliki akses view, tidak dapat melakukan perubahan data');
-        }
-        if ($isAdmin) {
-            $validated['is_verified'] = $request->has('is_verified');
-            $validated['is_prodi_selected'] = $request->has('is_prodi_selected');
-            $validated['is_bayar_pendaftaran'] = $request->has('is_bayar_pendaftaran');
-            $validated['is_data_completed'] = $request->has('is_data_completed');
-            $validated['is_dokumen_uploaded'] = $request->has('is_dokumen_uploaded');
-            $validated['is_tes_selesai'] = $request->has('is_tes_selesai');
-            $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
-            $validated['is_daftar_ulang'] = $request->has('is_daftar_ulang');
-            $validated['is_ukt_paid'] = $request->has('is_ukt_paid');
-            
-            // ⭐ TAMBAHAN: Handle fakultas_id
-            if ($request->role === 'dekan') {
-                $validated['fakultas_id'] = $request->fakultas_id;
+            // Admin bisa update semua
+            if($isAdmisi){
+                return redirect()->route('admin.user.index')
+                ->with('error', 'Role Admisi hanya memiliki akses view, tidak dapat melakukan perubahan data');
+            }
+            if ($isAdmin) {
+                $validated['is_verified'] = $request->has('is_verified');
+                $validated['is_prodi_selected'] = $request->has('is_prodi_selected');
+                $validated['is_bayar_pendaftaran'] = $request->has('is_bayar_pendaftaran');
+                $validated['is_data_completed'] = $request->has('is_data_completed');
+                $validated['is_dokumen_uploaded'] = $request->has('is_dokumen_uploaded');
+                $validated['is_tes_selesai'] = $request->has('is_tes_selesai');
+                $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
+                $validated['is_daftar_ulang'] = $request->has('is_daftar_ulang');
+                $validated['is_ukt_paid'] = $request->has('is_ukt_paid');
+            }
+            // Keuangan hanya bisa update step 2 (bayar pendaftaran) dan step 8 (bayar UKT)
+            elseif ($isKeuangan) {
+                $validated['is_bayar_pendaftaran'] = $request->has('is_bayar_pendaftaran');
+                $validated['is_ukt_paid'] = $request->has('is_ukt_paid');
+                // Pertahankan nilai lama untuk field lainnya
+                unset($validated['is_verified']);
+                unset($validated['is_prodi_selected']);
+                unset($validated['is_data_completed']);
+                unset($validated['is_dokumen_uploaded']);
+                unset($validated['is_tes_selesai']);
+                unset($validated['is_wawancara_selesai']);
+                unset($validated['is_daftar_ulang']);
+            }
+            // WR-3 hanya bisa update step 6 (wawancara)
+            elseif ($isWakilRektor) {
+                $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
+                // Pertahankan nilai lama untuk field lainnya
+                unset($validated['is_verified']);
+                unset($validated['is_prodi_selected']);
+                unset($validated['is_bayar_pendaftaran']);
+                unset($validated['is_data_completed']);
+                unset($validated['is_dokumen_uploaded']);
+                unset($validated['is_tes_selesai']);
+                unset($validated['is_daftar_ulang']);
+                unset($validated['is_ukt_paid']);
+            }
+            elseif($isDekan){
+                $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
+                // Pertahankan nilai lama untuk field lainnya
+                unset($validated['is_verified']);
+                unset($validated['is_prodi_selected']);
+                unset($validated['is_bayar_pendaftaran']);
+                unset($validated['is_data_completed']);
+                unset($validated['is_dokumen_uploaded']);
+                unset($validated['is_tes_selesai']);
+                unset($validated['is_daftar_ulang']);
+                unset($validated['is_ukt_paid']);
+            }
+            elseif($isPimpinan){
+                $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
+                // Pertahankan nilai lama untuk field lainnya
+                unset($validated['is_verified']);
+                unset($validated['is_prodi_selected']);
+                unset($validated['is_bayar_pendaftaran']);
+                unset($validated['is_data_completed']);
+                unset($validated['is_dokumen_uploaded']);
+                unset($validated['is_tes_selesai']);
+                unset($validated['is_daftar_ulang']);
+                unset($validated['is_ukt_paid']);
+            }
+        
+            // Only update password if provided
+            if (!empty($validated['password'])) {
+                $validated['password'] = Hash::make($validated['password']);
             } else {
                 // Reset fakultas_id jika bukan dekan
                 $validated['fakultas_id'] = null;

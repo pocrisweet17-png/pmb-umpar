@@ -598,6 +598,14 @@
                         <div class="text-center sm:text-left">
                             <h3 class="text-3xl font-bold text-white mb-3">🎉 Selamat! Pendaftaran Selesai</h3>
                             <p class="text-green-100 text-lg">Anda telah menyelesaikan semua tahap pendaftaran mahasiswa baru. Silakan tunggu informasi selanjutnya.</p>
+
+                            @if($user->is_daftar_ulang)
+                                <a href="{{ route('mahasiswa.selamat-lulus') }}"
+                                class="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-gray-900
+                                        rounded-xl font-bold hover:bg-amber-400 transition-all shadow-lg">
+                                    🎓 Lihat Halaman Mahasiswa Baru
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>

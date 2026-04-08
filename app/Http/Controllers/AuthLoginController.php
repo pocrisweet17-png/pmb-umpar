@@ -44,7 +44,8 @@ class AuthLoginController extends Controller
         $request->session()->regenerate();
 
         // Redirect admin
-        if (in_array($user->role, ['admin', 'keuangan', 'wr-3','admisi','dekan'])) {
+        if (in_array($user->role, ['admin', 'keuangan', 'wr-3','admisi','dekan','pimpinan'])) {
+
             return redirect()->route('admin.dashboard');
         }
 

@@ -25,7 +25,6 @@ class ProgramStudy extends Model
     ];
     
     public $timestamps = false; // jika tidak pakai created_at/updated_at
-    public $timestamps = false;
 
      public function fakultasRelation(): BelongsTo
     {
