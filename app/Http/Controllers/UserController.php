@@ -83,9 +83,12 @@ class UserController extends Controller
                 });
             }
         
-            $users = $query->orderBy('created_at', 'desc')->paginate(4);
-        
-            return view('admin.user.index', compact('users'));
+            $totalVerified = User::where('is_verified', true)->count();
+            $totalAdmin = User::where('role', 'admin')->count();
+
+            $users = $query->orderBy('created_at', 'desc')->paginate(2);
+
+            return view('admin.user.index', compact('users', 'totalVerified', 'totalAdmin'));
         }
 
     /**
