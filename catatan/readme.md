@@ -59,6 +59,12 @@ berapa yang lulus di prodinya) dan datanya bisa di cetak berdasarkan EXCEL atau 
 - hilangkan verifiaksi di navbar kelola data mahasiswa.
 
 
+## 
 
+# tugas baru.
+- pagination di halaman 
+    halaman data mahasiswa
+
+- tambah tombol verifikasi, di halaman kelola user.
 
  
