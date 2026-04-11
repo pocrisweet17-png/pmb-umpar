@@ -15,9 +15,7 @@ class MahasiswaController extends Controller
     /**
      * Menampilkan daftar mahasiswa yang sudah daftar ulang.
      * - Role 'dekan'  : hanya melihat mahasiswa di fakultasnya, dikelompokkan per prodi.
-
      * - Role lain     : melihat semua mahasiswa (tampilan flat + pagination).
-
      */
     public function daftarUlang(Request $request)
     {
@@ -43,6 +41,26 @@ class MahasiswaController extends Controller
                 ->toArray();
 
             $baseQuery->whereIn('kodeProdi', $kodeProdiDiFakultas);
+        }
+
+        // ── Filter untuk Admin ───────────────────────────────────────────────────
+        if (!$isDekan) {
+            if ($request->filled('prodi')) {
+                $baseQuery->where('kodeProdi', $request->prodi);
+            }
+            if ($request->filled('status')) {
+                $baseQuery->where('status_daftar_ulang', $request->status);
+            }
+            if ($request->filled('angkatan')) {
+                $baseQuery->where('angkatan', $request->angkatan);
+            }
+            if ($request->filled('q')) {
+                $search = $request->q;
+                $baseQuery->where(function($q) use ($search) {
+                    $q->where('namaLengkap', 'like', "%{$search}%")
+                      ->orWhere('nim', 'like', "%{$search}%");
+                });
+            }
         }
 
         // ── Ambil SEMUA data (untuk stats + dekan grouping) ───────────────────────
@@ -215,14 +233,68 @@ class MahasiswaController extends Controller
 
     /**
      * Export data mahasiswa daftar ulang ke Excel.
-     * Mendukung filter: ?prodi=XX &status=XX &angkatan=XX &q=XX &fakultas=XX
+     * Mendukung filter: 
+     * - ?prodi=XX 
+     * - &status=XX 
+     * - &angkatan=XX 
+     * - &q=XX 
+     * - &fakultas_id=XX (untuk dekan)
      */
     public function exportExcel(Request $request)
     {
-        $fileName = 'Data_Mahasiswa_Daftar_Ulang_' . date('Y-m-d_His') . '.xlsx';
-
-        return Excel::download(new MahasiswaExport($request->all()), $fileName);
+        $filters = $request->only(['prodi', 'status', 'angkatan', 'q', 'fakultas_id']);
+    
+    // Generate nama file berdasarkan filter
+        $fileName = $this->generateFileName($filters);
+        
+        return Excel::download(new MahasiswaExport($filters), $fileName);
     }
+
+    /**
+ * Generate nama file Excel berdasarkan filter yang dipilih
+ */
+private function generateFileName($filters)
+{
+    $parts = ['Data_Mahasiswa_Daftar_Ulang'];
+    
+    // Jika filter berdasarkan prodi
+    if (!empty($filters['prodi'])) {
+        $prodi = ProgramStudy::where('kodeProdi', $filters['prodi'])->first();
+        $namaProdi = $prodi ? $prodi->namaProdi : $filters['prodi'];
+        // Bersihkan nama prodi dari karakter yang tidak valid untuk nama file
+        $namaProdi = preg_replace('/[\/\\\\:*?"<>|]/', '-', $namaProdi);
+        $parts[] = $namaProdi;
+    }
+    
+    // Jika filter berdasarkan fakultas (untuk dekan)
+    if (!empty($filters['fakultas_id']) && empty($filters['prodi'])) {
+        $fakultas = \App\Models\Fakultas::find($filters['fakultas_id']);
+        if ($fakultas) {
+            $namaFakultas = preg_replace('/[\/\\\\:*?"<>|]/', '-', $fakultas->nama_fakultas);
+            $parts[] = $namaFakultas;
+        }
+    }
+    
+    // Jika filter berdasarkan status
+    if (!empty($filters['status'])) {
+        $statusMap = [
+            'pending' => 'Menunggu',
+            'verified' => 'Terverifikasi',
+            'rejected' => 'Ditolak',
+        ];
+        $parts[] = $statusMap[$filters['status']] ?? $filters['status'];
+    }
+    
+    // Jika filter berdasarkan angkatan
+    if (!empty($filters['angkatan'])) {
+        $parts[] = 'Angkatan_' . $filters['angkatan'];
+    }
+    
+    // Tambahkan tanggal
+    $parts[] = date('Y-m-d_His');
+    
+    return implode('_', $parts) . '.xlsx';
+}
 
     /**
      * Verifikasi daftar ulang mahasiswa.
