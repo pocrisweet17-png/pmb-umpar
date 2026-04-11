@@ -196,7 +196,7 @@
                     @if($canAccess) </a> @else </div> @endif
 
                     {{-- Kelola Biaya PMB --}}
-                    @php $canAccess = $isAdminFull; @endphp
+                    @php $canAccess = $isAdminFull || $isKeuangan; @endphp
                     @if($canAccess)
                         <a href="{{ route('admin.biaya-pmb.index') }}"
                         class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.biaya-pmb.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
