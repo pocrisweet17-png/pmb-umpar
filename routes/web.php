@@ -358,6 +358,15 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         ->name('mahasiswa.export-excel');
 });
 
+// Routes untuk verifikasi khusus
+Route::patch('/admin/user/{id}/verify-interview', [UserController::class, 'verifyInterview'])
+    ->name('admin.user.verify.interview')
+    ->middleware(['auth', 'role:wr-3']);
+
+Route::patch('/admin/user/{id}/verify-payment', [UserController::class, 'verifyPayment'])
+    ->name('admin.user.verify.payment')
+    ->middleware(['auth', 'role:keuangan']);
+
 // routes/web.php - Tambahkan route ini untuk debug
 Route::get('/debug-registration', function() {
     $data = \App\Models\Registration::all();

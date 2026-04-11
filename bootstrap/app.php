@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Middleware\RoleMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.ukt'         => \App\Http\Middleware\StepBayarUkt::class,
             'check.daftarulang' => \App\Http\Middleware\StepDaftarUlang::class,
             'check.fakultas' => \App\Http\Middleware\CheckFakultasAccess::class,
+            'role' => RoleMiddleware::class,
         ]);
 
     })

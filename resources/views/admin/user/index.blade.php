@@ -10,6 +10,7 @@
     $isWr3 = auth()->user()->role === 'wr-3';
     $isDekan = auth()->user()->role === 'dekan';
     $isPimpinan = auth()->user()->role === 'pimpinan';
+    $isKeuangan = auth()->user()->role === 'keuangan';
 @endphp
 <div class="space-y-6">
 
@@ -71,165 +72,31 @@
     <!-- Search & Filter Section -->
     <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
         <form method="GET" action="{{ route('admin.user.index') }}" class="space-y-4">
-
-            <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
-
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <!-- Search Input -->
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                        🔍 Cari Camaba
+                        🔍 Cari User
                     </label>
-
                     <div class="relative">
                         <input type="text"
-<<<<<<< HEAD
-                            name="search"
-                            value="{{ request('search') }}"
-                            placeholder="Cari nama, username, email, NIK, WA, atau no registrasi..."
-                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-
-                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-
-                            <path stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-
-=======
                                 name="search"
                                 value="{{ request('search') }}"
                                 placeholder="Cari nama, username, email, NIK, WA, atau no registrasi..."
                                 class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                         <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
->>>>>>> c725232840e4de2ca89c207adcd8c9dee52d0523
                         </svg>
                     </div>
                 </div>
 
-<<<<<<< HEAD
-
-                <!-- Role Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Role
-                    </label>
-
-                    <select name="role"
-                        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-
-                        <option value="">Semua Role</option>
-
-                        <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>
-                            User
-                        </option>
-
-                        <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>
-                            Admin
-                        </option>
-
-                        <option value="keuangan" {{ request('role') == 'keuangan' ? 'selected' : '' }}>
-                            Keuangan
-                        </option>
-
-                        <option value="wr-3" {{ request('role') == 'wr-3' ? 'selected' : '' }}>
-                            Wakil Rektor 3
-                        </option>
-
-                        <option value="admisi" {{ request('role') == 'admisi' ? 'selected' : '' }}>
-                            Admisi
-                        </option>
-
-                        <option value="dekan" {{ request('role') == 'dekan' ? 'selected' : '' }}>
-                            Dekan
-                        </option>
-
-                    </select>
-                </div>
-
-
-                <!-- Filter Fakultas -->
-                @if(in_array(auth()->user()->role, ['admin','wr-3','admisi']))
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Fakultas
-                    </label>
-
-                    <select name="fakultas"
-                        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-
-                        <option value="">Semua Fakultas</option>
-
-                        @foreach(\App\Models\Fakultas::where('is_active', true)->get() as $fak)
-
-                            <option value="{{ $fak->id }}"
-                                {{ request('fakultas') == $fak->id ? 'selected' : '' }}>
-
-                                {{ $fak->nama_fakultas }}
-
-                            </option>
-
-                        @endforeach
-
-                    </select>
-                </div>
-                @endif
-
-
-                <!-- Filter Prodi -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Program Studi
-                    </label>
-
-                    <select name="prodi"
-                        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-
-                        <option value="">Semua Prodi</option>
-
-                        @foreach(\App\Models\ProgramStudy::all() as $prodi)
-
-                            <option value="{{ $prodi->kodeProdi }}"
-                                {{ request('prodi') == $prodi->kodeProdi ? 'selected' : '' }}>
-
-                                {{ $prodi->namaProdi }}
-
-                            </option>
-
-                        @endforeach
-
-                    </select>
-                </div>
-
-
-                <!-- Verification Filter -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Status
-                    </label>
-
-                    <select name="verified"
-                        class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-
-                        <option value="">Semua Status</option>
-
-                        <option value="1" {{ request('verified') === '1' ? 'selected' : '' }}>
-                            Verified
-                        </option>
-
-                        <option value="0" {{ request('verified') === '0' ? 'selected' : '' }}>
-                            Unverified
-                        </option>
-
-=======
                 <!-- Role Filter -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
                     <select name="role"
                             class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                         <option value="">Semua Role</option>
-                        <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
+                        <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>Camaba</option>
                         <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                         <option value="keuangan" {{ request('role') == 'keuangan' ? 'selected' : '' }}>Keuangan</option>
                         <option value="wr-3" {{ request('role') == 'wr-3' ? 'selected' : '' }}>Wakil Rektor 3</option>
@@ -289,93 +156,20 @@
                                 {{ $prodi->namaProdi }}
                             </option>
                         @endforeach
->>>>>>> c725232840e4de2ca89c207adcd8c9dee52d0523
                     </select>
                 </div>
-
             </div>
 
-<<<<<<< HEAD
-
-            <!-- Action Buttons -->
-            <div class="flex flex-wrap gap-3">
-
-                <button type="submit"
-                    class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/30">
-
-                    <svg class="w-5 h-5 mr-2"
-                        fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-
-                        <path stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-
-=======
             <!-- Action Buttons -->
             <div class="flex flex-wrap gap-3">
                 <button type="submit"
                         class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/30">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
->>>>>>> c725232840e4de2ca89c207adcd8c9dee52d0523
                     </svg>
-
                     Cari
-
                 </button>
 
-<<<<<<< HEAD
-
-                @if(request('search') || request('role') || request('verified') !== null || request('fakultas') || request('prodi'))
-
-                <a href="{{ route('admin.user.index') }}"
-                    class="inline-flex items-center bg-gray-500 hover:bg-gray-600 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg">
-
-                    <svg class="w-5 h-5 mr-2"
-                        fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-
-                        <path stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-
-                    </svg>
-
-                    Reset Filter
-
-                </a>
-
-                @endif
-
-
-                @if(request('search') || request('role') || request('verified') !== null || request('fakultas') || request('prodi'))
-
-                <div class="flex items-center text-sm text-gray-600 bg-blue-50 px-4 py-2.5 rounded-xl border border-blue-200">
-
-                    <svg class="w-5 h-5 mr-2 text-blue-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24">
-
-                        <path stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-
-                    </svg>
-
-                    <span class="font-semibold">
-                        {{ $users->count() }}
-                    </span>
-
-                    &nbsp;hasil ditemukan
-
-                </div>
-
-=======
                 @if(request('search') || request('role') || request('verified') !== null || request('fakultas') || request('prodi'))
                     <a href="{{ route('admin.user.index') }}"
                         class="inline-flex items-center bg-gray-500 hover:bg-gray-600 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg">
@@ -391,14 +185,10 @@
                         </svg>
                         <span class="font-semibold">{{ $users->count() }}</span>&nbsp;hasil ditemukan
                     </div>
->>>>>>> c725232840e4de2ca89c207adcd8c9dee52d0523
                 @endif
-
             </div>
-
         </form>
     </div>
-
 
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -406,7 +196,8 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 font-medium">Total User</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-2">{{ $users->count() }}</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-2">{{ $users->total() }}</p>
+                    <p class="text-xs text-gray-400 mt-1">{{ $users->count() }} ditampilkan di halaman ini</p>
                 </div>
                 <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -420,7 +211,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 font-medium">User Verified</p>
-                    <p class="text-3xl font-bold text-gray-900 mt-2">{{ $users->where('is_verified', true)->count() }}</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-2">{{ $totalVerified }}</p>
                 </div>
                 <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -519,7 +310,7 @@
                                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                                     </svg>
-                                    Edit
+                                    Lihat / Edit
                                 </button>
                                 <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none
                                             opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200">
@@ -529,16 +320,96 @@
                                     <div class="w-2 h-2 bg-gray-900 rotate-45 mx-auto -mt-1"></div>
                                 </div>
                             </div>
+                        @elseif($isWr3)
+                            <form action="{{ route('admin.user.verify.interview', $user->id) }}" method="POST" class="flex-1">
+                                @csrf
+                                @method('PATCH')
+                                @if($user->is_wawancara_selesai)
+                                    <button type="submit" 
+                                            class="w-full inline-flex items-center justify-center bg-green-500 text-white px-4 py-2.5 rounded-lg hover:bg-green-600 transition-all font-medium text-sm">
+                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        ✓ Terverifikasi
+                                    </button>
+                                @else
+                                    <button type="submit" 
+                                            class="w-full inline-flex items-center justify-center bg-blue-500 text-white px-4 py-2.5 rounded-lg hover:bg-blue-600 transition-all font-medium text-sm">
+                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        Verifikasi Wawancara
+                                    </button>
+                                @endif
+                            </form>
+                        @elseif($isKeuangan)
+                            <div class="flex-1 flex flex-col gap-2">
+                                <form action="{{ route('admin.user.verify.payment', $user->id) }}" method="POST" class="w-full">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="payment_type" value="pendaftaran">
+                                    @php
+                                        $paymentPendaftaran = $user->payments()
+                                            ->where('tipe_pembayaran', 'pendaftaran')
+                                            ->where('status_transaksi', 'settlement')
+                                            ->first();
+                                    @endphp
+                                    @if($paymentPendaftaran)
+                                        <button type="submit" 
+                                                class="w-full inline-flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all font-medium text-sm">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            ✓ Verif Pendaftaran
+                                        </button>
+                                    @else
+                                        <button type="submit" 
+                                                class="w-full inline-flex items-center justify-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all font-medium text-sm">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            Verifikasi Pendaftaran
+                                        </button>
+                                    @endif
+                                </form>
+
+                                <form action="{{ route('admin.user.verify.payment', $user->id) }}" method="POST" class="w-full">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="payment_type" value="ukt">
+                                    @php
+                                        $paymentUKT = $user->payments()
+                                            ->where('tipe_pembayaran', 'ukt')
+                                            ->where('status_transaksi', 'settlement')
+                                            ->first();
+                                    @endphp
+                                    @if($paymentUKT)
+                                        <button type="submit" 
+                                                class="w-full inline-flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all font-medium text-sm">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            ✓ Verif Daftar Ulang
+                                        </button>
+                                    @else
+                                        <button type="submit" 
+                                                class="w-full inline-flex items-center justify-center bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-all font-medium text-sm">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            Verifikasi Daftar Ulang
+                                        </button>
+                                    @endif
+                                </form>
+                            </div>
                         @else
                             <a href="{{ route('admin.user.edit', $user->id) }}"
                             class="flex-1 bg-amber-500 text-white px-4 py-2.5 rounded-lg hover:bg-amber-600 transition-colors text-center font-medium text-sm shadow-sm">
                                 Edit
                             </a>
-                        @endif
-
                             @if($user->id !== auth()->id() && $isAdmin)
                                 <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST"
-                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
+                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
@@ -550,6 +421,7 @@
                                     </button>
                                 </form>
                             @endif
+                        @endif
                     </div>
                 </div>
             @empty
@@ -563,6 +435,58 @@
                     <p class="text-gray-600 mb-4">Mulai dengan menambahkan user pertama</p>
                 </div>
             @endforelse
+            {{-- Pagination --}}
+            <div class="mt-4 px-4 pb-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                
+                <p class="text-sm text-gray-600 order-2 sm:order-1">
+                    Menampilkan
+                    <span class="font-semibold text-blue-700">{{ $users->firstItem() ?? 0 }}</span>
+                    –
+                    <span class="font-semibold text-blue-700">{{ $users->lastItem() ?? 0 }}</span>
+                    dari
+                    <span class="font-semibold text-blue-700">{{ $users->total() }}</span>
+                    data
+                </p>
+
+                @if ($users->hasPages())
+                    <div class="flex items-center gap-1 flex-wrap justify-center order-1 sm:order-2">
+
+                        @if ($users->onFirstPage())
+                            <span class="px-3 py-2 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed select-none flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                <span class="hidden sm:inline">Prev</span>
+                            </span>
+                        @else
+                            <a href="{{ $users->previousPageUrl() }}" class="px-3 py-2 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                <span class="hidden sm:inline">Prev</span>
+                            </a>
+                        @endif
+
+                        @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
+                            @if ($page == $users->currentPage())
+                                <span class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-bold text-white bg-gradient-to-br from-blue-600 to-indigo-600 shadow-md shadow-blue-200 select-none">{{ $page }}</span>
+                            @else
+                                <a href="{{ $url }}" class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium text-blue-700 bg-white border border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200">{{ $page }}</a>
+                            @endif
+                        @endforeach
+
+                        {{-- Next --}}
+                        @if ($users->hasMorePages())
+                            <a href="{{ $users->nextPageUrl() }}" class="px-3 py-2 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 flex items-center gap-1">
+                                <span class="hidden sm:inline">Next</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        @else
+                            <span class="px-3 py-2 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed select-none flex items-center gap-1">
+                                <span class="hidden sm:inline">Next</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </span>
+                        @endif
+
+                    </div>
+                @endif
+            </div>
         </div>
 
         <!-- Desktop Table View -->
@@ -624,10 +548,6 @@
                                 @elseif($user->role === 'admisi')
                                 <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-full">
                                         ADMISI
-                                    </span>
-                                @elseif($user->role === 'dekan')
-                                <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-full">
-                                        DEKAN
                                     </span>
                                 @else
                                     <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-blue-800 bg-blue-100 rounded-full">
@@ -693,7 +613,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex gap-2">
                                     @if($isAdmisi)
-                                    {{-- disable admisi --}}
+                                        {{-- disable admisi --}}
                                         <div class="relative group/btn">
                                             <button disabled
                                                     class="inline-flex items-center bg-gray-200 text-gray-400 px-4 py-2 rounded-lg cursor-not-allowed font-medium text-sm border border-gray-300">
@@ -710,29 +630,223 @@
                                                 <div class="w-2 h-2 bg-gray-900 rotate-45 mx-auto -mt-1"></div>
                                             </div>
                                         </div>
-                                    @else
+                                    @elseif($isWr3)
+                                        {{-- WR-3: Tombol Lihat/Edit dan Verifikasi Wawancara (dengan syarat) --}}
+                                        <div class="flex gap-2">
+                                            {{-- Tombol Lihat/Edit tetap ada --}}
+                                            <a href="{{ route('admin.user.edit', $user->id) }}"
+                                            class="inline-flex items-center bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-all shadow-sm font-medium text-sm">
+                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                </svg>
+                                                Lihat / Edit
+                                            </a>
+
+                                            {{-- Tombol Verifikasi Wawancara --}}
+                                            @php
+                                                // Cek syarat untuk verifikasi wawancara
+                                                // Syarat: is_prodi_selected, is_bayar_pendaftaran, is_data_completed, is_dokumen_uploaded, is_tes_selesai harus true
+                                                $canVerifyInterview = $user->is_prodi_selected && 
+                                                                    $user->is_bayar_pendaftaran && 
+                                                                    $user->is_data_completed && 
+                                                                    $user->is_dokumen_uploaded && 
+                                                                    $user->is_tes_selesai;
+                                            @endphp
+
+                                            @if(!$canVerifyInterview && !$user->is_wawancara_selesai)
+                                                {{-- Tombol disabled dengan tooltip --}}
+                                                <div class="relative group/btn">
+                                                    <button disabled
+                                                            class="inline-flex items-center bg-gray-300 text-gray-500 px-4 py-2 rounded-lg cursor-not-allowed font-medium text-sm">
+                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                        Verifikasi Wawancara
+                                                    </button>
+                                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none
+                                                                opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                                                        <div class="bg-gray-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-lg">
+                                                            Harap selesaikan: Pilih Prodi, Bayar Pendaftaran, Data Pribadi, Upload Dokumen, dan Tes
+                                                        </div>
+                                                        <div class="w-2 h-2 bg-gray-900 rotate-45 mx-auto -mt-1"></div>
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <form action="{{ route('admin.user.verify.interview', $user->id) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    @if($user->is_wawancara_selesai)
+                                                        <button type="submit" 
+                                                                class="inline-flex items-center bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all shadow-sm font-medium text-sm">
+                                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                            </svg>
+                                                            ✓ Terverifikasi
+                                                        </button>
+                                                    @else
+                                                        <button type="submit" 
+                                                                class="inline-flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all shadow-sm font-medium text-sm">
+                                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                            </svg>
+                                                            Verifikasi Wawancara
+                                                        </button>
+                                                    @endif
+                                                </form>
+                                            @endif
+                                        </div>
+                                    @elseif($isKeuangan)
+                                    {{-- Keuangan: Tombol Lihat/Edit dan Verifikasi Pembayaran (dengan syarat) --}}
+                                    <div class="flex gap-2">
+                                        {{-- Tombol Lihat/Edit tetap ada --}}
                                         <a href="{{ route('admin.user.edit', $user->id) }}"
-                                        class="inline-flex items-center bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-all shadow-sm hover:shadow font-medium text-sm">
+                                        class="inline-flex items-center bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-all shadow-sm font-medium text-sm">
                                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
                                             Lihat / Edit
                                         </a>
-                                    @endif
-                                    @if($user->id !== auth()->id() && $isAdmin)
-                                        <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST"
-                                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                    class="inline-flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all shadow-sm font-medium text-sm">
+
+                                        {{-- Tombol Verifikasi Pembayaran Pendaftaran --}}
+                                        @php
+                                            // Cek syarat untuk verifikasi pembayaran pendaftaran
+                                            // Syarat: is_prodi_selected harus true
+                                            $canVerifyPendaftaran = $user->is_prodi_selected;
+                                            
+                                            $paymentPendaftaran = $user->payments()
+                                                ->where('tipe_pembayaran', 'pendaftaran')
+                                                ->where('status_transaksi', 'settlement')
+                                                ->first();
+                                        @endphp
+
+                                        @if(!$canVerifyPendaftaran && !$paymentPendaftaran)
+                                            <div class="relative group/btn">
+                                                <button disabled
+                                                        class="inline-flex items-center bg-gray-300 text-gray-500 px-3 py-2 rounded-lg cursor-not-allowed font-medium text-sm">
+                                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    Verif Pendaftaran
+                                                </button>
+                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none
+                                                            opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                                                    <div class="bg-gray-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-lg">
+                                                        Harap selesaikan: Pilih Prodi terlebih dahulu
+                                                    </div>
+                                                    <div class="w-2 h-2 bg-gray-900 rotate-45 mx-auto -mt-1"></div>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <form action="{{ route('admin.user.verify.payment', $user->id) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="payment_type" value="pendaftaran">
+                                                @if($paymentPendaftaran)
+                                                    <button type="submit" 
+                                                            class="inline-flex items-center bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-all shadow-sm font-medium text-sm">
+                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                        </svg>
+                                                        ✓ Pendaftaran
+                                                    </button>
+                                                @else
+                                                    <button type="submit" 
+                                                            class="inline-flex items-center bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-all shadow-sm font-medium text-sm">
+                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                        Verif Pendaftaran
+                                                    </button>
+                                                @endif
+                                            </form>
+                                        @endif
+
+                                        {{-- Tombol Verifikasi Daftar Ulang --}}
+                                        @php
+                                            // Cek syarat untuk verifikasi pembayaran daftar ulang (UKT)
+                                            // Syarat: is_prodi_selected, is_bayar_pendaftaran, is_data_completed, is_dokumen_uploaded, is_tes_selesai, is_wawancara_selesai harus true
+                                            $canVerifyUkt = $user->is_prodi_selected && 
+                                                            $user->is_bayar_pendaftaran && 
+                                                            $user->is_data_completed && 
+                                                            $user->is_dokumen_uploaded && 
+                                                            $user->is_tes_selesai && 
+                                                            $user->is_wawancara_selesai;
+                                            
+                                            $paymentUKT = $user->payments()
+                                                ->where('tipe_pembayaran', 'ukt')
+                                                ->where('status_transaksi', 'settlement')
+                                                ->first();
+                                        @endphp
+
+                                        @if(!$canVerifyUkt && !$paymentUKT)
+                                            <div class="relative group/btn">
+                                                <button disabled
+                                                        class="inline-flex items-center bg-gray-300 text-gray-500 px-3 py-2 rounded-lg cursor-not-allowed font-medium text-sm">
+                                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    Verif Daftar Ulang
+                                                </button>
+                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none
+                                                            opacity-0 group-hover/btn:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                                                    <div class="bg-gray-900 text-white text-xs font-medium px-3 py-1.5 rounded-lg shadow-lg">
+                                                        Harap selesaikan semua tahapan sebelumnya (Prodi, Bayar, Data, Dokumen, Tes, Wawancara)
+                                                    </div>
+                                                    <div class="w-2 h-2 bg-gray-900 rotate-45 mx-auto -mt-1"></div>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <form action="{{ route('admin.user.verify.payment', $user->id) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="payment_type" value="ukt">
+                                                @if($paymentUKT)
+                                                    <button type="submit" 
+                                                            class="inline-flex items-center bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-all shadow-sm font-medium text-sm">
+                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                        </svg>
+                                                        ✓ Daftar Ulang
+                                                    </button>
+                                                @else
+                                                    <button type="submit" 
+                                                            class="inline-flex items-center bg-purple-500 text-white px-3 py-2 rounded-lg hover:bg-purple-600 transition-all shadow-sm font-medium text-sm">
+                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                        Verif Daftar Ulang
+                                                    </button>
+                                                @endif
+                                            </form>
+                                        @endif
+                                    </div>
+                                    @else
+                                        {{-- Role lain: Tombol Edit dan Hapus (kecuali untuk role yang tidak boleh hapus) --}}
+                                        <div class="flex gap-2">
+                                            <a href="{{ route('admin.user.edit', $user->id) }}"
+                                            class="inline-flex items-center bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-all shadow-sm hover:shadow font-medium text-sm">
                                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                 </svg>
-                                                Hapus
-                                            </button>
-                                        </form>
+                                                Lihat / Edit
+                                            </a>
+                                            @if($user->id !== auth()->id() && $isAdmin)
+                                                <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST"
+                                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                            class="inline-flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all shadow-sm font-medium text-sm">
+                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                        </svg>
+                                                        Hapus
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     @endif
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -750,6 +864,58 @@
                     @endforelse
                 </tbody>
             </table>
+            {{-- Pagination --}}
+                <div class="mt-4 px-4 pb-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    
+                    <p class="text-sm text-gray-600 order-2 sm:order-1">
+                        Menampilkan
+                        <span class="font-semibold text-blue-700">{{ $users->firstItem() ?? 0 }}</span>
+                        –
+                        <span class="font-semibold text-blue-700">{{ $users->lastItem() ?? 0 }}</span>
+                        dari
+                        <span class="font-semibold text-blue-700">{{ $users->total() }}</span>
+                        data
+                    </p>
+                
+                    @if ($users->hasPages())
+                        <div class="flex items-center gap-1 flex-wrap justify-center order-1 sm:order-2">
+                
+                            @if ($users->onFirstPage())
+                                <span class="px-3 py-2 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed select-none flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                    <span class="hidden sm:inline">Prev</span>
+                                </span>
+                            @else
+                                <a href="{{ $users->previousPageUrl() }}" class="px-3 py-2 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                    <span class="hidden sm:inline">Prev</span>
+                                </a>
+                            @endif
+                
+                            @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
+                                @if ($page == $users->currentPage())
+                                    <span class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-bold text-white bg-gradient-to-br from-blue-600 to-indigo-600 shadow-md shadow-blue-200 select-none">{{ $page }}</span>
+                                @else
+                                    <a href="{{ $url }}" class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium text-blue-700 bg-white border border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200">{{ $page }}</a>
+                                @endif
+                            @endforeach
+                
+                            {{-- Next --}}
+                            @if ($users->hasMorePages())
+                                <a href="{{ $users->nextPageUrl() }}" class="px-3 py-2 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 flex items-center gap-1">
+                                    <span class="hidden sm:inline">Next</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </a>
+                            @else
+                                <span class="px-3 py-2 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed select-none flex items-center gap-1">
+                                    <span class="hidden sm:inline">Next</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </span>
+                            @endif
+                
+                        </div>
+                    @endif
+                </div>
         </div>
     </div>
 
