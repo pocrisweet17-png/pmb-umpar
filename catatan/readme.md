@@ -65,6 +65,7 @@ berapa yang lulus di prodinya) dan datanya bisa di cetak berdasarkan EXCEL atau 
 - pagination di halaman 
     halaman data mahasiswa
 
-- tambah tombol verifikasi, di halaman kelola user.
+- tambah tombol verifikasi, di semua yang memiliki list.
+- 
 
  
