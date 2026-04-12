@@ -72,7 +72,7 @@
 
             <nav class="flex-1 overflow-y-auto py-8 px-4 space-y-2">
                     {{-- Dashboard --}}
-                    @php $canAccess = $isAdminFull; @endphp
+                    @php $canAccess = $isAdminFull || $isPimpinan; @endphp
                     @if($canAccess)
                         <a href="{{ route('admin.dashboard') }}"
                         class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.dashboard') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -161,7 +161,7 @@
 
                     
                     {{-- Kelola data mahasiswa --}}
-                    @php $canAccess = $isAdminFull || $isWR3 || $isDekan || $isPimpinan; @endphp
+                    @php $canAccess = $isAdminFull || $isWR3 || $isDekan ; @endphp
                     @if($canAccess)
                         <a href="{{ route('admin.user.daftar-ulang') }}"
                         class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.daftar-ulang*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
