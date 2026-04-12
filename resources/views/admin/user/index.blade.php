@@ -474,6 +474,29 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
+                            @if($isAdmin || $isAdmisi)
+                                <form action="{{ route('admin.user.toggle-verify', $user->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit"
+                                        class="inline-flex items-center text-xs font-semibold px-3 py-1 rounded-full transition-all cursor-pointer
+                                            {{ $user->is_verified 
+                                                ? 'text-green-800 bg-green-100 hover:bg-red-100 hover:text-red-700' 
+                                                : 'text-gray-600 bg-gray-100 hover:bg-green-100 hover:text-green-700' }}">
+                                        @if($user->is_verified)
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                            </svg>
+                                            Verified
+                                        @else
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            Unverified
+                                        @endif
+                                    </button>
+                                </form>
+                            @else
+                                {{-- Non-admin: tampilkan badge biasa tanpa tombol --}}
                                 @if($user->is_verified)
                                     <span class="inline-flex items-center text-xs font-semibold text-green-800 bg-green-100 px-3 py-1 rounded-full">
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -489,7 +512,8 @@
                                         Unverified
                                     </span>
                                 @endif
-                            </td>
+                            @endif
+                        </td>
                             {{-- Progress Steps PMB --}}
                             <td class="px-6 py-4">
                                 @php

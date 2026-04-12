@@ -86,7 +86,7 @@ class UserController extends Controller
             $totalVerified = User::where('is_verified', true)->count();
             $totalAdmin = User::where('role', 'admin')->count();
             
-            $users = $query->orderBy('created_at', 'desc')->paginate(1)->withQueryString();
+            $users = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
             return view('admin.user.index', compact('users', 'totalVerified', 'totalAdmin'));
         }
@@ -253,7 +253,7 @@ public function show(string $id)
         
             // intinya ini logic untuk ceklis dan unceklis Bayar daftar ulang
             $wasUktPaid = $user->is_ukt_paid; 
-            $nowUktPaid = $validated['is_ukt_paid'] ?? $user->is_ukt_paid;;
+            $nowUktPaid = $validated['is_ukt_paid'] ?? $user->is_ukt_paid;
         
             // ========== CASE 1: UKT DI-UNCHECK (dari TRUE ke FALSE) ==========
             if ($wasUktPaid && !$nowUktPaid) {
@@ -408,5 +408,14 @@ public function show(string $id)
 
         return redirect()->route('admin.user.index')
             ->with('success', 'User berhasil dihapus!');
+    }
+    public function toggleVerify(string $id)
+    {
+        $user = User::findOrFail($id);
+        $user->is_verified = !$user->is_verified;
+        $user->save();
+
+        $status = $user->is_verified ? 'diverifikasi' : 'batal diverifikasi';
+        return back()->with('success', "User {$user->nama_lengkap} berhasil {$status}.");
     }
 }
