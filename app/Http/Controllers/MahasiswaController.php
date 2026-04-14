@@ -56,9 +56,12 @@ class MahasiswaController extends Controller
         ];
 
         // ── Paginated data untuk mode Admin ──────────────────────────────────────
-        $mahasiswas = $isDekan
-            ? collect()   // dekan tidak pakai pagination
-            : (clone $baseQuery)->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
+        // $mahasiswas = $isDekan
+        //     ? collect()   // dekan tidak pakai pagination
+        //     : (clone $baseQuery)->orderBy('created_at', 'desc')->paginate(1)->withQueryString();
+
+        // coba kasih paginate semua aja deh
+            $mahasiswas = (clone $baseQuery)->orderBy('created_at', 'desc')->paginate(1)->withQueryString();
 
         // ── Mode Dekan: kelompokkan per prodi ────────────────────────────────────
         $mahasiswaPerProdi = null;

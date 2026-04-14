@@ -577,9 +577,56 @@ tr.row-hidden { display:none !important; }
             </tbody>
         </table>
     </div>
-    @if($mahasiswas->hasPages())
-    <div class="bg-gray-50 px-6 py-4 border-t border-gray-100">{{ $mahasiswas->links() }}</div>
-    @endif
+    {{-- PAGINATE --}}
+    <div class="mt-4 px-4 pb-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p class="text-sm text-gray-600 order-2 sm:order-1">
+            Menampilkan
+            <span class="font-semibold text-indigo-700">{{ $mahasiswas->firstItem() ?? 0 }}</span>
+            –
+            <span class="font-semibold text-indigo-700">{{ $mahasiswas->lastItem() ?? 0 }}</span>
+            dari
+            <span class="font-semibold text-indigo-700">{{ $mahasiswas->total() }}</span>
+            data
+        </p>
+        @if ($mahasiswas->hasPages())
+        <div class="flex items-center gap-1 flex-wrap justify-center order-1 sm:order-2">
+            {{-- Prev --}}
+            @if ($mahasiswas->onFirstPage())
+            <span class="px-3 py-2 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed select-none flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                <span class="hidden sm:inline">Prev</span>
+            </span>
+            @else
+            <a href="{{ $mahasiswas->previousPageUrl() }}" class="px-3 py-2 rounded-lg text-sm font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all duration-200 flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                <span class="hidden sm:inline">Prev</span>
+            </a>
+            @endif
+
+            {{-- Page Numbers --}}
+            @foreach ($mahasiswas->getUrlRange(1, $mahasiswas->lastPage()) as $page => $url)
+                @if ($page == $mahasiswas->currentPage())
+                <span class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-bold text-white bg-gradient-to-br from-indigo-600 to-violet-600 shadow-md shadow-indigo-200 select-none">{{ $page }}</span>
+                @else
+                <a href="{{ $url }}" class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium text-indigo-700 bg-white border border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all duration-200">{{ $page }}</a>
+                @endif
+            @endforeach
+
+            {{-- Next --}}
+            @if ($mahasiswas->hasMorePages())
+            <a href="{{ $mahasiswas->nextPageUrl() }}" class="px-3 py-2 rounded-lg text-sm font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all duration-200 flex items-center gap-1">
+                <span class="hidden sm:inline">Next</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+            @else
+            <span class="px-3 py-2 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed select-none flex items-center gap-1">
+                <span class="hidden sm:inline">Next</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </span>
+            @endif
+        </div>
+        @endif
+    </div>
 </div>
 
 @endif {{-- end isDekan --}}
