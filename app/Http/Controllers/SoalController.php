@@ -40,10 +40,11 @@ class SoalController extends Controller
     }
 
     public function index(){
-        $soals = Soal::all();
+
+        $soals = Soal::orderBy('idSoal', 'asc')->paginate(10)->withQueryString();
+        
         return view('admin.soal.index', compact('soals'));
     }
-
     public function edit($id){
         $soal = Soal::findOrFail($id);
         return view('admin.soal.edit', compact('soal'));
