@@ -70,7 +70,7 @@ class KeuanganController extends Controller
 
         $this->applyFilters($query, $request);
 
-        $payments = $query->orderBy('created_at', 'desc')->get();
+        $payments = $query->orderBy('created_at', 'desc')->paginate(2)->withQueryString();
 
         // Statistik
         $totalPendapatan = Payment::where('status_transaksi', 'settlement')->sum('jumlah');
