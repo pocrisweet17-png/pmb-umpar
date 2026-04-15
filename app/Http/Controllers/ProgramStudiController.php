@@ -36,9 +36,9 @@ class ProgramStudiController extends Controller
         }
 
         $programStudis = $query->orderBy('fakultas', 'asc')
-                               ->orderBy('jenjang', 'asc')
-                               ->orderBy('namaProdi', 'asc')
-                               ->get();
+                            ->orderBy('jenjang', 'asc')
+                            ->orderBy('namaProdi', 'asc')
+                            ->paginate(10)->withQueryString();
 
         // Get unique fakultas for filter
         $fakultasList = ProgramStudy::select('fakultas')
@@ -46,7 +46,15 @@ class ProgramStudiController extends Controller
                                     ->orderBy('fakultas')
                                     ->pluck('fakultas');
 
-        return view('admin.program-study.index', compact('programStudis', 'fakultasList'));
+        $totalProdi = ProgramStudy::count();
+        $totalS1    = ProgramStudy::where('jenjang', 'S1')->count();
+        $totalS2    = ProgramStudy::where('jenjang', 'S2')->count();
+        $totalS3    = ProgramStudy::where('jenjang', 'S3')->count();
+
+        return view('admin.program-study.index', compact(
+            'programStudis', 'fakultasList',
+            'totalProdi', 'totalS1', 'totalS2', 'totalS3'
+        ));
     }
 
     /**

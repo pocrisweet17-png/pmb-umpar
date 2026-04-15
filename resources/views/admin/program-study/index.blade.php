@@ -66,7 +66,7 @@
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <p class="text-sm text-blue-100 font-medium">Total Program Studi</p>
-                    <p class="text-3xl font-bold mt-2">{{ $programStudis->count() }}</p>
+                    <p class="text-3xl font-bold mt-2">{{ $totalProdi }}</p>
                 </div>
                 <div class="w-14 h-14 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,7 +81,7 @@
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <p class="text-sm text-green-100 font-medium">S1</p>
-                    <p class="text-3xl font-bold mt-2">{{ $programStudis->where('jenjang', 'S1')->count() }}</p>
+                    <p class="text-3xl font-bold mt-2">{{ $totalS1 }}</p>
                 </div>
                 <div class="w-14 h-14 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,7 +96,7 @@
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <p class="text-sm text-purple-100 font-medium">S2</p>
-                    <p class="text-3xl font-bold mt-2">{{ $programStudis->where('jenjang', 'S2')->count() }}</p>
+                    <p class="text-3xl font-bold mt-2">{{ $totalS2 }}</p>
                 </div>
                 <div class="w-14 h-14 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +111,7 @@
             <div class="flex items-center justify-between mb-3">
                 <div>
                     <p class="text-sm text-orange-100 font-medium">S3</p>
-                    <p class="text-3xl font-bold mt-2">{{ $programStudis->whereIn('jenjang', 'S3')->count() }}</p>
+                    <p class="text-3xl font-bold mt-2">{{ $totalS3 }}</p>
                 </div>
                 <div class="w-14 h-14 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,7 +181,7 @@
                         <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <span class="font-semibold">{{ $programStudis->count() }}</span>&nbsp;program studi ditemukan
+                        <span class="font-semibold">{{ $programStudis->total() }}</span>&nbsp;program studi ditemukan
                     </div>
                 @endif
             </div>
@@ -264,6 +264,58 @@
                     @endforelse
                 </tbody>
             </table>
+            {{-- Pagination --}}
+        <div class="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-gray-100">
+
+            <p class="text-sm text-gray-600 order-2 sm:order-1">
+                Menampilkan
+                <span class="font-semibold text-blue-700">{{ $programStudis->firstItem() ?? 0 }}</span>
+                –
+                <span class="font-semibold text-blue-700">{{ $programStudis->lastItem() ?? 0 }}</span>
+                dari
+                <span class="font-semibold text-blue-700">{{ $programStudis->total() }}</span>
+                data
+            </p>
+
+            @if ($programStudis->hasPages())
+                <div class="flex items-center gap-1 flex-wrap justify-center order-1 sm:order-2">
+
+                    @if ($programStudis->onFirstPage())
+                        <span class="px-3 py-2 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed select-none flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            <span class="hidden sm:inline">Prev</span>
+                        </span>
+                    @else
+                        <a href="{{ $programStudis->previousPageUrl() }}" class="px-3 py-2 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            <span class="hidden sm:inline">Prev</span>
+                        </a>
+                    @endif
+
+                    @foreach ($programStudis->getUrlRange(1, $programStudis->lastPage()) as $page => $url)
+                        @if ($page == $programStudis->currentPage())
+                            <span class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-bold text-white bg-gradient-to-br from-blue-600 to-indigo-600 shadow-md shadow-blue-200 select-none">{{ $page }}</span>
+                        @else
+                            <a href="{{ $url }}" class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium text-blue-700 bg-white border border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200">{{ $page }}</a>
+                        @endif
+                    @endforeach
+
+                    @if ($programStudis->hasMorePages())
+                        <a href="{{ $programStudis->nextPageUrl() }}" class="px-3 py-2 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 flex items-center gap-1">
+                            <span class="hidden sm:inline">Next</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    @else
+                        <span class="px-3 py-2 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed select-none flex items-center gap-1">
+                            <span class="hidden sm:inline">Next</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </span>
+                    @endif
+
+                </div>
+            @endif
+        </div>
+
         </div>
     </div>
 
