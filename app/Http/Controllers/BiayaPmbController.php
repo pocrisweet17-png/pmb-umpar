@@ -26,8 +26,8 @@ class BiayaPmbController extends Controller
         }
 
         $biayaPmb = $query->orderBy('tahun', 'desc')
-                          ->orderBy('kodeProdi', 'asc')
-                          ->get();
+                  ->orderBy('kodeProdi', 'asc')
+                  ->paginate(10)->withQueryString();
 
         $programStudis = ProgramStudy::orderBy('namaProdi', 'asc')->get();
 

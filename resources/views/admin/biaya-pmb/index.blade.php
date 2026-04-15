@@ -183,6 +183,57 @@
                 </tbody>
             </table>
         </div>
+         {{-- Pagination --}}
+        <div class="px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+
+            <p class="text-sm text-gray-600 order-2 sm:order-1">
+                Menampilkan
+                <span class="font-semibold text-blue-700">{{ $biayaPmb->firstItem() ?? 0 }}</span>
+                –
+                <span class="font-semibold text-blue-700">{{ $biayaPmb->lastItem() ?? 0 }}</span>
+                dari
+                <span class="font-semibold text-blue-700">{{ $biayaPmb->total() }}</span>
+                data
+            </p>
+
+            @if ($biayaPmb->hasPages())
+                <div class="flex items-center gap-1 flex-wrap justify-center order-1 sm:order-2">
+
+                    @if ($biayaPmb->onFirstPage())
+                        <span class="px-3 py-2 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed select-none flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            <span class="hidden sm:inline">Prev</span>
+                        </span>
+                    @else
+                        <a href="{{ $biayaPmb->previousPageUrl() }}" class="px-3 py-2 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                            <span class="hidden sm:inline">Prev</span>
+                        </a>
+                    @endif
+
+                    @foreach ($biayaPmb->getUrlRange(1, $biayaPmb->lastPage()) as $page => $url)
+                        @if ($page == $biayaPmb->currentPage())
+                            <span class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-bold text-white bg-gradient-to-br from-blue-600 to-indigo-600 shadow-md shadow-blue-200 select-none">{{ $page }}</span>
+                        @else
+                            <a href="{{ $url }}" class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium text-blue-700 bg-white border border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200">{{ $page }}</a>
+                        @endif
+                    @endforeach
+
+                    @if ($biayaPmb->hasMorePages())
+                        <a href="{{ $biayaPmb->nextPageUrl() }}" class="px-3 py-2 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 flex items-center gap-1">
+                            <span class="hidden sm:inline">Next</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    @else
+                        <span class="px-3 py-2 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed select-none flex items-center gap-1">
+                            <span class="hidden sm:inline">Next</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </span>
+                    @endif
+
+                </div>
+            @endif
+        </div>
     </div>
 
 </div>
