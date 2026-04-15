@@ -281,6 +281,8 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     // Preview dokumen
     Route::get('/mahasiswa/{mahasiswaId}/dokumen/{dokumenId}/preview', [MahasiswaController::class, 'previewDokumen'])
         ->name('admin.mahasiswa.preview-dokumen');
+    Route::get('/mahasiswa/{id}/bukti-daftar-ulang/preview',  [MahasiswaController::class, 'previewBuktiDaftarUlang'])->name('admin.mahasiswa.preview-bukti');
+    Route::get('/mahasiswa/{id}/bukti-daftar-ulang/download', [MahasiswaController::class, 'downloadBuktiDaftarUlang'])->name('admin.mahasiswa.download-bukti');
     
     // Download ZIP semua dokumen
     Route::get('/mahasiswa/{mahasiswaId}/download-zip', [MahasiswaController::class, 'downloadZip'])

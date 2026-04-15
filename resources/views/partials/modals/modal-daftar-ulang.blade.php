@@ -131,7 +131,7 @@
                     
                     <div class="pl-11">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">
-                            Bukti Pembayaran Biaya Kuliah Semester (format PDF) <span class="text-red-500">*</span>
+                            Bukti Pembayaran Pendaftaran Ulang (format PDF) <span class="text-red-500">*</span>
                         </label>
                         
                         @if(isset($mahasiswa) && $mahasiswa->is_daftar_ulang && $mahasiswa->bukti_pembayaran)

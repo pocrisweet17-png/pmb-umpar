@@ -154,10 +154,11 @@ class MahasiswaController extends Controller
 
         $path = Storage::disk('public')->path($dokumen->urlFile);
         $mime = Storage::disk('public')->mimeType($dokumen->urlFile);
+        $namaFile = $mahasiswa->nim . '_' . $mahasiswa->namaLengkap . '_' . $dokumen->namaFile;
 
         return response()->file($path, [
             'Content-Type'        => $mime,
-            'Content-Disposition' => 'inline; filename="' . $dokumen->namaFile . '"',
+            'Content-Disposition' => 'inline; filename="' . $dokumen->$namaFile . '"',
         ]);
     }
 
@@ -182,8 +183,9 @@ class MahasiswaController extends Controller
             ->firstOrFail();
 
         abort_unless(Storage::disk('public')->exists($dokumen->urlFile), 404, 'File tidak ditemukan.');
+        $namaFile = $mahasiswa->nim . '_' . $mahasiswa->namaLengkap . '_' . $dokumen->namaFile;
 
-        return Storage::disk('public')->download($dokumen->urlFile, $dokumen->namaFile);
+        return Storage::disk('public')->download($dokumen->urlFile, $dokumen->$namaFile);
     }
 
     /**
@@ -205,7 +207,7 @@ class MahasiswaController extends Controller
         $dokumens = $mahasiswa->user->dokumens ?? collect();
         abort_if($dokumens->isEmpty(), 404, 'Tidak ada dokumen.');
 
-        $zipName = 'Dokumen_' . $mahasiswa->nim . '_' . date('Ymd') . '.zip';
+        $zipName = 'Dokumen_' . $mahasiswa->nim . '_' . $mahasiswa->namaLengkap . '_' . date('Ymd') . '.zip';
         $tempDir = storage_path('app/temp');
 
         if (!is_dir($tempDir)) {
