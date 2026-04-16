@@ -296,38 +296,6 @@
                 {{-- ===== SECTION 3: Camaba-Only Fields ===== --}}
                 <div id="camabaFields" class="space-y-6" style="{{ old('role', 'user') == 'user' ? 'display: block' : 'display: none' }}">
 
-                    {{-- Personal Info
-                    <div class="form-section bg-gray-50 rounded-xl p-5 sm:p-6 border border-gray-200">
-                        <h4 class="font-semibold text-gray-800 mb-4 flex items-center text-sm sm:text-base">
-                            <div class="w-7 h-7 bg-green-100 rounded-lg flex items-center justify-center mr-2.5">
-                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
-                                </svg>
-                            </div>
-                            Informasi Pribadi Camaba
-                        </h4>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1.5 text-sm">
-                                    NIK <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" name="nik"
-                                       placeholder="16 digit NIK" maxlength="16"
-                                       class="form-input w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm transition-shadow bg-white">
-                            </div>
-
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-1.5 text-sm">
-                                    No. WhatsApp <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" name="no_whatsapp" 
-                                       placeholder="08xxxxxxxxxx"
-                                       class="form-input w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm transition-shadow bg-white">
-                            </div>
-                        </div>
-                    </div> --}}
-
                     {{-- Program Studi --}}
                     <div class="form-section bg-gray-50 rounded-xl p-5 sm:p-6 border border-gray-200">
                         <h4 class="font-semibold text-gray-800 mb-4 flex items-center text-sm sm:text-base">
@@ -420,7 +388,7 @@
                 <input type="hidden" name="is_data_completed" id="is_data_completed_hidden" value="{{ old('is_data_completed', 0) }}">
                 <input type="hidden" name="is_dokumen_uploaded" id="is_dokumen_uploaded_hidden" value="{{ old('is_dokumen_uploaded', 0) }}">
                 <input type="hidden" name="is_tes_selesai" id="is_tes_selesai_hidden" value="{{ old('is_tes_selesai', 0) }}">
-                <input type="hidden" name="is_wawancara_selesai" id="is_wawancara_selesai_hidden" value="{{0}}">
+                <input type="hidden" name="is_wawancara_selesai" id="is_wawancara_selesai_hidden" value="{{ old('is_wawancara_selesai', 0) }}">
                 <input type="hidden" name="is_ukt_paid" id="is_ukt_paid_hidden" value="{{ old('is_ukt_paid', 0) }}">
                 <input type="hidden" name="is_daftar_ulang" id="is_daftar_ulang_hidden" value="{{ old('is_daftar_ulang', 0) }}">
 

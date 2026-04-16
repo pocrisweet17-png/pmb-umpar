@@ -632,6 +632,7 @@
                                     class="w-full border-2 border-purple-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white font-medium text-sm sm:text-base {{ !$isAdmin && !$isSuperAdminFull ? 'opacity-50 cursor-not-allowed' : '' }}">
                                 <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User / Camaba</option>
                                 @if(auth()->user()->role === 'super-admin')
+                                    <option value="super-admin" {{ old('role', $user->role) == 'super-admin' ? 'selected' : '' }}>Super Admin</option>
                                     <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
                                 @endif
                                 <option value="keuangan" {{ old('role', $user->role) == 'keuangan' ? 'selected' : '' }}>keuangan</option>

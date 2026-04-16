@@ -327,7 +327,7 @@
                             </a>
                         @endif
 
-                            @if($user->id !== auth()->id() && $isAdmin)
+                            @if($user->id !== auth()->id() && ($isAdmin || $isSuperAdminFull))
                                 <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST"
                                       onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
                                     @csrf
@@ -444,9 +444,13 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $user->programStudiPilihan1?->namaProdi ?? '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $user->programStudiPilihan2?->namaProdi ?? '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                @if($user->role === 'admin')
-                                    <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-purple-800 bg-purple-100 rounded-full">
-                                        ADMIN
+                                @if($user->role === 'super-admin')
+                                    <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-red-800 bg-red-100 rounded-full">
+                                        Super Admin
+                                    </span>
+                                @elseif($user->role === 'admin')
+                                <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-yellow-800 bg-orange-100 rounded-full">
+                                        Admin
                                     </span>
                                 @elseif($user->role === 'keuangan')
                                 <span class="inline-flex items-center px-3 py-1 text-xs font-bold text-green-800 bg-green-100 rounded-full">
@@ -582,7 +586,7 @@
                                             Lihat / Edit
                                         </a>
                                     @endif
-                                    @if($user->id !== auth()->id() && $isAdmin)
+                                    @if($user->id !== auth()->id() && ( $isSuperAdminFull || $isAdmin))
                                         <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST"
                                               onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
                                             @csrf
