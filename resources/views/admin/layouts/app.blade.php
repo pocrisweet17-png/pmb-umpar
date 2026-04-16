@@ -1,6 +1,7 @@
 @php
     $authRole = auth()->user()->role;
-    $isAdminFull = $authRole === 'admin';
+    $isSuperAdminFull = $authRole === 'super-admin';
+    $isAdmin = $authRole === 'admin';
     $isKeuangan = $authRole === 'keuangan';
     $isWR3 = $authRole === 'wr-3';
     $isAdmisi = $authRole === 'admisi';
@@ -72,7 +73,7 @@
 
             <nav class="flex-1 overflow-y-auto py-8 px-4 space-y-2">
                     {{-- Dashboard --}}
-                    @php $canAccess = $isAdminFull || $isPimpinan; @endphp
+                    @php $canAccess = $isSuperAdminFull || $isPimpinan || $isAdmin; @endphp
                     @if($canAccess)
                         <a href="{{ route('admin.dashboard') }}"
                         class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.dashboard') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -89,7 +90,7 @@
                     @if($canAccess) </a> @else </div> @endif
 
                     {{-- Kelola Soal --}}
-                    @php $canAccess = $isAdminFull; @endphp
+                    @php $canAccess = $isSuperAdminFull || $isAdmin; @endphp
                     @if($canAccess)
                         <a href="{{ route('admin.soal.index') }}"
                         class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.soal.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -106,7 +107,7 @@
                     @if($canAccess) </a> @else </div> @endif
 
                    {{-- Kelola Camaba --}}
-                        @php $canAccess = $isAdminFull || $isAdmisi || $isWR3; @endphp
+                        @php $canAccess = $isSuperAdminFull || $isAdmisi || $isWR3 || $isAdmin; @endphp
                         @if($canAccess)
                             <a href="{{ route('admin.user.index') }}"
                             class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.index') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -126,7 +127,7 @@
                         </div>
                         @endif
                     {{-- Kelola Wawancara --}}
-                    @php $canAccess = $isAdminFull || $isWR3; @endphp
+                    @php $canAccess = $isSuperAdminFull || $isWR3 || $isAdmin; @endphp
                     @if($canAccess)
                         <a href="{{ route('admin.wawancara.index') }}"
                         class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.wawancara.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -143,7 +144,7 @@
                     @if($canAccess) </a> @else </div> @endif
 
                     {{-- Landing Page --}}
-                    @php $canAccess = $isAdminFull; @endphp
+                    @php $canAccess = $isSuperAdminFull || $isAdmin; @endphp
                     @if($canAccess)
                         <a href="{{ route('admin.landing-page.index') }}"
                         class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.landing-page.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -161,7 +162,7 @@
 
                     
                     {{-- Kelola data mahasiswa --}}
-                    @php $canAccess = $isAdminFull || $isWR3 || $isDekan ; @endphp
+                    @php $canAccess = $isSuperAdminFull || $isWR3 || $isDekan || $isAdmin; @endphp
                     @if($canAccess)
                         <a href="{{ route('admin.user.daftar-ulang') }}"
                         class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.user.daftar-ulang*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -178,7 +179,7 @@
                     @if($canAccess) </a> @else </div> @endif
 
                     {{-- Kelola Program Studi --}}
-                    @php $canAccess = $isAdminFull; @endphp
+                    @php $canAccess = $isSuperAdminFull || $isAdmin; @endphp
                     @if($canAccess)
                         <a href="{{ route('admin.program-studi.index') }}"
                         class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.program-studi.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -195,7 +196,7 @@
                     @if($canAccess) </a> @else </div> @endif
 
                     {{-- Kelola Biaya PMB --}}
-                    @php $canAccess = $isAdminFull; @endphp
+                    @php $canAccess = $isSuperAdminFull; @endphp
                     @if($canAccess)
                         <a href="{{ route('admin.biaya-pmb.index') }}"
                         class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.biaya-pmb.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -212,7 +213,7 @@
                     @if($canAccess) </a> @else </div> @endif
 
                     {{-- Kelola Keuangan --}}
-                    @php $canAccess = $isAdminFull || $isKeuangan; @endphp
+                    @php $canAccess = $isSuperAdminFull || $isKeuangan; @endphp
                     @if($canAccess)
                         <a href="{{ route('admin.keuangan.index') }}"
                         class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.keuangan.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -287,7 +288,7 @@
             <nav class="flex-1 overflow-y-auto py-8 px-4 space-y-2">
 
                 {{-- Dashboard --}}
-                @php $canAccess = $isAdminFull; @endphp
+                @php $canAccess = $isSuperAdminFull; @endphp
                 @if($canAccess)
                     <a href="{{ route('admin.dashboard') }}"
                     class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.dashboard') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -304,7 +305,7 @@
                 @if($canAccess) </a> @else </div> @endif
 
                 {{-- Kelola Soal --}}
-                @php $canAccess = $isAdminFull; @endphp
+                @php $canAccess = $isSuperAdminFull; @endphp
                 @if($canAccess)
                     <a href="{{ route('admin.soal.index') }}"
                     class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.soal.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -332,7 +333,7 @@
                 </a>
 
                 {{-- Kelola Wawancara --}}
-                @php $canAccess = $isAdminFull; @endphp
+                @php $canAccess = $isSuperAdminFull; @endphp
                 @if($canAccess)
                     <a href="{{ route('admin.wawancara.index') }}"
                     class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.wawancara.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -349,7 +350,7 @@
                 @if($canAccess) </a> @else </div> @endif
 
                 {{-- Landing Page --}}
-                @php $canAccess = $isAdminFull; @endphp
+                @php $canAccess = $isSuperAdminFull; @endphp
                 @if($canAccess)
                     <a href="{{ route('admin.landing-page.index') }}"
                     class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.landing-page.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -377,7 +378,7 @@
                 </a>
 
                 {{-- Kelola Program Studi --}}
-                @php $canAccess = $isAdminFull; @endphp
+                @php $canAccess = $isSuperAdminFull; @endphp
                 @if($canAccess)
                     <a href="{{ route('admin.program-studi.index') }}"
                     class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.program-studi.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">
@@ -394,7 +395,7 @@
                 @if($canAccess) </a> @else </div> @endif
 
                 {{-- Kelola Biaya PMB --}}
-                @php $canAccess = $isAdminFull; @endphp
+                @php $canAccess = $isSuperAdminFull; @endphp
                 @if($canAccess)
                     <a href="{{ route('admin.biaya-pmb.index') }}"
                     class="group flex items-center px-4 py-3.5 text-gray-300 hover:bg-gray-800/50 hover:text-white transition-all rounded-xl {{ request()->routeIs('admin.biaya-pmb.*') ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30' : '' }}">

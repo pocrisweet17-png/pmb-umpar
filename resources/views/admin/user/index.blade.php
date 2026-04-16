@@ -5,6 +5,7 @@
 
 @section('content')
 @php
+    $isSuperAdminFull = auth()->user()->role === 'super-admin';
     $isAdmin = auth()->user()->role === 'admin';
     $isAdmisi = auth()->user()->role === 'admisi';
     $isWr3 = auth()->user()->role === 'wr-3';
@@ -57,10 +58,10 @@
                 <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Manajemen User</h2>
                 <p class="text-gray-600 mt-2 text-sm sm:text-base">Kelola semua pengguna sistem di sini</p>
             </div>
-            <a href="{{ $isAdmin ? route('admin.user.create') : '#' }}"
+            <a href="{{ $isSuperAdminFull || $isAdmin ? route('admin.user.create') : '#' }}"
                 class="inline-flex items-center justify-center bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3.5 rounded-xl shadow-lg font-semibold group
-                        {{ !$isAdmin ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}"
-                {{ !$isAdmin ? 'onclick="return false;"' : '' }}>
+                    {{ !($isSuperAdminFull || $isAdmin) ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' }}"
+                {{ !($isSuperAdminFull || $isAdmin) ? 'onclick="return false;"' : '' }}>
                 <svg class="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
@@ -474,7 +475,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                            @if($isAdmin || $isAdmisi)
+                            @if($isAdmin || $isAdmisi || $isSuperAdminFull)
                                 <form action="{{ route('admin.user.toggle-verify', $user->id) }}" method="POST">
                                     @csrf
                                     <button type="submit"

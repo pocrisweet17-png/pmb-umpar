@@ -5,6 +5,7 @@
 
 @section('content')
 @php
+    $isSuperAdminFull = auth()->user()->role === 'super-admin';
     $isKeuangan = auth()->user()->role === 'keuangan';
     $isWakilRektor = auth()->user()->role === 'wr-3';
     $isAdmin = auth()->user()->role === 'admin';
@@ -627,17 +628,19 @@
                                 Role <span class="text-red-500">*</span>
                             </label>
                             <select name="role" id="role-select" required
-                                    {{ !$isAdmin ? 'disabled' : '' }}
-                                    class="w-full border-2 border-purple-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white font-medium text-sm sm:text-base {{ !$isAdmin ? 'opacity-50 cursor-not-allowed' : '' }}">
+                                    {{ !$isAdmin && !$isSuperAdminFull ? 'disabled' : '' }}
+                                    class="w-full border-2 border-purple-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all bg-white font-medium text-sm sm:text-base {{ !$isAdmin && !$isSuperAdminFull ? 'opacity-50 cursor-not-allowed' : '' }}">
                                 <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User / Camaba</option>
-                                <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                                @if(auth()->user()->role === 'super-admin')
+                                    <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                                @endif
                                 <option value="keuangan" {{ old('role', $user->role) == 'keuangan' ? 'selected' : '' }}>keuangan</option>
                                 <option value="wr-3" {{ old('role', $user->role) == 'wr-3' ? 'selected' : '' }}>Wakil rektor 3</option>
                                 <option value="admisi" {{ old('role', $user->role) == 'admisi' ? 'selected' : '' }}>admisi</option>
                                 <option value="dekan" {{ old('role', $user->role) == 'dekan' ? 'selected' : '' }}>Dekan Fakultas</option>
                                 <option value="pimpinan" {{ old('role', $user->role) == 'pimpinan' ? 'selected' : '' }}>Pimpinan</option>
                             </select>
-                            @if(!$isAdmin)
+                            @if(!$isAdmin && !$isSuperAdminFull)
                                 <input type="hidden" name="role" value="{{ $user->role }}">
                             @endif
                         </div>
@@ -662,23 +665,23 @@
                             <label class="block text-gray-700 font-medium mb-2 text-sm">
                                 Status Verifikasi Email
                             </label>
-                            <label class="flex items-center cursor-pointer bg-white border-2 border-purple-300 rounded-xl px-4 py-3 hover:bg-purple-50 transition-colors {{ !$isAdmin ? 'opacity-50 cursor-not-allowed' : '' }}">
+                            <label class="flex items-center cursor-pointer bg-white border-2 border-purple-300 rounded-xl px-4 py-3 hover:bg-purple-50 transition-colors {{ !$isAdmin && !$isSuperAdminFull ? 'opacity-50 cursor-not-allowed' : '' }}">
                                 <input type="checkbox" name="is_verified" value="1" {{ old('is_verified', $user->is_verified) ? 'checked' : '' }}
-                                        {{ !$isAdmin ? 'disabled' : '' }}
+                                        {{ !$isAdmin && !$isSuperAdminFull ? 'disabled' : '' }}
                                         class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 focus:ring-2">
                                 <span class="ml-3 text-sm font-medium text-gray-700">Verifikasi Email manual</span>
                             </label>
-                            @if(!$isAdmin)
+                            @if(!$isAdmin && !$isSuperAdminFull)
                                 <input type="hidden" name="is_verified" value="{{ $user->is_verified ? '1' : '0' }}">
                             @endif
-                        </div>
+                        </div> 
                     </div>
 
                     <p class="text-xs text-purple-700 mt-3 flex items-start">
                         <svg class="w-4 h-4 mr-1 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        Admin memiliki akses penuh ke sistem
+                        Super Admin memiliki akses penuh ke sistem
                     </p>
                 </div>
 

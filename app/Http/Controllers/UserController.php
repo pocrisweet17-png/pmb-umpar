@@ -111,13 +111,18 @@ class UserController extends Controller
             'nama_lengkap' => 'required|string|max:255',
             'nik' => 'required|string|max:16|unique:users',
             'no_whatsapp' => 'required|string|max:15',
-            'role' => 'required|in:admin,user,keuangan,wr-3,admisi,dekan,pimpinan',
+            'role' => 'required|in:super-admin,admin,user,keuangan,wr-3,admisi,dekan,pimpinan',
             'is_wawancara_selesai' => 'boolean',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
         $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
 
+        if ($validated['role'] === 'admin' && auth()->user()->role !== 'super-admin') {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Hanya Super Admin yang dapat membuat user dengan role Admin.');
+}
         User::create($validated);
 
         return redirect()->route('admin.user.index')
@@ -155,7 +160,7 @@ public function show(string $id)
                 'nama_lengkap' => 'required|string|max:255',
                 'nik' => ['required', 'string', 'max:16', Rule::unique('users')->ignore($user->id)],
                 'no_whatsapp' => 'required|string|max:15',
-                'role' => 'required|in:admin,user,keuangan,wr-3,admisi,dekan,pimpinan',
+                'role' => 'required|in:super-admin,admin,user,keuangan,wr-3,admisi,dekan,pimpinan',
                 'password' => 'nullable|string|min:8|confirmed',
                 'is_verified' => 'boolean',
                 'is_prodi_selected' => 'boolean',
@@ -170,6 +175,7 @@ public function show(string $id)
         
             // Cek role user yang sedang login
             $currentUserRole = auth()->user()->role;
+            $isSuperAdminFull = $currentUserRole === 'super-admin';
             $isAdmin = $currentUserRole === 'admin';
             $isKeuangan = $currentUserRole === 'keuangan';
             $isWakilRektor = $currentUserRole === 'wr-3';
@@ -182,7 +188,7 @@ public function show(string $id)
                 return redirect()->route('admin.user.index')
                 ->with('error', 'Role Admisi hanya memiliki akses view, tidak dapat melakukan perubahan data');
             }
-            if ($isAdmin) {
+            if ($isAdmin || $isSuperAdminFull) {
                 $validated['is_verified'] = $request->has('is_verified');
                 $validated['is_prodi_selected'] = $request->has('is_prodi_selected');
                 $validated['is_bayar_pendaftaran'] = $request->has('is_bayar_pendaftaran');
