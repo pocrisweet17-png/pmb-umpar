@@ -10,6 +10,13 @@
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
     .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
     .tab-btn.active { background: white; color: #4f46e5; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+
+        .disabled-card {
+        opacity: 0.5;
+        pointer-events: none;
+        filter: grayscale(0.1);
+    }
+
 </style>
 @endpush
 
@@ -20,7 +27,13 @@
     <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-lg p-6 sm:p-8 text-white border border-blue-500/20">
         <div>
             <h2 class="text-2xl sm:text-3xl font-bold mb-2">Selamat Datang, {{ Auth::user()->name }}!</h2>
-            <p class="text-blue-100 text-sm sm:text-base">Kelola PMB dan pantau sistem dengan mudah</p>
+            <p class="text-blue-100 text-sm sm:text-base">
+                @if($isPimpinan)
+                    Pantau statistik PMB dengan mudah
+                @else
+                    Kelola PMB dan pantau sistem dengan mudah
+                @endif
+            </p>
         </div>
     </div>
 
@@ -54,24 +67,27 @@
             <p class="text-xs text-gray-500">Pengguna terdaftar di sistem</p>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-200 group md:col-span-2 lg:col-span-1">
+       <!-- Quick Actions Card - Disabled untuk pimpinan -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 transition-all duration-200 group {{ $isPimpinan ? 'disabled-card' : 'hover:shadow-xl' }}">
             <div class="flex items-center justify-between mb-4">
                 <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-110 transition-transform">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
                 </div>
-                <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-3 py-1 rounded-full">Actions</span>
+               <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-3 py-1 rounded-full">
+                    {{ $isPimpinan ? 'Disabled' : 'Actions' }}
+                </span>
             </div>
             <h3 class="text-gray-600 text-sm font-medium mb-3">Quick Actions</h3>
             <div class="space-y-2">
-                <a href="{{ route('admin.soal.create') }}" class="flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium group/link">
+                <a href="{{ route('admin.soal.create') }}" class="flex items-center text-sm {{ $isPimpinan ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800' }} font-medium group/link">
                     <svg class="w-4 h-4 mr-2 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
                     Tambah Soal Baru
                 </a>
-                <a href="{{ route('admin.soal.index') }}" class="flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium group/link">
+                <a href="{{ route('admin.soal.index') }}" class="flex items-center text-sm {{ $isPimpinan ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800' }} font-medium group/link">
                     <svg class="w-4 h-4 mr-2 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
@@ -81,7 +97,8 @@
         </div>
     </div>
 
-    <!-- System Info & Quick Stats -->
+    <!-- System Info & Quick Stats - Sembunyikan untuk pimpinan -->
+    @if(!$isPimpinan)
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
             <div class="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-4">
@@ -122,13 +139,14 @@
                 </h3>
             </div>
             <div class="p-6 space-y-4">
-                <div class="flex items-center justify-between py-3 border-b border-gray-100">
-                    <span class="text-sm text-gray-600 font-medium">Soal Aktif</span>
-                    <span class="text-lg font-bold text-gray-900">{{ $totalSoal ?? 0 }}</span>
-                </div>
+               
                 <div class="flex items-center justify-between py-3 border-b border-gray-100">
                     <span class="text-sm text-gray-600 font-medium">Admin Login</span>
                     <span class="text-lg font-bold text-gray-900">{{ $totalAdmin }}</span>
+                </div>
+                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                    <span class="text-sm text-gray-600 font-medium">Pimpinan Login</span>
+                    <span class="text-lg font-bold text-gray-900">{{ $totalPimpinan ?? 0 }}</span>
                 </div>
                 <div class="flex items-center justify-between py-3">
                     <span class="text-sm text-gray-600 font-medium">User Login</span>
@@ -138,7 +156,7 @@
         </div>
     </div>
 
-    <!-- Action Buttons -->
+    <!-- Manajemen Konten - Disabled untuk pimpinan -->
     <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-200">
         <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
             <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,6 +200,7 @@
             </a>
         </div>
     </div>
+    @endif
 
     <!-- ─── Statistik Asal Daerah & Jenis Kelamin ──────────────────────────── -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -235,7 +254,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                 </svg>
             </div>
-            <h3 class="text-xl font-bold text-white">Statistik Program Studi</h3>
+            <h3 class="text-xl font-bold text-white">Statistik Program Studi (Pendaftar)</h3>
         </div>
         <div class="px-8 pt-6">
             <div class="inline-flex bg-gray-100 rounded-xl p-1 gap-1">
@@ -277,7 +296,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                 </svg>
             </div>
-            <h3 class="text-xl font-bold text-white">Statistik Fakultas</h3>
+            <h3 class="text-xl font-bold text-white">Statistik Fakultas (Pendaftar)</h3>
         </div>
         <div class="px-8 pt-6">
             <div class="inline-flex bg-gray-100 rounded-xl p-1 gap-1">
@@ -310,6 +329,51 @@
             </div>
         </div>
     </div>
+     <!-- ─── Statistik Mahasiswa (sudah punya NIM) - Tanpa Persen, Paling Bawah ─── -->
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+        <div class="bg-emerald-500 px-8 py-6 flex items-center gap-4">
+            <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-white">Statistik Mahasiswa Terdaftar (Memiliki NIM)</h3>
+        </div>
+        <div class="px-8 pt-6">
+            <div class="inline-flex bg-gray-100 rounded-xl p-1 gap-1">
+                <button onclick="switchTab('mahasiswa','fakultas')" id="tab-mahasiswa-fakultas"
+                    class="tab-btn active px-5 py-2 rounded-lg text-sm font-semibold text-gray-500 transition-all duration-200">
+                    Per Fakultas
+                </button>
+                <button onclick="switchTab('mahasiswa','prodi')" id="tab-mahasiswa-prodi"
+                    class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold text-gray-500 transition-all duration-200">
+                    Per Program Studi
+                </button>
+            </div>
+        </div>
+        <div class="p-8">
+            <!-- Panel Mahasiswa per Fakultas -->
+            <div id="panel-mahasiswa-fakultas">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                    <div class="flex justify-center">
+                        <div class="w-full max-w-xs"><canvas id="mahasiswaFakultasChart" class="max-h-72"></canvas></div>
+                    </div>
+                    <div id="mahasiswaFakultasLegend" class="space-y-2 max-h-72 overflow-y-auto scrollbar-thin pr-2"></div>
+                </div>
+            </div>
+            
+            <!-- Panel Mahasiswa per Program Studi -->
+            <div id="panel-mahasiswa-prodi" class="hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                    <div class="flex justify-center">
+                        <div class="w-full max-w-xs"><canvas id="mahasiswaProdiChart" class="max-h-72"></canvas></div>
+                    </div>
+                    <div id="mahasiswaProdiLegend" class="space-y-2 max-h-72 overflow-y-auto scrollbar-thin pr-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 </div>
 
@@ -323,6 +387,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const prodiData2    = @json($prodiStats2    ?? []);
     const fakultasData1 = @json($fakultasStats  ?? []);
     const fakultasData2 = @json($fakultasStats2 ?? []);
+    const mahasiswaFakultasData = @json($mahasiswaPerFakultas ?? []);
+    const mahasiswaProdiData    = @json($mahasiswaPerProdi    ?? []);
 
     const colors = [
         '#6366f1','#8b5cf6','#ec4899','#f43f5e','#f97316',
@@ -330,8 +396,10 @@ document.addEventListener('DOMContentLoaded', function () {
         '#3b82f6','#a855f7','#d946ef','#0ea5e9','#10b981'
     ];
     const genderColors = ['#6366f1','#ec4899','#cbd5e0'];
+    const emeraldColors = ['#10b981','#34d399','#6ee7b7','#a7f3d0','#059669','#047857','#065f46','#064e3b'];
 
-    const baseOptions = {
+    // Options untuk chart dengan persentase (untuk pendaftar)
+    const baseOptionsWithPercentage = {
         responsive: true,
         maintainAspectRatio: true,
         cutout: '72%',
@@ -355,10 +423,34 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    function buildChart(canvasId, legendId, data, palette) {
+        // Options untuk chart mahasiswa (tanpa persentase)
+    const baseOptionsWithoutPercentage = {
+        responsive: true,
+        maintainAspectRatio: true,
+        cutout: '72%',
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: 'rgba(17,24,39,0.95)',
+                padding: 16,
+                titleFont: { size: 14, weight: '600' },
+                bodyFont:  { size: 13 },
+                cornerRadius: 12,
+                displayColors: false,
+                callbacks: {
+                    label(ctx) {
+                        return `${ctx.label}: ${ctx.parsed}`;
+                    }
+                }
+            }
+        }
+    };
+
+    function buildChart(canvasId, legendId, data, palette, showPercentage = true) {
         const labels = Object.keys(data);
         const values = Object.values(data);
         const legend = document.getElementById(legendId);
+        const options = showPercentage ? baseOptionsWithPercentage : baseOptionsWithoutPercentage;
 
         if (!labels.length) {
             if (legend) legend.innerHTML = '<p class="text-sm text-gray-400 text-center py-8 col-span-2">Tidak ada data</p>';
@@ -376,40 +468,78 @@ document.addEventListener('DOMContentLoaded', function () {
                     hoverOffset: 12
                 }]
             },
-            options: baseOptions
+            options: options
         });
 
         const total = values.reduce((a, b) => a + b, 0);
         labels.forEach((label, i) => {
-            const pct = ((values[i] / total) * 100).toFixed(1);
-            legend.innerHTML += `
-                <div class="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                    <div class="flex items-center gap-3">
-                        <span class="w-3 h-3 rounded-md flex-shrink-0" style="background:${palette[i % palette.length]}"></span>
-                        <span class="text-sm text-gray-700">${label}</span>
-                    </div>
-                    <div class="flex items-baseline gap-2 ml-2">
-                        <strong class="text-gray-900">${values[i]}</strong>
-                        <span class="text-xs text-gray-400">${pct}%</span>
-                    </div>
-                </div>`;
+            if (showPercentage) {
+                const pct = ((values[i] / total) * 100).toFixed(1);
+                legend.innerHTML += `
+                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-md flex-shrink-0" style="background:${palette[i % palette.length]}"></span>
+                            <span class="text-sm text-gray-700">${label}</span>
+                        </div>
+                        <div class="flex items-baseline gap-2 ml-2">
+                            <strong class="text-gray-900">${values[i]}</strong>
+                            <span class="text-xs text-gray-400">${pct}%</span>
+                        </div>
+                    </div>`;
+            } else {
+                legend.innerHTML += `
+                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-md flex-shrink-0" style="background:${palette[i % palette.length]}"></span>
+                            <span class="text-sm text-gray-700">${label}</span>
+                        </div>
+                        <div class="flex items-baseline gap-2 ml-2">
+                            <strong class="text-gray-900">${values[i]}</strong>
+                            <span class="text-xs text-gray-400">Mahasiswa</span>
+                        </div>
+                    </div>`;
+            }
         });
     }
 
-    buildChart('regionChart',    'regionLegend',    regionData,    colors);
-    buildChart('genderChart',    'genderLegend',    genderData,    genderColors);
-    buildChart('prodiChart1',    'prodiLegend1',    prodiData1,    colors);
-    buildChart('prodiChart2',    'prodiLegend2',    prodiData2,    colors);
-    buildChart('fakultasChart1', 'fakultasLegend1', fakultasData1, colors);
-    buildChart('fakultasChart2', 'fakultasLegend2', fakultasData2, colors);
+    // Chart dengan persentase (pendaftar)
+    buildChart('regionChart',    'regionLegend',    regionData,    colors, true);
+    buildChart('genderChart',    'genderLegend',    genderData,    genderColors, true);
+    buildChart('prodiChart1',    'prodiLegend1',    prodiData1,    colors, true);
+    buildChart('prodiChart2',    'prodiLegend2',    prodiData2,    colors, true);
+    buildChart('fakultasChart1', 'fakultasLegend1', fakultasData1, colors, true);
+    buildChart('fakultasChart2', 'fakultasLegend2', fakultasData2, colors, true);
+    
+    // Chart mahasiswa (tanpa persentase)
+    buildChart('mahasiswaFakultasChart','mahasiswaFakultasLegend', mahasiswaFakultasData, emeraldColors, false);
+    buildChart('mahasiswaProdiChart',   'mahasiswaProdiLegend',    mahasiswaProdiData,    colors, false);
 });
 
-function switchTab(group, num) {
-    ['1','2'].forEach(n => {
-        document.getElementById(`panel-${group}-${n}`).classList.toggle('hidden', n !== num);
-        document.getElementById(`tab-${group}-${n}`).classList.toggle('active', n === num);
-    });
-}
+   if (group === 'prodi') {
+        ['1','2'].forEach(n => {
+            document.getElementById(`panel-${group}-${n}`).classList.toggle('hidden', n !== num);
+            document.getElementById(`tab-${group}-${n}`).classList.toggle('active', n === num);
+        });
+    } else if (group === 'fakultas') {
+        ['1','2'].forEach(n => {
+            document.getElementById(`panel-${group}-${n}`).classList.toggle('hidden', n !== num);
+            document.getElementById(`tab-${group}-${n}`).classList.toggle('active', n === num);
+        });
+    } else if (group === 'mahasiswa') {
+        // Handle mahasiswa tabs
+        const panels = ['fakultas', 'prodi'];
+        panels.forEach(panel => {
+            const panelElement = document.getElementById(`panel-mahasiswa-${panel}`);
+            const tabElement = document.getElementById(`tab-mahasiswa-${panel}`);
+            if (panel === num) {
+                panelElement.classList.remove('hidden');
+                tabElement.classList.add('active');
+            } else {
+                panelElement.classList.add('hidden');
+                tabElement.classList.remove('active');
+            }
+        });
+    }
 </script>
 
 @endsection
