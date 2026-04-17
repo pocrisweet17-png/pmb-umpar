@@ -713,11 +713,11 @@ $footer = LandingPageContent::getSection('footer');
           </span>
           {{-- ✅ DIPERBAIKI: menggunakan data dari $testimonials seperti local --}}
           <h4 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-[#0c2340] mb-4">
-            {{ $testimonials['section_title'] ?? 'Apa Kata' }} <span class="text-gradient-static">Alumni</span>?
+            {{ $testimonials['section_title'] ?? 'Mendaftar dengan langkah' }} <span class="text-gradient-static">mudah</span>!
           </h4>
-          <p class="reveal delay-2 text-gray-600 max-w-2xl mx-auto text-lg">
-            {{ $testimonials['section_subtitle'] ?? 'Dengarkan pengalaman dari para alumni dan mahasiswa kami.' }}
-          </p>
+          <!--<p class="reveal delay-2 text-gray-600 max-w-2xl mx-auto text-lg">-->
+          <!--  {{ $testimonials['section_subtitle'] ?? 'Mendaftar dengan langkah mudah.' }}-->
+          <!--</p>-->
         </div>
 
         <div class="reveal delay-3 relative">
@@ -826,7 +826,7 @@ $footer = LandingPageContent::getSection('footer');
 
         <div class="text-center mb-12">
           <span class="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm font-semibold mb-4 border border-white/30">
-            🖼️ BROSUR PMB
+            ️ BROSUR PMB
           </span>
           <h2 class="reveal delay-1 text-3xl sm:text-4xl font-bold text-white mb-4">{{ $brosurTitle }}</h2>
           <p class="reveal delay-2 text-white/80 max-w-2xl mx-auto text-lg">{{ $brosurDesc }}</p>

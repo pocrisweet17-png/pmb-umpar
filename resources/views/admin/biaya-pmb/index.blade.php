@@ -48,7 +48,7 @@
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
                 <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Kelola Biaya PMB</h2>
-                <p class="text-gray-600 mt-2 text-sm sm:text-base">Pengaturan biaya pendaftaran dan UKT per program studi</p>
+                  <p class="text-gray-600 mt-2 text-sm sm:text-base">Pengaturan biaya pendaftaran dan pendaftaran ulang setiap program studi</p>
             </div>
             <button onclick="document.getElementById('modalTambahBiaya').classList.remove('hidden')"
                class="inline-flex items-center justify-center bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3.5 rounded-xl shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 hover:from-green-700 hover:to-green-800 transition-all duration-200 font-semibold group">
@@ -279,7 +279,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Biaya UKT <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Biaya Pendaftaran Ulang <span class="text-red-500">*</span></label>
                     <input type="number" name="biaya_ukt" required min="0" step="1000"
                            placeholder="300000"
                            class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">

@@ -176,7 +176,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                         </svg>
                                         Jurusan
-                                    </span> 
+                                    </span>
                                     <span class="text-sm font-semibold text-gray-900">{{ $user->namaProdiPilihan1 ?? $user->pilihan_1 ?? '-' }}</span>
                                 </div>
                                  <div class="data-row flex items-center justify-between px-4 py-3.5">
@@ -354,113 +354,251 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 // print data
+
+// ===============================
+// GENERATE NO SK (OPSI 1)
+// ===============================
+function generateNomorSK(nomorRegistrasi) {
+    if (!nomorRegistrasi) return "000/PMB/UMPAR/I/2026";
+
+    const angka = nomorRegistrasi.toString().replace(/\D/g, '');
+    const urutan = angka.slice(-3).padStart(3, '0');
+
+    const bulanRomawi = ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
+    const bulan = bulanRomawi[new Date().getMonth()];
+    const tahun = new Date().getFullYear();
+
+    return `${urutan}/PMB/UMPAR/${bulan}/${tahun}`;
+}
+
+// ===============================
+// PRINT DOKUMEN
+// ===============================
 function printDataPribadi() {
-    // Buat window baru untuk print
-    const printWindow = window.open('', '_blank');
-    
-    // Ambil data dari modal
-    const namaLengkap = "{{ $user->nama_lengkap ?? $user->name ?? 'User' }}";
-    const nomorRegistrasi = "{{ $user->nomor_registrasi ?? 'Belum terdaftar' }}";
-    const jurusan = "{{ $user->namaProdiPilihan1 ?? $user->pilihan_1 ?? '-' }}";
-    const nim = "{{ $user->nim ?? '-' }}";
-    const email = "{{ $user->email ?? '-' }}";
-    const noWhatsapp = "{{ $user->no_whatsapp ?? '-' }}";
+
+    const namaLengkap = "{{ $user->nama_lengkap ?? $user->name ?? '-' }}";
+    const nomorRegistrasi = "{{ $user->nomor_registrasi ?? '-' }}";
     const nik = "{{ $user->nik ?? '-' }}";
+    const nim = "{{ $user->nim ?? '-' }}";
+    const jurusan = "{{ $user->namaProdiPilihan1 ?? $user->pilihan_1 ?? '-' }}";
+    const jenjang = "{{ $user->programStudiPilihan1->jenjang ?? '-' }}";
+    const fotoMahasiswa = @json($user->foto_mahasiswa);
     
-    @if(isset($registrasi))
-    const tempatLahir = "{{ $registrasi->tempatLahir ?? '-' }}";
-    const tanggalLahir = "{{ $registrasi->tanggalLahir ? \Carbon\Carbon::parse($registrasi->tanggalLahir)->format('d F Y') : '-' }}";
-    const agama = "{{ $registrasi->agama ?? '-' }}";
-    const alamat = "{{ $registrasi->alamat ?? '-' }}";
-    const asalSekolah = "{{ $registrasi->asalSekolah ?? '-' }}";
-    const jurusanSekolah = "{{ $registrasi->jurusan ?? '-' }}";
-    const tahunLulus = "{{ $registrasi->tahunLulus ?? '-' }}";
-    const dataLengkap = true;
-    @else
-    const dataLengkap = false;
-    @endif
-    
-    // HTML untuk print
+    const urlVerifikasi = `https://pmb.magguru-it.web.id/verifikasi.php?sk=${nomorRegistrasi}`;
+
+    const nomorSK = generateNomorSK(nomorRegistrasi);
+    const qrData = `NIK: ${nik}\nNO SK: ${nomorSK}`;
+    const printWindow = window.open('', '_blank');
+
     const printContent = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Data Pribadi - ${namaLengkap}</title>
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #1f2937; }
-                .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #3b82f6; padding-bottom: 20px; }
-                .header h1 { color: #1e40af; font-size: 28px; margin-bottom: 8px; }
-                .header p { color: #6b7280; font-size: 14px; }
-                .section { margin-bottom: 30px; }
-                .section-title { background: linear-gradient(to right, #3b82f6, #8b5cf6); color: white; padding: 12px 16px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-bottom: 16px; }
-                .data-table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
-                .data-table tr { border-bottom: 1px solid #f3f4f6; }
-                .data-table tr:last-child { border-bottom: none; }
-                .data-table td { padding: 12px 16px; }
-                .data-table td:first-child { font-weight: 600; color: #6b7280; width: 40%; background: #f9fafb; }
-                .data-table td:last-child { color: #111827; }
-                .footer { margin-top: 40px; text-align: center; color: #9ca3af; font-size: 12px; border-top: 1px solid #e5e7eb; padding-top: 20px; }
-                .badge { display: inline-block; background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
-                @media print { body { padding: 20px; } }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>DATA PRIBADI</h1>
-                <p>Dicetak pada: ${new Date().toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' })}</p>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">Informasi Akun</div>
-                <table class="data-table">
-                    <tr><td>Nama Lengkap</td><td>${namaLengkap}</td></tr>
-                    <tr><td>Jurusan</td><td>${jurusan}</td></tr>
-                    <tr><td>NIM</td><td>${nim}</td></tr>
-                    <tr><td>Email</td><td>${email}</td></tr>
-                    <tr><td>No. WhatsApp</td><td>${noWhatsapp}</td></tr>
-                    <tr><td>NIK</td><td>${nik}</td></tr>
-                    <tr><td>No. Registrasi</td><td><span class="badge">${nomorRegistrasi}</span></td></tr>
-                </table>
-            </div>
-            
-            ${dataLengkap ? `
-            <div class="section">
-                <div class="section-title">Data Pribadi</div>
-                <table class="data-table">
-                    <tr><td>Tempat Lahir</td><td>${tempatLahir}</td></tr>
-                    <tr><td>Tanggal Lahir</td><td>${tanggalLahir}</td></tr>
-                    <tr><td>Agama</td><td>${agama}</td></tr>
-                    <tr><td>Alamat</td><td>${alamat}</td></tr>
-                    <tr><td>Asal Sekolah</td><td>${asalSekolah}</td></tr>
-                    <tr><td>Jurusan Sekolah</td><td>${jurusanSekolah}</td></tr>
-                    <tr><td>Tahun Lulus</td><td>${tahunLulus}</td></tr>
-                </table>
-            </div>
-            ` : `
-            <div class="section">
-                <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 16px; text-align: center;">
-                    <p style="color: #92400e; font-weight: 600;">Data pribadi belum lengkap</p>
-                </div>
-            </div>
-            `}
-            
-            <div class="footer">
-                <p>Dokumen ini dicetak secara otomatis dari sistem</p>
-            </div>
-        </body>
-        </html>
-    `;
-    
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<style>
+@page {
+    size: A4;
+    margin: 3cm 3cm 3cm 3cm;
+}
+
+body {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+    color: #000;
+    position: relative;
+}
+
+/* =====================
+   WATERMARK
+===================== */
+.watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 420px;
+    opacity: 0.08;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+}
+
+/* =====================
+   KOP SURAT
+===================== */
+.logo {
+    width: 70px;
+    height: auto;
+}
+
+.kop {
+    text-align: center;
+    line-height: 1.25;
+}
+
+.kementerian {
+    font-size: 13pt;
+    font-weight: bold;
+}
+
+.universitas {
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+.panitia {
+    font-size: 12pt;
+    font-weight: bold;
+}
+
+.alamat {
+    font-size: 10pt;
+}
+
+.garis {
+    border-top: 3px solid #000;
+    border-bottom: 1px solid #000;
+    height: 4px;
+    margin: 10px 0 22px 0;
+}
+
+/* =====================
+   ISI DOKUMEN
+===================== */
+.judul {
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+.judul span {
+    font-weight: normal;
+    font-size: 11pt;
+}
+
+.isi {
+    text-align: justify;
+    line-height: 1.6;
+}
+
+.table-data td {
+    padding: 3px 6px;
+    vertical-align: top;
+}
+
+.foto-box {
+    width: 113px;
+    height: 151px;
+    border: 1px solid #000;
+    text-align: center;
+    font-size: 10pt;
+}
+
+.foto-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ttd {
+    margin-top: 50px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- WATERMARK -->
+<img src="{{ asset('img/umpar.png') }}" class="watermark">
+
+<!-- KOP -->
+<table width="100%">
+<tr>
+<td width="15%" align="center" valign="middle">
+    <img src="{{ asset('img/umpar.png') }}" alt="Logo UMPAR" class="logo">
+</td>
+<td width="85%" class="kop">
+    <div class="kementerian">
+        PANITIA PENERIMAAN MAHASISWA BARU
+    </div>
+    <div class="universitas">
+        UNIVERSITAS MUHAMMADIYAH PAREPARE
+    </div>
+    <div class="panitia">
+       
+    </div>
+    <div class="alamat">
+        Jl. Jend. Ahmad Yani KM. 6 Telp. (0421) 22757 Parepare 
+    </div>
+</td>
+</tr>
+</table>
+
+<div class="garis"></div>
+
+<!-- JUDUL -->
+<div class="judul">
+PENGUMUMAN HASIL SELEKSI<br>
+<span>
+PENERIMAAN MAHASISWA BARU<br>
+TAHUN AKADEMIK {{ date('Y') }}/{{ date('Y')+1 }}
+</span>
+</div>
+
+<!-- ISI -->
+<div class="isi">
+Berdasarkan hasil seleksi Penerimaan Mahasiswa Baru
+Universitas Muhammadiyah Parepare Tahun Akademik
+{{ date('Y') }}/{{ date('Y')+1 }},
+dengan ini ditetapkan bahwa calon mahasiswa berikut:
+</div>
+
+<!-- DATA -->
+<table width="100%" style="margin-top:15px;">
+<tr>
+<td width="70%">
+    <table class="table-data">
+        <tr><td>Nama Lengkap</td><td>: <strong>{{ $user->nama_lengkap }}</strong></td></tr>
+        <tr><td>Nomor Registrasi</td><td>: {{ $user->nomor_registrasi }}</td></tr>
+        <tr><td>NIM</td><td>: {{ $user->nim }}</td></tr>
+        <tr><td>NIK</td><td>: {{ $user->nik }}</td></tr>
+        <tr><td>Program Studi</td><td>: {{ $user->namaProdiPilihan1 }}</td></tr>
+        <tr><td>Jenjang</td><td>: ${jenjang}</td></tr>
+    </table>
+</td>
+
+<td width="30%" align="center" valign="top">
+<div class="foto-box">
+     ${ fotoMahasiswa ? `<img src="${fotoMahasiswa}">`: `FOTO<br>3 x 4` }
+</div>
+</td>
+</tr>
+</table>
+
+<!-- PENETAPAN -->
+<div class="isi" style="margin-top:20px;">
+Dinyatakan <strong>LULUS</strong> dan <strong>DITERIMA</strong>
+sebagai mahasiswa Universitas Muhammadiyah Parepare
+Tahun Akademik {{ date('Y') }}/{{ date('Y')+1 }}.
+</div>
+
+<div style="margin-top:40px;text-align:right;">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${urlVerifikasi}">
+    <div style="font-size:10pt;margin-top:5px;">
+        Scan untuk verifikasi keaslian dokumen
+    </div>
+</div>
+
+
+
+</body>
+</html>
+
+
+`;
+
     printWindow.document.write(printContent);
     printWindow.document.close();
-    
-    // Tunggu konten dimuat lalu print
-    printWindow.onload = function() {
-        printWindow.print();
-        // Tutup window setelah print (opsional)
-        // printWindow.onafterprint = function() { printWindow.close(); };
-    };
+    printWindow.onload = () => printWindow.print();
 }
-</script>
 </script>

@@ -32,6 +32,7 @@ use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\LandingPageContentController;
 use App\Http\Controllers\MahasiswaDashboardController;
 use App\Http\Controllers\PertanyaanWawancaraController;
+use App\Http\Middleware\RoleMiddleware;
 // ======================================================================
 // PUBLIC ROUTES
 // ======================================================================
@@ -189,7 +190,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 });
 
-Route::get('/brosur-pmb/download/{index?}', [LandingPageController::class, 'downloadBrosur'])
+Route::get('/brosur-pmb/download/{index?}', [LandingPageContentController::class, 'downloadBrosur'])
           ->name('brosur.download')
           ->where('index', '[0-9]+');
 
@@ -252,12 +253,37 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::put('/admin/user/{id}', [UserController::class, 'update'])->name('admin.user.update');
     Route::delete('/admin/user/{id}', [UserController::class, 'destroy'])->name('admin.user.destroy');
     Route::post('/admin/user/{id}/toggle-verify', [UserController::class, 'toggleVerify'])->name('admin.user.toggle-verify');
-    Route::get('/mahasiswa/daftar-ulang', [MahasiswaController::class, 'daftarUlang'])->name('admin.user.daftar-ulang');
-    Route::post('/mahasiswa/{id}/verify-daftar-ulang', [MahasiswaController::class, 'verifyDaftarUlang'])->name('admin.mahasiswa.verify-daftar-ulang');
-    Route::post('/mahasiswa/{id}/reject-daftar-ulang', [MahasiswaController::class, 'rejectDaftarUlang'])->name('admin.mahasiswa.reject-daftar-ulang');
-    Route::get('/mahasiswa/{mahasiswaId}/dokumen/{dokumenId}/download', [MahasiswaController::class, 'downloadDokumen'])->name('admin.mahasiswa.download-dokumen');
-    Route::get('/mahasiswa/{mahasiswaId}/dokumen/{dokumenId}/preview',  [MahasiswaController::class, 'previewDokumen'])->name('admin.mahasiswa.preview-dokumen');
-    Route::get('/mahasiswa/{mahasiswaId}/download-zip',                 [MahasiswaController::class, 'downloadZip'])->name('admin.mahasiswa.download-zip');
+
+  // ========== ROUTES MAHASISWA DAFTAR ULANG (DIRELOKASI KE SINI) ==========
+    // Halaman daftar ulang mahasiswa
+    Route::get('/mahasiswa/daftar-ulang', [MahasiswaController::class, 'daftarUlang'])
+        ->name('admin.user.daftar-ulang');
+    
+    // Export Excel dengan filter
+    Route::get('/mahasiswa/export-excel', [MahasiswaController::class, 'exportExcel'])
+        ->name('admin.mahasiswa.export-excel');
+    
+    // Verifikasi daftar ulang
+    Route::post('/mahasiswa/{id}/verify-daftar-ulang', [MahasiswaController::class, 'verifyDaftarUlang'])
+        ->name('admin.mahasiswa.verify-daftar-ulang');
+    
+    // Tolak daftar ulang
+    Route::post('/mahasiswa/{id}/reject-daftar-ulang', [MahasiswaController::class, 'rejectDaftarUlang'])
+        ->name('admin.mahasiswa.reject-daftar-ulang');
+    
+    // Download dokumen
+    Route::get('/mahasiswa/{mahasiswaId}/dokumen/{dokumenId}/download', [MahasiswaController::class, 'downloadDokumen'])
+        ->name('admin.mahasiswa.download-dokumen');
+    
+    // Preview dokumen
+    Route::get('/mahasiswa/{mahasiswaId}/dokumen/{dokumenId}/preview', [MahasiswaController::class, 'previewDokumen'])
+        ->name('admin.mahasiswa.preview-dokumen');
+    Route::get('/mahasiswa/{id}/bukti-daftar-ulang/preview',  [MahasiswaController::class, 'previewBuktiDaftarUlang'])->name('admin.mahasiswa.preview-bukti');
+    Route::get('/mahasiswa/{id}/bukti-daftar-ulang/download', [MahasiswaController::class, 'downloadBuktiDaftarUlang'])->name('admin.mahasiswa.download-bukti');
+    
+    // Download ZIP semua dokumen
+    Route::get('/mahasiswa/{mahasiswaId}/download-zip', [MahasiswaController::class, 'downloadZip'])
+        ->name('admin.mahasiswa.download-zip');
 
     // CRUD Pertanyaan Wawancara
     Route::get('/admin/wawancara', [PertanyaanWawancaraController::class, 'index'])->name('admin.wawancara.index');
@@ -302,28 +328,27 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
 });
 
 // ========== Kelola Biaya PMB ==========
-    Route::prefix('admin/biaya-pmb')->name('admin.biaya-pmb.')->group(function () {
+    Route::prefix('admin/biaya-pmb')->name('admin.biaya-pmb.')->middleware(['auth', AdminMiddleware::class])->group(function () {
         Route::get('/', [BiayaPmbController::class, 'index'])->name('index');
         Route::post('/', [BiayaPmbController::class, 'store'])->name('store');
         Route::put('/{id}', [BiayaPmbController::class, 'update'])->name('update');
         Route::delete('/{id}', [BiayaPmbController::class, 'destroy'])->name('destroy');
     });
 
-    // ========== Kelola Keuangan & Transaksi ==========
-    Route::prefix('admin/keuangan')->name('admin.keuangan.')->group(function () {
-        Route::get('/', [KeuanganController::class, 'index'])->name('index');
-        Route::get('/export', [KeuanganController::class, 'export'])->name('export');
-        Route::get('/{id}', [KeuanganController::class, 'show'])->name('show');
-    });
-    // ========== Kelola Program Studi ==========
-    Route::prefix('admin/program-studi')->name('admin.program-studi.')->group(function () {
-        Route::get('/', [ProgramStudiController::class, 'index'])->name('index');
-        Route::post('/', [ProgramStudiController::class, 'store'])->name('store');
-        Route::put('/{kodeProdi}', [ProgramStudiController::class, 'update'])->name('update');
-        Route::delete('/{kodeProdi}', [ProgramStudiController::class, 'destroy'])->name('destroy');
-    });
+// ========== Kelola Keuangan & Transaksi ==========
+Route::prefix('admin/keuangan')->name('admin.keuangan.')->middleware(['auth', AdminMiddleware::class])->group(function () {
+    Route::get('/', [KeuanganController::class, 'index'])->name('index');
+    Route::get('/export', [KeuanganController::class, 'export'])->name('export');
+    Route::get('/{id}', [KeuanganController::class, 'show'])->name('show');
+});
 
-
+// ========== Kelola Program Studi ==========
+Route::prefix('admin/program-studi')->name('admin.program-studi.')->middleware(['auth', AdminMiddleware::class])->group(function () {
+    Route::get('/', [ProgramStudiController::class, 'index'])->name('index');
+    Route::post('/', [ProgramStudiController::class, 'store'])->name('store');
+    Route::put('/{kodeProdi}', [ProgramStudiController::class, 'update'])->name('update');
+    Route::delete('/{kodeProdi}', [ProgramStudiController::class, 'destroy'])->name('destroy');
+});
 
 Route::get('/wilayah/{type}/{id?}', function ($type, $id = null) {
     $base = 'https://emsifa.github.io/api-wilayah-indonesia/api';
@@ -343,6 +368,16 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/mahasiswa/export-excel', [MahasiswaController::class, 'exportExcel'])
         ->name('mahasiswa.export-excel');
 });
+
+// Routes untuk verifikasi khusus
+Route::patch('/admin/user/{id}/verify-interview', [UserController::class, 'verifyInterview'])
+    ->name('admin.user.verify.interview')
+    ->middleware(['auth', 'role:wr-3']);
+
+Route::patch('/admin/user/{id}/verify-payment', [UserController::class, 'verifyPayment'])
+    ->name('admin.user.verify.payment')
+    ->middleware(['auth', 'role:keuangan']);
+
 
 // routes/web.php - Tambahkan route ini untuk debug
 Route::get('/debug-registration', function() {

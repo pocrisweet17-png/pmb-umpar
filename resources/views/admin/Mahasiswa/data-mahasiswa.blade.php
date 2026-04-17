@@ -120,8 +120,8 @@ tr.row-hidden { display:none !important; }
 @endpush
 
 @section('content')
-<div class="max-w-full mx-auto">
-
+<div class="max-w-7xl mx-auto">
+    
 {{-- ALERT --}}
 @if(session('success'))
 <div class="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-5 py-3 flex items-center justify-between text-sm font-medium shadow-sm"

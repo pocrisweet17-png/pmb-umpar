@@ -9,14 +9,32 @@
     .scrollbar-thin::-webkit-scrollbar-track { background: #f3f4f6; border-radius: 10px; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
     .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
-    .tab-btn.active { background: white; color: #4f46e5; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
-
-        .disabled-card {
+    .tab-btn.active { 
+        background: white; 
+        color: #4f46e5 !important; 
+        box-shadow: 0 1px 3px rgba(0,0,0,.12);
+        border: 1px solid #e0e7ff;
+    }
+    .disabled-card {
         opacity: 0.5;
         pointer-events: none;
         filter: grayscale(0.1);
     }
-
+    .wawancara-btn.active {
+        background: #4f46e5;
+        color: white;
+        border-color: #4f46e5;
+    }
+    .wawancara-btn {
+        transition: all 0.2s ease;
+    }
+    .wawancara-btn:hover {
+        background: #e0e7ff;
+        color: #4f46e5;
+    }
+    .bar-chart-bar {
+        transition: width 0.5s ease-out;
+    }
 </style>
 @endpush
 
@@ -26,7 +44,7 @@
     <!-- Welcome Card -->
     <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-lg p-6 sm:p-8 text-white border border-blue-500/20">
         <div>
-            <h2 class="text-2xl sm:text-3xl font-bold mb-2">Selamat Datang, {{ Auth::user()->name }}!</h2>
+            <h2 class="text-2xl sm:text-3xl font-bold mb-2">Selamat Datang, {{ Auth::user()->nama_lengkap ?? Auth::user()->username }}!</h2>
             <p class="text-blue-100 text-sm sm:text-base">
                 @if($isPimpinan)
                     Pantau statistik PMB dengan mudah
@@ -62,12 +80,11 @@
                 </div>
                 <span class="text-xs font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">Active</span>
             </div>
-            <h3 class="text-gray-600 text-sm font-medium mb-1">Total Member</h3>
+            <h3 class="text-gray-600 text-sm font-medium mb-1">Total Pendaftar</h3>
             <p class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">{{ $totalUser ?? 0 }}</p>
             <p class="text-xs text-gray-500">Pengguna terdaftar di sistem</p>
         </div>
 
-       <!-- Quick Actions Card - Disabled untuk pimpinan -->
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 transition-all duration-200 group {{ $isPimpinan ? 'disabled-card' : 'hover:shadow-xl' }}">
             <div class="flex items-center justify-between mb-4">
                 <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-110 transition-transform">
@@ -75,7 +92,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
                 </div>
-               <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-3 py-1 rounded-full">
+                <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-3 py-1 rounded-full">
                     {{ $isPimpinan ? 'Disabled' : 'Actions' }}
                 </span>
             </div>
@@ -139,7 +156,6 @@
                 </h3>
             </div>
             <div class="p-6 space-y-4">
-               
                 <div class="flex items-center justify-between py-3 border-b border-gray-100">
                     <span class="text-sm text-gray-600 font-medium">Admin Login</span>
                     <span class="text-lg font-bold text-gray-900">{{ $totalAdmin }}</span>
@@ -149,14 +165,14 @@
                     <span class="text-lg font-bold text-gray-900">{{ $totalPimpinan ?? 0 }}</span>
                 </div>
                 <div class="flex items-center justify-between py-3">
-                    <span class="text-sm text-gray-600 font-medium">User Login</span>
+                    <span class="text-sm text-gray-600 font-medium">Pendaftar</span>
                     <span class="text-lg font-bold text-gray-400">{{ $totalUser ?? 0 }}</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Manajemen Konten - Disabled untuk pimpinan -->
+    <!-- Manajemen Konten -->
     <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-200">
         <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
             <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,10 +218,8 @@
     </div>
     @endif
 
-    <!-- ─── Statistik Asal Daerah & Jenis Kelamin ──────────────────────────── -->
+    <!-- ─── Statistik Asal Daerah & Jenis Kelamin (Semua Pendaftar) ─────────── -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-        <!-- Asal Daerah -->
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
             <div class="bg-blue-500 px-8 py-6 flex items-center gap-4">
                 <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
@@ -213,7 +227,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
                     </svg>
                 </div>
-                <h3 class="text-xl font-bold text-white">Statistik Asal Daerah</h3>
+                <h3 class="text-xl font-bold text-white">Statistik Asal Daerah (Semua Pendaftar)</h3>
             </div>
             <div class="p-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
@@ -225,7 +239,6 @@
             </div>
         </div>
 
-        <!-- Jenis Kelamin -->
         <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
             <div class="bg-blue-500 px-8 py-6 flex items-center gap-4">
                 <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
@@ -233,7 +246,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                 </div>
-                <h3 class="text-xl font-bold text-white">Statistik Jenis Kelamin</h3>
+                <h3 class="text-xl font-bold text-white">Statistik Jenis Kelamin (Semua Pendaftar)</h3>
             </div>
             <div class="p-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
@@ -241,6 +254,47 @@
                         <div class="w-full max-w-xs"><canvas id="genderChart" class="max-h-72"></canvas></div>
                     </div>
                     <div id="genderLegend" class="space-y-2 max-h-72 overflow-y-auto scrollbar-thin pr-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Statistik Asal Daerah & Jenis Kelamin (Mahasiswa Sudah Punya NIM) ── -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+            <div class="bg-emerald-500 px-8 py-6 flex items-center gap-4">
+                <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white">Statistik Asal Daerah (Mahasiswa Terdaftar)</h3>
+            </div>
+            <div class="p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                    <div class="flex justify-center">
+                        <div class="w-full max-w-xs"><canvas id="mahasiswaRegionChart" class="max-h-72"></canvas></div>
+                    </div>
+                    <div id="mahasiswaRegionLegend" class="space-y-2 max-h-72 overflow-y-auto scrollbar-thin pr-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+            <div class="bg-emerald-500 px-8 py-6 flex items-center gap-4">
+                <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white">Statistik Jenis Kelamin (Mahasiswa Terdaftar)</h3>
+            </div>
+            <div class="p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                    <div class="flex justify-center">
+                        <div class="w-full max-w-xs"><canvas id="mahasiswaGenderChart" class="max-h-72"></canvas></div>
+                    </div>
+                    <div id="mahasiswaGenderLegend" class="space-y-2 max-h-72 overflow-y-auto scrollbar-thin pr-2"></div>
                 </div>
             </div>
         </div>
@@ -329,7 +383,8 @@
             </div>
         </div>
     </div>
-     <!-- ─── Statistik Mahasiswa (sudah punya NIM) - Tanpa Persen, Paling Bawah ─── -->
+
+    <!-- ─── Statistik Mahasiswa (sudah punya NIM) ─────────────────────────── -->
     <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
         <div class="bg-emerald-500 px-8 py-6 flex items-center gap-4">
             <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
@@ -352,7 +407,6 @@
             </div>
         </div>
         <div class="p-8">
-            <!-- Panel Mahasiswa per Fakultas -->
             <div id="panel-mahasiswa-fakultas">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                     <div class="flex justify-center">
@@ -361,8 +415,6 @@
                     <div id="mahasiswaFakultasLegend" class="space-y-2 max-h-72 overflow-y-auto scrollbar-thin pr-2"></div>
                 </div>
             </div>
-            
-            <!-- Panel Mahasiswa per Program Studi -->
             <div id="panel-mahasiswa-prodi" class="hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                     <div class="flex justify-center">
@@ -374,172 +426,315 @@
         </div>
     </div>
 
+    <!-- ─── Statistik Jawaban Wawancara ────────────────────────────────────── -->
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+        <div class="bg-purple-500 px-8 py-6 flex items-center gap-4">
+            <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-white">Statistik Jawaban Wawancara</h3>
+        </div>
+        <div class="px-8 pt-6">
+            <div class="flex flex-wrap gap-2 mb-6">
+                @foreach($pertanyaans as $index => $pertanyaan)
+                    <button onclick="showWawancaraStat({{ $pertanyaan->id }}, this)"
+                            class="wawancara-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-purple-100 hover:text-purple-600 transition-all {{ $loop->first ? 'active bg-purple-600 text-white' : '' }}"
+                            data-id="{{ $pertanyaan->id }}">
+                        {{ $index + 1 }}. {{ Str::limit($pertanyaan->pertanyaan, 30) }}
+                    </button>
+                @endforeach
+            </div>
+        </div>
+        <div class="p-8 pt-0">
+            @foreach($pertanyaans as $pertanyaan)
+                @php
+                    $stats = $wawancaraStats[$pertanyaan->id] ?? null;
+                @endphp
+                <div id="wawancara-panel-{{ $pertanyaan->id }}" 
+                     class="wawancara-panel {{ $loop->first ? '' : 'hidden' }}">
+                    @if($stats && $stats['total'] > 0)
+                        <div class="mb-6">
+                            <p class="text-gray-700 font-medium mb-2">{{ $stats['pertanyaan'] }}</p>
+                            <p class="text-sm text-gray-500 mb-4">Total responden: {{ $stats['total'] }} orang</p>
+                            
+                            <div class="space-y-4">
+                                @foreach(['a', 'b', 'c', 'd'] as $opsi)
+                                    @php
+                                        $count = $stats['jawaban'][$opsi];
+                                        $percentage = $stats['total'] > 0 ? round(($count / $stats['total']) * 100, 1) : 0;
+                                        $optionText = $stats["opsi_$opsi"];
+                                        $colors = [
+                                            'a' => 'bg-blue-500',
+                                            'b' => 'bg-green-500',
+                                            'c' => 'bg-yellow-500',
+                                            'd' => 'bg-purple-500'
+                                        ];
+                                    @endphp
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-sm font-medium text-gray-700">
+                                                <span class="inline-block w-6 h-6 rounded-full {{ $colors[$opsi] }} text-white text-xs text-center leading-6 mr-2">{{ strtoupper($opsi) }}</span>
+                                                {{ $optionText }}
+                                            </span>
+                                            <span class="text-sm text-gray-600">{{ $count }} orang ({{ $percentage }}%)</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                            {{-- FIX: Simpan target width di data-width, mulai dari 0% untuk animasi --}}
+                                            <div class="bar-chart-bar {{ $colors[$opsi] }} h-3 rounded-full"
+                                                 style="width: 0%"
+                                                 data-width="{{ $percentage }}%">
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        <div class="text-center py-12">
+                            <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <p class="text-gray-500">Belum ada data jawaban untuk pertanyaan ini</p>
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    </div>
 
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+// Data dari controller
+const regionData            = @json($regionStats ?? []);
+const genderData            = @json($genderStats ?? []);
+const mahasiswaRegionData   = @json($mahasiswaRegionStats ?? []);
+const mahasiswaGenderData   = @json($mahasiswaGenderStats ?? []);
+const prodiData1            = @json($prodiStats ?? []);
+const prodiData2            = @json($prodiStats2 ?? []);
+const fakultasData1         = @json($fakultasStats ?? []);
+const fakultasData2         = @json($fakultasStats2 ?? []);
+const mahasiswaFakultasData = @json($mahasiswaPerFakultas ?? []);
+const mahasiswaProdiData    = @json($mahasiswaPerProdi ?? []);
 
-    const regionData    = @json($regionStats    ?? []);
-    const genderData    = @json($genderStats    ?? []);
-    const prodiData1    = @json($prodiStats     ?? []);
-    const prodiData2    = @json($prodiStats2    ?? []);
-    const fakultasData1 = @json($fakultasStats  ?? []);
-    const fakultasData2 = @json($fakultasStats2 ?? []);
-    const mahasiswaFakultasData = @json($mahasiswaPerFakultas ?? []);
-    const mahasiswaProdiData    = @json($mahasiswaPerProdi    ?? []);
+const colors = [
+    '#6366f1','#8b5cf6','#ec4899','#f43f5e','#f97316',
+    '#f59e0b','#84cc16','#22c55e','#14b8a6','#06b6d4',
+    '#3b82f6','#a855f7','#d946ef','#0ea5e9','#10b981'
+];
+const genderColors   = ['#6366f1','#ec4899','#cbd5e0'];
+const emeraldColors  = ['#10b981','#34d399','#6ee7b7','#a7f3d0','#059669','#047857','#065f46','#064e3b'];
 
-    const colors = [
-        '#6366f1','#8b5cf6','#ec4899','#f43f5e','#f97316',
-        '#f59e0b','#84cc16','#22c55e','#14b8a6','#06b6d4',
-        '#3b82f6','#a855f7','#d946ef','#0ea5e9','#10b981'
-    ];
-    const genderColors = ['#6366f1','#ec4899','#cbd5e0'];
-    const emeraldColors = ['#10b981','#34d399','#6ee7b7','#a7f3d0','#059669','#047857','#065f46','#064e3b'];
+// ─── Pelacak instance Chart agar tidak double-render ───────────────────────
+const chartInstances = {};
 
-    // Options untuk chart dengan persentase (untuk pendaftar)
-    const baseOptionsWithPercentage = {
-        responsive: true,
-        maintainAspectRatio: true,
-        cutout: '72%',
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                backgroundColor: 'rgba(17,24,39,0.95)',
-                padding: 16,
-                titleFont: { size: 14, weight: '600' },
-                bodyFont:  { size: 13 },
-                cornerRadius: 12,
-                displayColors: false,
-                callbacks: {
-                    label(ctx) {
-                        const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-                        const pct   = ((ctx.parsed / total) * 100).toFixed(1);
-                        return `${ctx.label}: ${ctx.parsed} (${pct}%)`;
-                    }
+const baseOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
+    cutout: '72%',
+    plugins: {
+        legend: { display: false },
+        tooltip: {
+            backgroundColor: 'rgba(17,24,39,0.95)',
+            padding: 16,
+            titleFont: { size: 14, weight: '600' },
+            bodyFont:  { size: 13 },
+            cornerRadius: 12,
+            displayColors: false,
+            callbacks: {
+                label(ctx) {
+                    const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                    const pct   = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0;
+                    return `${ctx.label}: ${ctx.parsed} (${pct}%)`;
                 }
             }
         }
-    };
+    }
+};
 
-        // Options untuk chart mahasiswa (tanpa persentase)
-    const baseOptionsWithoutPercentage = {
-        responsive: true,
-        maintainAspectRatio: true,
-        cutout: '72%',
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                backgroundColor: 'rgba(17,24,39,0.95)',
-                padding: 16,
-                titleFont: { size: 14, weight: '600' },
-                bodyFont:  { size: 13 },
-                cornerRadius: 12,
-                displayColors: false,
-                callbacks: {
-                    label(ctx) {
-                        return `${ctx.label}: ${ctx.parsed}`;
-                    }
+const mahasiswaOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
+    cutout: '72%',
+    plugins: {
+        legend: { display: false },
+        tooltip: {
+            backgroundColor: 'rgba(17,24,39,0.95)',
+            padding: 16,
+            titleFont: { size: 14, weight: '600' },
+            bodyFont:  { size: 13 },
+            cornerRadius: 12,
+            displayColors: false,
+            callbacks: {
+                label(ctx) {
+                    return `${ctx.label}: ${ctx.parsed} Mahasiswa`;
                 }
             }
         }
-    };
+    }
+};
 
-    function buildChart(canvasId, legendId, data, palette, showPercentage = true) {
-        const labels = Object.keys(data);
-        const values = Object.values(data);
-        const legend = document.getElementById(legendId);
-        const options = showPercentage ? baseOptionsWithPercentage : baseOptionsWithoutPercentage;
+// ─── Builder Chart ─────────────────────────────────────────────────────────
+function buildChart(canvasId, legendId, data, palette, useMahasiswaOptions = false) {
+    // Cegah render ulang jika chart sudah pernah dibuat
+    if (chartInstances[canvasId]) return;
 
-        if (!labels.length) {
-            if (legend) legend.innerHTML = '<p class="text-sm text-gray-400 text-center py-8 col-span-2">Tidak ada data</p>';
-            return;
-        }
+    const labels  = Object.keys(data);
+    const values  = Object.values(data);
+    const legend  = document.getElementById(legendId);
+    const options = useMahasiswaOptions ? mahasiswaOptions : baseOptions;
 
-        new Chart(document.getElementById(canvasId).getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels,
-                datasets: [{
-                    data: values,
-                    backgroundColor: palette.slice(0, labels.length),
-                    borderWidth: 0,
-                    hoverOffset: 12
-                }]
-            },
-            options: options
-        });
-
-        const total = values.reduce((a, b) => a + b, 0);
-        labels.forEach((label, i) => {
-            if (showPercentage) {
-                const pct = ((values[i] / total) * 100).toFixed(1);
-                legend.innerHTML += `
-                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                        <div class="flex items-center gap-3">
-                            <span class="w-3 h-3 rounded-md flex-shrink-0" style="background:${palette[i % palette.length]}"></span>
-                            <span class="text-sm text-gray-700">${label}</span>
-                        </div>
-                        <div class="flex items-baseline gap-2 ml-2">
-                            <strong class="text-gray-900">${values[i]}</strong>
-                            <span class="text-xs text-gray-400">${pct}%</span>
-                        </div>
-                    </div>`;
-            } else {
-                legend.innerHTML += `
-                    <div class="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                        <div class="flex items-center gap-3">
-                            <span class="w-3 h-3 rounded-md flex-shrink-0" style="background:${palette[i % palette.length]}"></span>
-                            <span class="text-sm text-gray-700">${label}</span>
-                        </div>
-                        <div class="flex items-baseline gap-2 ml-2">
-                            <strong class="text-gray-900">${values[i]}</strong>
-                            <span class="text-xs text-gray-400">Mahasiswa</span>
-                        </div>
-                    </div>`;
-            }
-        });
+    if (!labels.length) {
+        if (legend) legend.innerHTML = '<p class="text-sm text-gray-400 text-center py-8 col-span-2">Tidak ada data</p>';
+        return;
     }
 
-    // Chart dengan persentase (pendaftar)
-    buildChart('regionChart',    'regionLegend',    regionData,    colors, true);
-    buildChart('genderChart',    'genderLegend',    genderData,    genderColors, true);
-    buildChart('prodiChart1',    'prodiLegend1',    prodiData1,    colors, true);
-    buildChart('prodiChart2',    'prodiLegend2',    prodiData2,    colors, true);
-    buildChart('fakultasChart1', 'fakultasLegend1', fakultasData1, colors, true);
-    buildChart('fakultasChart2', 'fakultasLegend2', fakultasData2, colors, true);
-    
-    // Chart mahasiswa (tanpa persentase)
-    buildChart('mahasiswaFakultasChart','mahasiswaFakultasLegend', mahasiswaFakultasData, emeraldColors, false);
-    buildChart('mahasiswaProdiChart',   'mahasiswaProdiLegend',    mahasiswaProdiData,    colors, false);
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+
+    chartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels,
+            datasets: [{
+                data: values,
+                backgroundColor: palette.slice(0, labels.length),
+                borderWidth: 0,
+                hoverOffset: 12
+            }]
+        },
+        options: options
+    });
+
+    const total = values.reduce((a, b) => a + b, 0);
+    labels.forEach((label, i) => {
+        if (useMahasiswaOptions) {
+            legend.innerHTML += `
+                <div class="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="w-3 h-3 rounded-md flex-shrink-0" style="background:${palette[i % palette.length]}"></span>
+                        <span class="text-sm text-gray-700">${label}</span>
+                    </div>
+                    <div class="flex items-baseline gap-2 ml-2">
+                        <strong class="text-gray-900">${values[i]}</strong>
+                        <span class="text-xs text-gray-400">Mahasiswa</span>
+                    </div>
+                </div>`;
+        } else {
+            const pct = total > 0 ? ((values[i] / total) * 100).toFixed(1) : 0;
+            legend.innerHTML += `
+                <div class="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <span class="w-3 h-3 rounded-md flex-shrink-0" style="background:${palette[i % palette.length]}"></span>
+                        <span class="text-sm text-gray-700">${label}</span>
+                    </div>
+                    <div class="flex items-baseline gap-2 ml-2">
+                        <strong class="text-gray-900">${values[i]}</strong>
+                        <span class="text-xs text-gray-400">${pct}%</span>
+                    </div>
+                </div>`;
+        }
+    });
+}
+
+// ─── Animasi bar chart (baca dari data-width) ──────────────────────────────
+function animateBars(container) {
+    const bars = (container || document).querySelectorAll('.bar-chart-bar');
+    bars.forEach(bar => {
+        const target = bar.dataset.width || '0%';
+        bar.style.width = '0%';
+        // Pastikan reset selesai sebelum animasi mulai
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                bar.style.width = target;
+            });
+        });
+    });
+}
+
+// ─── Inisialisasi saat DOM ready ───────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function () {
+    // Chart yang langsung terlihat saat halaman pertama dibuka
+    buildChart('regionChart',           'regionLegend',           regionData,           colors,        false);
+    buildChart('genderChart',           'genderLegend',           genderData,           genderColors,  false);
+    buildChart('mahasiswaRegionChart',  'mahasiswaRegionLegend',  mahasiswaRegionData,  colors,        true);
+    buildChart('mahasiswaGenderChart',  'mahasiswaGenderLegend',  mahasiswaGenderData,  genderColors,  true);
+
+    // Tab aktif awal (Pilihan 1 & Per Fakultas)
+    buildChart('prodiChart1',           'prodiLegend1',           prodiData1,           colors,        false);
+    buildChart('fakultasChart1',        'fakultasLegend1',        fakultasData1,        colors,        false);
+    buildChart('mahasiswaFakultasChart','mahasiswaFakultasLegend',mahasiswaFakultasData,emeraldColors, true);
+
+    setActiveTab('prodi',      '1',       ['1','2']);
+    setActiveTab('fakultas',   '1',       ['1','2']);
+    setActiveTab('mahasiswa',  'fakultas',['fakultas','prodi']);
+
+    // Animasi bar wawancara panel pertama
+    setTimeout(() => animateBars(), 300);
 });
 
-   if (group === 'prodi') {
-        ['1','2'].forEach(n => {
-            document.getElementById(`panel-${group}-${n}`).classList.toggle('hidden', n !== num);
-            document.getElementById(`tab-${group}-${n}`).classList.toggle('active', n === num);
-        });
+function setActiveTab(group, activeNum, options) {
+    options.forEach(num => {
+        const panel = document.getElementById(`panel-${group}-${num}`);
+        const tab   = document.getElementById(`tab-${group}-${num}`);
+        const isActive = num === activeNum;
+
+        panel.classList.toggle('hidden', !isActive);
+
+        // Hapus semua state dulu
+        tab.classList.remove('active', 'bg-white', 'text-indigo-600', 'shadow', 'border', 'border-indigo-100', 'text-gray-500');
+
+        if (isActive) {
+            tab.classList.add('bg-white', 'text-indigo-600', 'shadow', 'border', 'border-indigo-100');
+        } else {
+            tab.classList.add('text-gray-500');
+        }
+    });
+}
+
+// ─── Switch Tab ────────────────────────────────────────────────────────────
+function switchTab(group, num) {
+    if (group === 'prodi') {
+        setActiveTab('prodi', num, ['1', '2']);
+        if (num === '2') buildChart('prodiChart2', 'prodiLegend2', prodiData2, colors, false);
+
     } else if (group === 'fakultas') {
-        ['1','2'].forEach(n => {
-            document.getElementById(`panel-${group}-${n}`).classList.toggle('hidden', n !== num);
-            document.getElementById(`tab-${group}-${n}`).classList.toggle('active', n === num);
-        });
+        setActiveTab('fakultas', num, ['1', '2']);
+        if (num === '2') buildChart('fakultasChart2', 'fakultasLegend2', fakultasData2, colors, false);
+
     } else if (group === 'mahasiswa') {
-        // Handle mahasiswa tabs
-        const panels = ['fakultas', 'prodi'];
-        panels.forEach(panel => {
-            const panelElement = document.getElementById(`panel-mahasiswa-${panel}`);
-            const tabElement = document.getElementById(`tab-mahasiswa-${panel}`);
-            if (panel === num) {
-                panelElement.classList.remove('hidden');
-                tabElement.classList.add('active');
-            } else {
-                panelElement.classList.add('hidden');
-                tabElement.classList.remove('active');
-            }
-        });
+        setActiveTab('mahasiswa', num, ['fakultas', 'prodi']);
+        if (num === 'prodi') buildChart('mahasiswaProdiChart', 'mahasiswaProdiLegend', mahasiswaProdiData, colors, true);
     }
+}
+
+// ─── Wawancara ─────────────────────────────────────────────────────────────
+function showWawancaraStat(pertanyaanId, button) {
+    // Sembunyikan semua panel
+    document.querySelectorAll('.wawancara-panel').forEach(panel => {
+        panel.classList.add('hidden');
+    });
+
+    // Tampilkan panel yang dipilih
+    const targetPanel = document.getElementById(`wawancara-panel-${pertanyaanId}`);
+    if (targetPanel) {
+        targetPanel.classList.remove('hidden');
+        // FIX: Animasi bar menggunakan data-width
+        setTimeout(() => animateBars(targetPanel), 100);
+    }
+
+    // Update active state tombol
+    document.querySelectorAll('.wawancara-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-purple-600', 'text-white');
+        btn.classList.add('bg-gray-100', 'text-gray-700');
+    });
+    button.classList.remove('bg-gray-100', 'text-gray-700');
+    button.classList.add('active', 'bg-purple-600', 'text-white');
+}
 </script>
 
 @endsection
+

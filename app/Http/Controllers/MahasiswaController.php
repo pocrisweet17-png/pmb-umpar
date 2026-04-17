@@ -42,6 +42,25 @@ class MahasiswaController extends Controller
 
             $baseQuery->whereIn('kodeProdi', $kodeProdiDiFakultas);
         }
+                // ── Filter untuk Admin ───────────────────────────────────────────────────
+        if (!$isDekan) {
+            if ($request->filled('prodi')) {
+                $baseQuery->where('kodeProdi', $request->prodi);
+            }
+            if ($request->filled('status')) {
+                $baseQuery->where('status_daftar_ulang', $request->status);
+            }
+            if ($request->filled('angkatan')) {
+                $baseQuery->where('angkatan', $request->angkatan);
+            }
+            if ($request->filled('q')) {
+                $search = $request->q;
+                $baseQuery->where(function($q) use ($search) {
+                    $q->where('namaLengkap', 'like', "%{$search}%")
+                      ->orWhere('nim', 'like', "%{$search}%");
+                });
+            }
+        }
 
         // ── Ambil SEMUA data (untuk stats + dekan grouping) ───────────────────────
         // Clone query sebelum pagination agar tidak double-query dengan kondisi berbeda
@@ -137,10 +156,11 @@ class MahasiswaController extends Controller
 
         $path = Storage::disk('public')->path($dokumen->urlFile);
         $mime = Storage::disk('public')->mimeType($dokumen->urlFile);
+        $namaFile = $mahasiswa->nim . '_' . $mahasiswa->namaLengkap . '_' . $dokumen->namaFile;
 
         return response()->file($path, [
             'Content-Type'        => $mime,
-            'Content-Disposition' => 'inline; filename="' . $dokumen->namaFile . '"',
+            'Content-Disposition' => 'inline; filename="' . $dokumen->$namaFile . '"',
         ]);
     }
 
@@ -164,9 +184,9 @@ class MahasiswaController extends Controller
             ->where('user_id', $mahasiswa->user_id)
             ->firstOrFail();
 
-        abort_unless(Storage::disk('public')->exists($dokumen->urlFile), 404, 'File tidak ditemukan.');
+        $namaFile = $mahasiswa->nim . '_' . $mahasiswa->namaLengkap . '_' . $dokumen->namaFile;
 
-        return Storage::disk('public')->download($dokumen->urlFile, $dokumen->namaFile);
+        return Storage::disk('public')->download($dokumen->urlFile, $dokumen->$namaFile);
     }
 
     /**
@@ -188,7 +208,7 @@ class MahasiswaController extends Controller
         $dokumens = $mahasiswa->user->dokumens ?? collect();
         abort_if($dokumens->isEmpty(), 404, 'Tidak ada dokumen.');
 
-        $zipName = 'Dokumen_' . $mahasiswa->nim . '_' . date('Ymd') . '.zip';
+         $zipName = 'Dokumen_' . $mahasiswa->nim . '_' . $mahasiswa->namaLengkap . '_' . date('Ymd') . '.zip';
         $tempDir = storage_path('app/temp');
 
         if (!is_dir($tempDir)) {
@@ -220,10 +240,59 @@ class MahasiswaController extends Controller
      */
     public function exportExcel(Request $request)
     {
-        $fileName = 'Data_Mahasiswa_Daftar_Ulang_' . date('Y-m-d_His') . '.xlsx';
-
-        return Excel::download(new MahasiswaExport($request->all()), $fileName);
+        $filters = $request->only(['prodi', 'status', 'angkatan', 'q', 'fakultas_id']);
+    
+    // Generate nama file berdasarkan filter
+        $fileName = $this->generateFileName($filters);
+        
+        return Excel::download(new MahasiswaExport($filters), $fileName);
     }
+
+       /**
+ * Generate nama file Excel berdasarkan filter yang dipilih
+ */
+private function generateFileName($filters)
+{
+    $parts = ['Data_Mahasiswa_Daftar_Ulang'];
+    
+    // Jika filter berdasarkan prodi
+    if (!empty($filters['prodi'])) {
+        $prodi = ProgramStudy::where('kodeProdi', $filters['prodi'])->first();
+        $namaProdi = $prodi ? $prodi->namaProdi : $filters['prodi'];
+        // Bersihkan nama prodi dari karakter yang tidak valid untuk nama file
+        $namaProdi = preg_replace('/[\/\\\\:*?"<>|]/', '-', $namaProdi);
+        $parts[] = $namaProdi;
+    }
+    
+    // Jika filter berdasarkan fakultas (untuk dekan)
+    if (!empty($filters['fakultas_id']) && empty($filters['prodi'])) {
+        $fakultas = \App\Models\Fakultas::find($filters['fakultas_id']);
+        if ($fakultas) {
+            $namaFakultas = preg_replace('/[\/\\\\:*?"<>|]/', '-', $fakultas->nama_fakultas);
+            $parts[] = $namaFakultas;
+        }
+    }
+    
+    // Jika filter berdasarkan status
+    if (!empty($filters['status'])) {
+        $statusMap = [
+            'pending' => 'Menunggu',
+            'verified' => 'Terverifikasi',
+            'rejected' => 'Ditolak',
+        ];
+        $parts[] = $statusMap[$filters['status']] ?? $filters['status'];
+    }
+    
+    // Jika filter berdasarkan angkatan
+    if (!empty($filters['angkatan'])) {
+        $parts[] = 'Angkatan_' . $filters['angkatan'];
+    }
+    
+    // Tambahkan tanggal
+    $parts[] = date('Y-m-d_His');
+    
+    return implode('_', $parts) . '.xlsx';
+}
 
     /**
      * Verifikasi daftar ulang mahasiswa.
