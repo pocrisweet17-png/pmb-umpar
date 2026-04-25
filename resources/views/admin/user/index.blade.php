@@ -281,6 +281,18 @@
                             ['field' => 'is_ukt_paid', 'label' => 'Bayar Ulang', 'short' => '7'],
                             ['field' => 'is_daftar_ulang', 'label' => 'Daftar Ulang', 'short' => '8'],
                         ];
+
+                        $totalSteps = count($steps); // simpan total asli SEBELUM di-slice
+
+                        $stepFilterMap = [
+                            'step_prodi' => 1, 'step_bayar' => 2, 'step_data' => 3, 'step_dokumen' => 4,
+                            'step_tes' => 5, 'step_wawancara' => 6, 'step_ukt' => 7, 'step_daftar_ulang' => 8,
+                        ];
+                        $activeStepFilter = $stepFilterMap[request('verified')] ?? null;
+                        if ($activeStepFilter !== null) {
+                            $steps = array_slice($steps, 0, $activeStepFilter);
+                        }
+
                         $completedCount = collect($steps)->filter(fn($s) => $user->{$s['field']})->count();
                     @endphp
                     <div class="mb-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
@@ -288,6 +300,11 @@
                             <span class="text-xs font-semibold text-gray-700">Progress PMB</span>
                             <span class="text-xs font-bold {{ $completedCount === count($steps) ? 'text-green-600' : 'text-gray-600' }}">{{ $completedCount }}/{{ count($steps) }}</span>
                         </div>
+                        @if($activeStepFilter !== null)
+                            <div class="text-[10px] text-amber-600 italic mb-2">
+                                Menampilkan sampai Step {{ $activeStepFilter }} (dari {{ $totalSteps }})
+                            </div>
+                        @endif
                         <div class="bg-gray-200 rounded-full h-2 mb-2">
                             <div class="h-2 rounded-full transition-all duration-300 {{ $completedCount === count($steps) ? 'bg-green-500' : ($completedCount >= 5 ? 'bg-blue-500' : ($completedCount >= 3 ? 'bg-yellow-500' : 'bg-red-400')) }}"
                                 style="width: {{ count($steps) > 0 ? ($completedCount / count($steps)) * 100 : 0 }}%"></div>
@@ -675,6 +692,18 @@
                                         ['field' => 'is_ukt_paid', 'label' => 'Bayar Ulang', 'short' => '7'],
                                         ['field' => 'is_daftar_ulang', 'label' => 'Daftar Ulang', 'short' => '8'],
                                     ];
+
+                                    $totalSteps = count($steps); // simpan total asli SEBELUM di-slice
+
+                                    $stepFilterMap = [
+                                        'step_prodi' => 1, 'step_bayar' => 2, 'step_data' => 3, 'step_dokumen' => 4,
+                                        'step_tes' => 5, 'step_wawancara' => 6, 'step_ukt' => 7, 'step_daftar_ulang' => 8,
+                                    ];
+                                    $activeStepFilter = $stepFilterMap[request('verified')] ?? null;
+                                    if ($activeStepFilter !== null) {
+                                        $steps = array_slice($steps, 0, $activeStepFilter);
+                                    }
+
                                     $completedCount = collect($steps)->filter(fn($s) => $user->{$s['field']})->count();
                                 @endphp
                                 <div class="min-w-[200px]">
@@ -685,6 +714,13 @@
                                         </div>
                                         <span class="text-xs font-bold {{ $completedCount === count($steps) ? 'text-green-600' : 'text-gray-600' }}">{{ $completedCount }}/{{ count($steps) }}</span>
                                     </div>
+
+                                    @if($activeStepFilter !== null)
+                                        <div class="text-[10px] text-amber-600 italic mb-2">
+                                            Filter: Step {{ $activeStepFilter }}/{{ $totalSteps }}
+                                        </div>
+                                    @endif
+
                                     <div class="flex items-center gap-1">
                                         @foreach($steps as $step)
                                             <div title="{{ $step['short'] }}. {{ $step['label'] }}: {{ $user->{$step['field']} ? 'Selesai' : 'Belum' }}"

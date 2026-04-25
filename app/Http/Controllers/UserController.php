@@ -55,17 +55,8 @@ class UserController extends Controller
             $verifiedVal = $request->verified;
 
             if (array_key_exists($verifiedVal, $stepMap)) {
-                $stepKeys = array_keys($stepMap);
-                $currentIndex = array_search($verifiedVal, $stepKeys);
                 $currentField = $stepMap[$verifiedVal];
-
                 $query->where($currentField, true);
-
-                if ($currentIndex < count($stepKeys) - 1) {
-                    $nextStepKey = $stepKeys[$currentIndex + 1];
-                    $nextField = $stepMap[$nextStepKey];
-                    $query->where($nextField, false);
-                }
             } else {
                 $query->where('is_verified', (int)$verifiedVal);
             }
