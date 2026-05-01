@@ -107,7 +107,16 @@ class UserController extends Controller
         $totalVerified = User::where('is_verified', true)->count();
         $totalAdmin = User::where('role', 'admin')->count();
         
-        $users = $query->paginate(10)->withQueryString();
+        $range_halaman = range(10, 100, 10);
+
+        $halaman_yg_direquest = (int) request('range_halaman', 10);
+        
+        if(! in_array($halaman_yg_direquest, $range_halaman)){
+            $halaman_yg_direquest = 10; // default
+        }
+
+        $users = $query->paginate($halaman_yg_direquest)->withQueryString();
+        
 
         return view('admin.user.index', compact('users', 'totalVerified', 'totalAdmin'));
     }

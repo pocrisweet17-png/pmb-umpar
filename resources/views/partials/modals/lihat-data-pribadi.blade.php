@@ -569,7 +569,7 @@ dengan ini ditetapkan bahwa calon mahasiswa berikut:
 
 <td width="30%" align="center" valign="top">
 <div class="foto-box">
-     ${ fotoMahasiswa ? `<img src="${fotoMahasiswa}">`: `FOTO<br>3 x 4` }
+     ${ $dokumen->urlFile ? `<img src="${fotoMahasiswa}">`: `FOTO<br>3 x 4` }
 </div>
 </td>
 </tr>

@@ -66,6 +66,14 @@ berapa yang lulus di prodinya) dan datanya bisa di cetak berdasarkan EXCEL atau 
     halaman data mahasiswa
 
 - tambah tombol verifikasi, di semua yang memiliki list.
+
+
+
 - 
 
+
+
+# TAMBAHKAN daftar data yang bisa di tampilkan paginate supaya bisa jadi dinamis
+# Buat pilih prodi jadi dropdown
+# const fotoMahasiswa = @json($user->foto_mahasiswa);
  

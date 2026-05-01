@@ -160,7 +160,29 @@
                         @endforeach
                     </select>
                 </div>
+
+            {{-- start tampilkan dropdown jumlah halaman --}}
+                    <div class="mb-3 d-flex align-items-center gap-2">
+                        <div class="mb-1">
+                            <label for="range_halaman" class="form-label mb-0">Tampilkan</label>
+                        </div>
+                        
+
+                        <select id="range_halaman" name="range_halaman" class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" style="width: auto;">
+                            @foreach (range(10, 100, 10) as $size)
+                                <option value="{{ $size }}" {{ request('range_halaman', 10) == $size ? 'selected' : '' }}>
+                                    {{ $size }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <span>data</span>
+
+                    </div>
+            {{-- end tampilkan dropdown jumlah halaman  --}}
+
             </div>
+
 
             <!-- Action Buttons -->
             <div class="flex flex-wrap gap-3">
@@ -199,7 +221,7 @@
                 <div>
                     <p class="text-sm text-gray-600 font-medium">Total User</p>
                     <p class="text-3xl font-bold text-gray-900 mt-2">{{ $users->total() }}</p>
-                    <p class="text-xs text-gray-400 mt-1">{{ $users->count() }} ditampilkan di halaman ini</p>
+                    <p class="text-xs text-gray-400 mt-1"><span class="text-green-600 font-bold text-sm">{{ $users->count() }}</span> ditampilkan di halaman ini</p>
                 </div>
                 <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -981,7 +1003,7 @@
                     <span class="font-semibold text-blue-700">{{ $users->firstItem() ?? 0 }}</span>
                     –
                     <span class="font-semibold text-blue-700">{{ $users->lastItem() ?? 0 }}</span>
-                    dari
+                    daris
                     <span class="font-semibold text-blue-700">{{ $users->total() }}</span>
                     data
                 </p>
@@ -1026,3 +1048,12 @@
     </div>
 </div>
 @endsection
+
+<script>
+document.getElementById('range_halaman').addEventListener('change', function () {
+    const url = new URL(window.location.href);
+    url.searchParams.set('range_halaman', this.value);
+    url.searchParams.set('page', 1); // reset ke halaman pertama
+    window.location.href = url.toString();
+});
+</script>
