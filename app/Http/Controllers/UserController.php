@@ -139,14 +139,36 @@ class UserController extends Controller
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'nama_lengkap' => 'required|string|max:255',
-            'nik' => 'required|string|max:16|unique:users',
-            'no_whatsapp' => 'required|string|max:15',
+            'nik' => $request->input('role') === 'user' ? 'required|string|max:16|unique:users' : 'nullable|string|max:16|unique:users',
+            'no_whatsapp' => $request->input('role') === 'user' ? 'required|string|max:15' : 'nullable|string|max:15',
             'role' => 'required|in:super-admin,admin,user,keuangan,wr-3,admisi,dekan,pimpinan',
             'is_wawancara_selesai' => 'boolean',
+
+            'pilihan_1'         => $request->input('role') === 'user' ? 'required|string|max:50' : 'nullable|string|max:50',
+            'pilihan_2'         => $request->input('role') === 'user' ? 'required|string|max:50' : 'nullable|string|max:50',
+
+            'is_prodi_selected'    => 'nullable|boolean',
+            'is_bayar_pendaftaran' => 'nullable|boolean',
+            'is_data_completed'    => 'nullable|boolean',
+            'is_dokumen_uploaded'  => 'nullable|boolean',
+            'is_tes_selesai'       => 'nullable|boolean',
+            'is_ukt_paid'          => 'nullable|boolean',
+            'is_daftar_ulang'      => 'nullable|boolean',
+            'is_verified'          => 'nullable|boolean',
+
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
-        $validated['is_wawancara_selesai'] = $request->has('is_wawancara_selesai');
+
+        $validated['is_wawancara_selesai'] = $request->input('is_wawancara_selesai') === '1';
+        $validated['is_prodi_selected']    = $request->input('is_prodi_selected') === '1';
+        $validated['is_bayar_pendaftaran'] = $request->input('is_bayar_pendaftaran') === '1';
+        $validated['is_data_completed']    = $request->input('is_data_completed') === '1';
+        $validated['is_dokumen_uploaded']  = $request->input('is_dokumen_uploaded') === '1';
+        $validated['is_tes_selesai']       = $request->input('is_tes_selesai') === '1';
+        $validated['is_ukt_paid']          = $request->input('is_ukt_paid') === '1';
+        $validated['is_daftar_ulang']      = $request->input('is_daftar_ulang') === '1';
+        $validated['is_verified']          = $request->input('is_verified') === '1';
 
         if ($validated['role'] === 'admin' && auth()->user()->role !== 'super-admin') {
             return redirect()->back()

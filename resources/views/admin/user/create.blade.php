@@ -261,7 +261,11 @@
                         </div>
                     </div>
                 </div>
-                {{-- ===== SECTION: NIK & No WA (semua role) ===== --}}
+
+
+                {{-- ===== SECTION 3: Camaba-Only Fields ===== --}}
+                <div id="camabaFields" class="space-y-6" style="{{ old('role', 'user') == 'user' ? 'display: block' : 'display: none' }}">
+                {{-- supaya nik dan lain lain cuma muncul di user --}}
                 <div class="form-section bg-gray-50 rounded-xl p-5 sm:p-6 border border-gray-200">
                     <h4 class="font-semibold text-gray-800 mb-4 flex items-center text-sm sm:text-base">
                         <div class="w-7 h-7 bg-green-100 rounded-lg flex items-center justify-center mr-2.5">
@@ -293,10 +297,7 @@
                     </div>
                 </div>
 
-                {{-- ===== SECTION 3: Camaba-Only Fields ===== --}}
-                <div id="camabaFields" class="space-y-6" style="{{ old('role', 'user') == 'user' ? 'display: block' : 'display: none' }}">
-
-                    {{-- Program Studi --}}
+                   {{-- Program Studi --}}
                     <div class="form-section bg-gray-50 rounded-xl p-5 sm:p-6 border border-gray-200">
                         <h4 class="font-semibold text-gray-800 mb-4 flex items-center text-sm sm:text-base">
                             <div class="w-7 h-7 bg-indigo-100 rounded-lg flex items-center justify-center mr-2.5">
@@ -307,28 +308,59 @@
                             Pilihan Program Studi
                         </h4>
 
+                        @php
+                            $namaProdi1 = old('pilihan_1')
+                                ? (\App\Models\ProgramStudy::find(old('pilihan_1'))?->namaProdi ?? old('pilihan_1'))
+                                : '';
+                            $namaProdi2 = old('pilihan_2')
+                                ? (\App\Models\ProgramStudy::find(old('pilihan_2'))?->namaProdi ?? old('pilihan_2'))
+                                : '';
+                        @endphp
+
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
+
+                            {{-- Pilihan 1 --}}
                             <div>
                                 <label class="block text-gray-700 font-medium mb-1.5 text-sm">
                                     Pilihan 1 <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="pilihan_1" value="{{ old('pilihan_1') }}"
-                                       placeholder="Kode Prodi Pilihan 1"
-                                       class="form-input w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-shadow bg-white">
+                                <div class="relative">
+                                    <input type="text" id="display_pilihan_1" readonly
+                                        value="{{ $namaProdi1 }}"
+                                        placeholder="Klik untuk memilih prodi"
+                                        onclick="openModalProdiAdmin(1)"
+                                        class="form-input w-full border border-gray-300 rounded-lg px-4 py-2.5 pr-10 cursor-pointer bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow" required>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </div>
+                                </div>
                             </div>
 
+                            {{-- Pilihan 2 --}}
                             <div>
                                 <label class="block text-gray-700 font-medium mb-1.5 text-sm">
-                                    Pilihan 2
+                                    Pilihan 2  <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="pilihan_2" value="{{ old('pilihan_2') }}"
-                                       placeholder="Kode Prodi Pilihan 2 (opsional)"
-                                       class="form-input w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-shadow bg-white">
+                                <div class="relative">
+                                    <input type="text" id="display_pilihan_2" readonly
+                                        value="{{ $namaProdi2 }}"
+                                        placeholder="Klik untuk memilih prodi (opsional)"
+                                        onclick="openModalProdiAdmin(2)"
+                                        class="form-input w-full border border-gray-300 rounded-lg px-4 py-2.5 pr-10 cursor-pointer bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow" required>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </div>
+                                </div>
                             </div>
+
                         </div>
                     </div>
 
-                    {{-- Progress PMB --}}
+                  {{-- Progress PMB --}}
                     <div class="form-section bg-gray-50 rounded-xl p-5 sm:p-6 border border-gray-200">
                         <h4 class="font-semibold text-gray-800 mb-1 flex items-center text-sm sm:text-base">
                             <div class="w-7 h-7 bg-teal-100 rounded-lg flex items-center justify-center mr-2.5">
@@ -455,8 +487,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const hiddenMappings = [
         { camaba: 'input[name="nik"]', hidden: '#nik_hidden' },
         { camaba: 'input[name="no_whatsapp"]', hidden: '#no_whatsapp_hidden' },
-        { camaba: 'input[name="pilihan_1"]', hidden: '#pilihan_1_hidden' },
-        { camaba: 'input[name="pilihan_2"]', hidden: '#pilihan_2_hidden' }
     ];
 
     const progressMappings = [
@@ -593,6 +623,172 @@ document.addEventListener('DOMContentLoaded', function() {
         generateDummyValues();
         syncCamabaToHidden();
     }
+    let _adminModalTarget = 1;
+
+    window.openModalProdiAdmin = function(target) {
+        _adminModalTarget = target;
+        document.getElementById('modalProdiAdminTitle').textContent =
+            target === 1 ? 'Pilih Program Studi – Pilihan 1' : 'Pilih Program Studi – Pilihan 2';
+
+        const jenjangEl  = document.getElementById('adminModalJenjang');
+        const fakultasEl = document.getElementById('adminModalFakultas');
+        const prodiEl    = document.getElementById('adminModalProdi');
+        const errorEl    = document.getElementById('adminModalError');
+
+        jenjangEl.value     = '';
+        fakultasEl.value    = '';
+        fakultasEl.disabled = true;
+        prodiEl.innerHTML   = '<option value="">-- Pilih Fakultas Dulu --</option>';
+        prodiEl.disabled    = true;
+        errorEl.classList.add('hidden');
+
+        document.getElementById('modalProdiAdmin').classList.remove('hidden');
+    };
+
+    window.closeModalProdiAdmin = function() {
+        document.getElementById('modalProdiAdmin').classList.add('hidden');
+    };
+
+    document.getElementById('adminModalJenjang').addEventListener('change', function() {
+        const fakultasEl = document.getElementById('adminModalFakultas');
+        const prodiEl    = document.getElementById('adminModalProdi');
+
+        prodiEl.innerHTML  = '<option value="">-- Pilih Fakultas Dulu --</option>';
+        prodiEl.disabled   = true;
+
+        if (this.value) {
+            fakultasEl.disabled = false;
+            fakultasEl.value    = '';
+        } else {
+            fakultasEl.disabled = true;
+            fakultasEl.value    = '';
+        }
+    });
+
+    document.getElementById('adminModalFakultas').addEventListener('change', function() {
+        const jenjang = document.getElementById('adminModalJenjang').value;
+        const prodiEl = document.getElementById('adminModalProdi');
+
+        if (!this.value || !jenjang) return;
+
+        prodiEl.innerHTML = '<option value="">Memuat...</option>';
+        prodiEl.disabled  = true;
+
+        fetch(`/api/prodi-by-fakultas?fakultas=${encodeURIComponent(this.value)}&jenjang=${encodeURIComponent(jenjang)}`)
+            .then(r => r.json())
+            .then(data => {
+                const otherHiddenId = _adminModalTarget === 1 ? 'pilihan_2_hidden' : 'pilihan_1_hidden';
+                const otherKode     = document.getElementById(otherHiddenId)?.value ?? '';
+
+                prodiEl.innerHTML = '<option value="">-- Pilih Prodi --</option>' +
+                    data.map(p =>
+                        `<option value="${p.kodeProdi}" ${p.kodeProdi === otherKode ? 'disabled' : ''}>
+                            ${p.namaProdi}
+                        </option>`
+                    ).join('');
+                prodiEl.disabled = false;
+            })
+            .catch(() => {
+                prodiEl.innerHTML = '<option value="">Gagal memuat data</option>';
+            });
+    });
+
+    window.confirmProdiAdmin = function() {
+        const prodiEl = document.getElementById('adminModalProdi');
+        const errorEl = document.getElementById('adminModalError');
+
+        if (!prodiEl.value) {
+            errorEl.textContent = 'Pilih program studi terlebih dahulu.';
+            errorEl.classList.remove('hidden');
+            return;
+        }
+
+        const kode = prodiEl.value;
+        const nama = prodiEl.options[prodiEl.selectedIndex].text.trim();
+
+        if (_adminModalTarget === 1) {
+            document.getElementById('pilihan_1_hidden').value  = kode;
+            document.getElementById('display_pilihan_1').value = nama;
+        } else {
+            document.getElementById('pilihan_2_hidden').value  = kode;
+            document.getElementById('display_pilihan_2').value = nama;
+        }
+
+        closeModalProdiAdmin();
+    };
 });
 </script>
+{{-- ===== Modal Pilih Prodi Admin ===== --}}
+<div id="modalProdiAdmin"
+     class="hidden fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4"
+     onclick="closeModalProdiAdmin()">
+
+    <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl relative"
+         onclick="event.stopPropagation()">
+
+        {{-- Header --}}
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <h3 class="font-bold text-gray-800 text-lg" id="modalProdiAdminTitle">Pilih Program Studi</h3>
+            <button type="button" onclick="closeModalProdiAdmin()"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors text-xl leading-none">
+                &times;
+            </button>
+        </div>
+
+        {{-- Body --}}
+        <div class="p-6 space-y-4">
+
+            {{-- Jenjang --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Jenjang</label>
+                <select id="adminModalJenjang"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                    <option value="">-- Pilih Jenjang --</option>
+                    <option value="S1">S1 (Sarjana)</option>
+                    <option value="S2">S2 (Magister)</option>
+                    <option value="S3">S3 (Doktor)</option>
+                    <option value="Profesi">Profesi</option>
+                </select>
+            </div>
+
+            {{-- Fakultas --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Fakultas</label>
+                <select id="adminModalFakultas"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                        disabled>
+                    <option value="">-- Pilih Jenjang Dulu --</option>
+                    @foreach(\App\Models\ProgramStudy::select('fakultas')->distinct()->orderBy('fakultas')->pluck('fakultas') as $fak)
+                        <option value="{{ $fak }}">{{ $fak }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Program Studi --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Program Studi</label>
+                <select id="adminModalProdi"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                        disabled>
+                    <option value="">-- Pilih Fakultas Dulu --</option>
+                </select>
+            </div>
+
+            {{-- Error --}}
+            <p id="adminModalError" class="text-red-600 text-sm hidden"></p>
+        </div>
+
+        {{-- Footer --}}
+        <div class="flex gap-3 px-6 pb-6">
+            <button type="button" onclick="closeModalProdiAdmin()"
+                    class="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors">
+                Batal
+            </button>
+            <button type="button" id="adminModalConfirmBtn" onclick="confirmProdiAdmin()"
+                    class="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors">
+                Pilih
+            </button>
+        </div>
+    </div>
+</div>
 @endsection
