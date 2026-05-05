@@ -20,6 +20,9 @@ class UserController extends Controller
         if ($currentUserRole === 'wr-3' || $currentUserRole === 'keuangan') {
             $query->where('role', 'user');
         }
+        if ($currentUserRole === 'admin' || $currentUserRole === 'admisi' || $currentUserRole === 'dekan' || $currentUserRole === 'pimpinan') {
+            $query->whereNotIn('role', ['super-admin', 'keuangan']);
+        }
 
         if ($request->filled('search')) {
             $search = trim($request->search);
@@ -197,6 +200,12 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $user = User::findOrFail($id);
+
+        if (auth()->user()->role === 'admin' && in_array($user->role, ['super-admin', 'keuangan'])) {
+            return redirect()->route('admin.user.index')
+            ->with('error', 'Anda tidak memiliki akses untuk mengedit user ini.');
+    }
+
         return view('admin.user.edit', compact('user'));
     }
 
@@ -468,6 +477,10 @@ class UserController extends Controller
         if ($user->id === auth()->id()) {
             return redirect()->route('admin.user.index')
                 ->with('error', 'Anda tidak dapat menghapus akun Anda sendiri!');
+        }
+        if (auth()->user()->role === 'admin' && in_array($user->role, ['super-admin', 'keuangan'])) {
+            return redirect()->route('admin.user.index')
+                ->with('error', 'Anda tidak memiliki akses untuk menghapus user ini.');
         }
 
         $user->delete();
