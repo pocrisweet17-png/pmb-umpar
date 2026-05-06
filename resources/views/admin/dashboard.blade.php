@@ -96,20 +96,22 @@
                     {{ $isPimpinan ? 'Disabled' : 'Actions' }}
                 </span>
             </div>
-            <h3 class="text-gray-600 text-sm font-medium mb-3">Quick Actions</h3>
             <div class="space-y-2">
-                <a href="{{ route('admin.soal.create') }}" class="flex items-center text-sm {{ $isPimpinan ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800' }} font-medium group/link">
-                    <svg class="w-4 h-4 mr-2 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Tambah Soal Baru
-                </a>
-                <a href="{{ route('admin.soal.index') }}" class="flex items-center text-sm {{ $isPimpinan ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800' }} font-medium group/link">
-                    <svg class="w-4 h-4 mr-2 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                    Lihat Semua Soal
-                </a>
+            @if(in_array(auth()->user()->role, ['admin', 'super-admin']))
+            <h3 class="text-gray-600 text-sm font-medium mb-3">Quick Actions</h3>
+                    <a href="{{ route('admin.soal.create') }}" class="flex items-center text-sm {{ $isPimpinan ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800' }} font-medium group/link">
+                        <svg class="w-4 h-4 mr-2 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Tambah Soal Baru
+                    </a>
+                    <a href="{{ route('admin.soal.index') }}" class="flex items-center text-sm {{ $isPimpinan ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800' }} font-medium group/link">
+                        <svg class="w-4 h-4 mr-2 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                        Lihat Semua Soal
+                    </a>
+                @endif
             </div>
         </div>
     </div>
