@@ -634,8 +634,8 @@
                                 @if(auth()->user()->role === 'super-admin')
                                     <option value="super-admin" {{ old('role', $user->role) == 'super-admin' ? 'selected' : '' }}>Super Admin</option>
                                     <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                                    <option value="keuangan" {{ old('role', $user->role) == 'keuangan' ? 'selected' : '' }}>keuangan</option>
                                 @endif
-                                <option value="keuangan" {{ old('role', $user->role) == 'keuangan' ? 'selected' : '' }}>keuangan</option>
                                 <option value="wr-3" {{ old('role', $user->role) == 'wr-3' ? 'selected' : '' }}>Wakil rektor 3</option>
                                 <option value="admisi" {{ old('role', $user->role) == 'admisi' ? 'selected' : '' }}>admisi</option>
                                 <option value="dekan" {{ old('role', $user->role) == 'dekan' ? 'selected' : '' }}>Dekan Fakultas</option>
