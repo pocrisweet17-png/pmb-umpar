@@ -151,12 +151,6 @@ class UserController extends Controller
             'pilihan_2'         => $request->input('role') === 'user' ? 'required|string|max:50' : 'nullable|string|max:50',
 
             'is_prodi_selected'    => 'nullable|boolean',
-            'is_bayar_pendaftaran' => 'nullable|boolean',
-            'is_data_completed'    => 'nullable|boolean',
-            'is_dokumen_uploaded'  => 'nullable|boolean',
-            'is_tes_selesai'       => 'nullable|boolean',
-            'is_ukt_paid'          => 'nullable|boolean',
-            'is_daftar_ulang'      => 'nullable|boolean',
             'is_verified'          => 'nullable|boolean',
 
         ]);

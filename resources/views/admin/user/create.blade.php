@@ -147,23 +147,24 @@
 
                         {{-- Admin (super-admin only) --}}
                         @if(auth()->user()->role === 'super-admin')
-                        <label class="role-option relative flex flex-col items-center gap-2 p-4 bg-white rounded-xl border-2 border-gray-200 cursor-pointer hover:border-purple-300 hover:shadow-sm" data-role="admin">
-                            <input type="radio" name="role" value="admin" {{ old('role') == 'admin' ? 'checked' : '' }} class="sr-only">
-                            <svg class="role-icon w-6 h-6 text-gray-500 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                            </svg>
-                            <span class="role-label text-sm font-medium text-gray-600 text-center">Admin</span>
-                        </label>
-                        @endif
+                            <label class="role-option relative flex flex-col items-center gap-2 p-4 bg-white rounded-xl border-2 border-gray-200 cursor-pointer hover:border-purple-300 hover:shadow-sm" data-role="admin">
+                                <input type="radio" name="role" value="admin" {{ old('role') == 'admin' ? 'checked' : '' }} class="sr-only">
+                                <svg class="role-icon w-6 h-6 text-gray-500 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                                <span class="role-label text-sm font-medium text-gray-600 text-center">Admin</span>
+                            </label>
+                        
 
-                        {{-- Keuangan --}}
-                        <label class="role-option relative flex flex-col items-center gap-2 p-4 bg-white rounded-xl border-2 border-gray-200 cursor-pointer hover:border-purple-300 hover:shadow-sm" data-role="keuangan">
-                            <input type="radio" name="role" value="keuangan" {{ old('role') == 'keuangan' ? 'checked' : '' }} class="sr-only">
-                            <svg class="role-icon w-6 h-6 text-gray-500 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span class="role-label text-sm font-medium text-gray-600 text-center">Keuangan</span>
-                        </label>
+                            {{-- Keuangan --}}
+                            <label class="role-option relative flex flex-col items-center gap-2 p-4 bg-white rounded-xl border-2 border-gray-200 cursor-pointer hover:border-purple-300 hover:shadow-sm" data-role="keuangan">
+                                <input type="radio" name="role" value="keuangan" {{ old('role') == 'keuangan' ? 'checked' : '' }} class="sr-only">
+                                <svg class="role-icon w-6 h-6 text-gray-500 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="role-label text-sm font-medium text-gray-600 text-center">Keuangan</span>
+                            </label>
+                        @endif
 
                         {{-- Admisi --}}
                         <label class="role-option relative flex flex-col items-center gap-2 p-4 bg-white rounded-xl border-2 border-gray-200 cursor-pointer hover:border-purple-300 hover:shadow-sm" data-role="admisi">
@@ -372,38 +373,10 @@
                         </h4>
                         <p class="text-xs text-gray-500 mb-4 ml-10">Centang tahapan yang sudah diselesaikan</p>
 
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                            <label class="progress-chip flex items-center gap-2 cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2.5">
+                        <div class="grid gap-2.5">
+                            <label class="progress-chip flex items-center gap-2 cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2.5 w-auto">
                                 <input type="checkbox" name="is_prodi_selected" value="1" {{ old('is_prodi_selected') ? 'checked' : '' }} class="w-4 h-4 text-teal-600 rounded border-gray-300 focus:ring-teal-500">
                                 <span class="text-xs text-gray-600">Pilih Prodi</span>
-                            </label>
-                            <label class="progress-chip flex items-center gap-2 cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2.5">
-                                <input type="checkbox" name="is_bayar_pendaftaran" value="1" {{ old('is_bayar_pendaftaran') ? 'checked' : '' }} class="w-4 h-4 text-teal-600 rounded border-gray-300 focus:ring-teal-500">
-                                <span class="text-xs text-gray-600">Bayar Daftar</span>
-                            </label>
-                            <label class="progress-chip flex items-center gap-2 cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2.5">
-                                <input type="checkbox" name="is_data_completed" value="1" {{ old('is_data_completed') ? 'checked' : '' }} class="w-4 h-4 text-teal-600 rounded border-gray-300 focus:ring-teal-500">
-                                <span class="text-xs text-gray-600">Data Pribadi</span>
-                            </label>
-                            <label class="progress-chip flex items-center gap-2 cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2.5">
-                                <input type="checkbox" name="is_dokumen_uploaded" value="1" {{ old('is_dokumen_uploaded') ? 'checked' : '' }} class="w-4 h-4 text-orange-500 rounded border-gray-300 focus:ring-orange-500">
-                                <span class="text-xs text-gray-600">Upload Dok</span>
-                            </label>
-                            <label class="progress-chip flex items-center gap-2 cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2.5">
-                                <input type="checkbox" name="is_tes_selesai" value="1" {{ old('is_tes_selesai') ? 'checked' : '' }} class="w-4 h-4 text-orange-500 rounded border-gray-300 focus:ring-orange-500">
-                                <span class="text-xs text-gray-600">Tes Selesai</span>
-                            </label>
-                            <label class="progress-chip flex items-center gap-2 cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2.5">
-                                <input type="checkbox" name="is_wawancara_selesai" value="1" {{ old('is_wawancara_selesai') ? 'checked' : '' }} class="w-4 h-4 text-orange-500 rounded border-gray-300 focus:ring-orange-500">
-                                <span class="text-xs text-gray-600">Wawancara</span>
-                            </label>
-                            <label class="progress-chip flex items-center gap-2 cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2.5">
-                                <input type="checkbox" name="is_ukt_paid" value="1" {{ old('is_ukt_paid') ? 'checked' : '' }} class="w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500">
-                                <span class="text-xs text-gray-600">Bayar UKT</span>
-                            </label>
-                            <label class="progress-chip flex items-center gap-2 cursor-pointer bg-white border border-gray-200 rounded-lg px-3 py-2.5">
-                                <input type="checkbox" name="is_daftar_ulang" value="1" {{ old('is_daftar_ulang') ? 'checked' : '' }} class="w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500">
-                                <span class="text-xs text-gray-600">Daftar Ulang</span>
                             </label>
                         </div>
                     </div>
@@ -747,7 +720,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <option value="S1">S1 (Sarjana)</option>
                     <option value="S2">S2 (Magister)</option>
                     <option value="S3">S3 (Doktor)</option>
-                    <option value="Profesi">Profesi</option>
                 </select>
             </div>
 
