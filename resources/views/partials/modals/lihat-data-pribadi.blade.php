@@ -1,6 +1,21 @@
-{{-- Modal Lihat Data Pribadi --}}
-{{-- ENHANCED VERSION - Smooth animations, better UX --}}
+@php
+    $fotoBase64 = null;
+    $foto = $user->dokumens->where('jenisDokumen', 'Pas Foto 3x4')->first();
 
+    if ($foto && $foto->urlFile) {
+        $path = public_path('storage/' . $foto->urlFile);
+
+        if (file_exists($path)) {
+            $mime = mime_content_type($path);
+            $data = base64_encode(file_get_contents($path));
+            $fotoBase64 = "data:{$mime};base64,{$data}";
+        }
+    }
+@endphp
+
+@if($foto)
+    <div style="display:none" id="debug-path">{{ $foto->urlFile }}</div>
+@endif
 <style>
     @keyframes modalFadeIn {
         from { opacity: 0; }
@@ -307,15 +322,28 @@
 
                 {{-- Modal Footer --}}
                 <div class="flex items-center justify-between gap-3 px-6 py-4 border-t border-gray-100 bg-white">
-                    <button 
-                        type="button" 
-                        onclick="printDataPribadi()" 
-                        class="print-btn-hover px-6 py-2.5 bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 hover:border-blue-500 rounded-xl text-sm font-semibold flex items-center gap-2 active:scale-[0.98] transition-all duration-200">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                        </svg>
-                        Cetak PDF
-                    </button>
+                        @if($user->is_ukt_paid)
+                        <button 
+                            type="button" 
+                            onclick="printDataPribadi()" 
+                            class="print-btn-hover px-6 py-2.5 bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 hover:border-blue-500 rounded-xl text-sm font-semibold flex items-center gap-2 active:scale-[0.98] transition-all duration-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                            </svg>
+                            Cetak PDF
+                        </button>
+                    @else
+                        <button 
+                            type="button" 
+                            disabled
+                            title="Selesaikan pendaftaran hingga step 7 (Bayar UKT) untuk mencetak"
+                            class="px-6 py-2.5 bg-gray-100 text-gray-400 border-2 border-gray-200 rounded-xl text-sm font-semibold flex items-center gap-2 cursor-not-allowed">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                            </svg>
+                            Cetak PDF
+                        </button>
+                    @endif
                     <button 
                         type="button" 
                         onclick="closeModalLihatDataPribadi()" 
@@ -375,21 +403,19 @@ function generateNomorSK(nomorRegistrasi) {
 // PRINT DOKUMEN
 // ===============================
 function printDataPribadi() {
-
-    const namaLengkap = "{{ $user->nama_lengkap ?? $user->name ?? '-' }}";
-    const nomorRegistrasi = "{{ $user->nomor_registrasi ?? '-' }}";
-    const nik = "{{ $user->nik ?? '-' }}";
-    const nim = "{{ $user->nim ?? '-' }}";
-    const jurusan = "{{ $user->namaProdiPilihan1 ?? $user->pilihan_1 ?? '-' }}";
-    const jenjang = "{{ $user->programStudiPilihan1->jenjang ?? '-' }}";
-    const fotoMahasiswa = @json($user->foto_mahasiswa);
     
+    const fotoBase64      = @json($fotoBase64);
+    const namaLengkap     = "{{ $user->nama_lengkap ?? '-' }}";
+    const nomorRegistrasi = "{{ $user->nomor_registrasi ?? '-' }}";
+    const nik             = "{{ $user->nik ?? '-' }}";
+    const nim             = "{{ $user->nim ?? '-' }}";
+    const jurusan         = "{{ optional($user->programStudiPilihan1)->namaProdi ?? $user->pilihan_1 ?? '-' }}";
+    const jenjang         = "{{ optional($user->programStudiPilihan1)->jenjang ?? '-' }}";
+
     const urlVerifikasi = `https://pmb.magguru-it.web.id/verifikasi.php?sk=${nomorRegistrasi}`;
-
     const nomorSK = generateNomorSK(nomorRegistrasi);
-    const qrData = `NIK: ${nik}\nNO SK: ${nomorSK}`;
-    const printWindow = window.open('', '_blank');
 
+    const printWindow = window.open('', '_blank');
     const printContent = `
 <!DOCTYPE html>
 <html>
@@ -569,7 +595,11 @@ dengan ini ditetapkan bahwa calon mahasiswa berikut:
 
 <td width="30%" align="center" valign="top">
 <div class="foto-box">
-     ${ $dokumen->urlFile ? `<img src="${fotoMahasiswa}">`: `FOTO<br>3 x 4` }
+     
+     ${ fotoBase64 
+            ? `<img src="${fotoBase64}" style="width:100%;height:100%;object-fit:cover;">` 
+            : `<div style="padding-top:60px;font-size:10pt;">FOTO<br>3 x 4</div>` 
+        }
 </div>
 </td>
 </tr>
