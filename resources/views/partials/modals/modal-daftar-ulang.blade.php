@@ -131,8 +131,12 @@
                     
                     <div class="pl-11">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">
-                             Bukti Pembayaran Pendaftaran Ulang (format PDF) <span class="text-red-500">*</span>
+                             PENGUMUMAN HASIL SELEKSI(format PDF) <span class="text-red-500">*</span>
                         </label>
+                        <p class="text-xs text-gray-500 mb-2">
+                            Anda dapat mendapatkannya di halaman 
+                            <span class="font-semibold text-gray-700">Data Pribadi</span>.
+                        </p>
                         
                         @if(isset($mahasiswa) && $mahasiswa->is_daftar_ulang && $mahasiswa->bukti_pembayaran)
                             <div class="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
