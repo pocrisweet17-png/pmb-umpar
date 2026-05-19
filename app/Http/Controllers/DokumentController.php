@@ -20,9 +20,16 @@ class DokumentController extends Controller
     {
         // Validasi
         $request->validate([
-            'dokumen.*' => 'required|file|max:5120', // max 5MB
-        ]);
-
+                'dokumen.ijazah'   => 'required|file|mimes:pdf|max:5120',
+                'dokumen.nilai_un' => 'required|file|mimes:pdf|max:5120',
+                'dokumen.akte'     => 'required|file|mimes:pdf|max:5120',
+                'dokumen.kk'       => 'required|file|mimes:pdf|max:5120',
+                'dokumen.foto'     => 'required|file|mimes:jpg,jpeg|max:2048', // 2MB
+            ], [
+                'dokumen.foto.required' => 'Pas Foto wajib diupload!',
+                'dokumen.foto.mimes'    => 'Pas Foto harus berformat JPG/JPEG!',
+                'dokumen.foto.max'      => 'Pas Foto maksimal 2MB!',
+            ]);
         $user = Auth::user();
 
         try {
@@ -45,17 +52,25 @@ class DokumentController extends Controller
                 'akte'     => 'Akte Kelahiran',
                 'kk'       => 'Kartu Keluarga',
                 'foto'     => 'Pas Foto 3x4',
+                'daftar_ulang' => 'bukti daftar ulang'
             ];
 
             // Upload setiap dokumen
             foreach ($request->file('dokumen') as $jenis => $file) {
+                if (!$file || !$file->isValid()) {
+                    Log::error("File tidak valid untuk: {$jenis}", [
+                        'user_id' => $user->id,
+                        'error_code' => $file ? $file->getError() : 'file is null'
+                    ]);
+                    throw new \Exception("File {$jenis} tidak valid atau gagal terupload");
+                }
                 
                 $timestamp = now()->format('YmdHis');
                 $namaFile = "{$jenis}_{$user->id}_{$timestamp}." . $file->getClientOriginalExtension();
                 $format   = $file->getClientOriginalExtension();
 
                 // Store file
-                $path = $file->storeAs('dokumen', $namaFile, 'public');
+                $path = $file->storeAs('dokumen/' . $jenis, $namaFile, 'public');
 
                 // Simpan ke database
                 Dokumen::create([

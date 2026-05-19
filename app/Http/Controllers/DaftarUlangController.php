@@ -69,7 +69,7 @@ class DaftarUlangController extends Controller
         try {
             $file = $request->file('bukti_pembayaran');
             $fileName = 'bukti_' . $validated['nim'] . '_' . time() . '.pdf';
-            $filePath = $file->storeAs('bukti-pembayaran', $fileName, 'public');
+            $filePath = $file->storeAs('dokumen/bukti_pembayaran', $fileName, 'public');
             Log::info('File uploaded:', ['path' => $filePath]);
         } catch (\Exception $e) {
             Log::error('File upload error: ' . $e->getMessage());
