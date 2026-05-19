@@ -66,7 +66,8 @@ class PendaftaranController extends Controller
                 // CREATE data baru
                 $registrasi = Registrasi::create([
                     'user_id'              => $user->id,
-                    'nomorPendaftaran'     => $user->nomor_registrasi,
+                    'namaLengkap'          => $user->nama_lengkap,
+                    'nomorPendaftaran'     => $user->nomor_registrasi ?? 'UMPAR-REG-' . $user->id . '-' . date('YmdHis'),
                     'programStudiPilihan'  => $user->pilihan_1 ?? null,
                     'tanggalDaftar'        => now(),
                     'statusRegistrasi'     => 'pending',
