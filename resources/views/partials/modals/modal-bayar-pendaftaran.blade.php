@@ -124,7 +124,7 @@
                                 <p class="text-gray-500 mb-6 text-center">Klik metode yang ingin Anda gunakan</p>
 
                                 <!-- Grid Metode Pembayaran -->
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 
                                     <!-- QRIS -->
                                     <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition flex flex-col items-center gap-2 group"
@@ -141,7 +141,7 @@
                                     </button>
 
                                     <!-- GoPay -->
-                                    <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition flex flex-col items-center gap-2 group"
+                                    {{-- <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition flex flex-col items-center gap-2 group"
                                             data-metode="gopay">
                                         <div class="w-12 h-12 flex items-center justify-center">
                                             <img
@@ -152,10 +152,10 @@
                                         </div>
                                         <span class="text-sm font-semibold text-gray-700 group-hover:text-green-700">GoPay</span>
                                         <span class="text-xs text-gray-400">Gojek</span>
-                                    </button>
+                                    </button> --}}
 
                                     <!-- ShopeePay -->
-                                    <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition flex flex-col items-center gap-2 group"
+                                    {{-- <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition flex flex-col items-center gap-2 group"
                                             data-metode="shopeepay">
                                         <div class="w-12 h-12 flex items-center justify-center">
                                             <img
@@ -166,10 +166,10 @@
                                         </div>
                                         <span class="text-sm font-semibold text-gray-700 group-hover:text-orange-700">ShopeePay</span>
                                         <span class="text-xs text-gray-400">Shopee</span>
-                                    </button>
+                                    </button> --}}
 
                                     <!-- Dana -->
-                                    <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition flex flex-col items-center gap-2 group"
+                                    {{-- <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition flex flex-col items-center gap-2 group"
                                             data-metode="dana">
                                         <div class="w-12 h-12 flex items-center justify-center">
                                             <img
@@ -180,10 +180,10 @@
                                         </div>
                                         <span class="text-sm font-semibold text-gray-700 group-hover:text-orange-700">Dana</span>
                                         <span class="text-xs text-gray-400">Dana</span>
-                                    </button>
+                                    </button> --}}
 
                                      <!-- Alfamart -->
-                                    <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition flex flex-col items-center gap-2 group"
+                                    {{-- <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition flex flex-col items-center gap-2 group"
                                             data-metode="alfamart">
                                         <div class="w-12 h-12 flex items-center justify-center">
                                             <img
@@ -194,7 +194,7 @@
                                         </div>
                                         <span class="text-sm font-semibold text-gray-700 group-hover:text-orange-700">Alfamart</span>
                                         <span class="text-xs text-gray-400">Alfamart</span>
-                                    </button>
+                                    </button> --}}
 
                                     <!-- Bank Transfer -->
                                     <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition flex flex-col items-center gap-2 group"
@@ -305,7 +305,7 @@
             </div>
             <h3 class="text-xl font-bold text-gray-900 mb-2">Pembayaran Berhasil!</h3>
             <p class="text-gray-600 mb-4">Pembayaran pendaftaran Anda telah berhasil diverifikasi.</p>
-            <button onclick="closeSuccessPopupAndReload()" class="w-full py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-semibold">
+            <button onclick="closeSuccessPopup()" class="w-full py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition font-semibold">
                 Tutup dan Lanjutkan
             </button>
         </div>
@@ -324,7 +324,7 @@
             </div>
             <h3 class="text-xl font-bold text-gray-900 mb-2">Pembayaran Tunai Terdaftar!</h3>
             <p class="text-gray-600 mb-4">Silakan datang ke kampus untuk melakukan pembayaran. Status akan diverifikasi setelah pembayaran diterima.</p>
-            <button onclick="closeOfflinePopupAndReload()" class="w-full py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition font-semibold">
+            <button onclick="closeSuccessPopup()" class="w-full py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition font-semibold">
                 Mengerti
             </button>
         </div>
@@ -339,15 +339,17 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Modal script loaded');
     
+    let isProcessingPayment = false;
+    
     const biayaPokok = {{ $biaya_pendaftaran }};
     
     const biayaAdminMapping = {
-        'qris': Math.round(biayaPokok * 0.007), // 0.7%
-        'gopay': Math.round(biayaPokok * 0.02),  // 2%
-        'shopeepay': Math.round(biayaPokok * 0.02),  // 2%
-        'dana': Math.round(biayaPokok * 0.015),  // 1.5% 
-        'bank_transfer': 4000,
-        'alfamart': 5000,
+        'qris': Math.round(biayaPokok * 0.007 * 1.12), // 0.7%
+        // 'gopay': Math.round(biayaPokok * 0.02),  // 2%
+        // 'shopeepay': Math.round(biayaPokok * 0.02),  // 2%
+        // 'dana': Math.round(biayaPokok * 0.015),  // 1.5% 
+        'bank_transfer': 4500,
+        // 'alfamart': 5000,
         'all': 0
     };
 
@@ -372,7 +374,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         totalBayarText.textContent = formatRupiah(total);
     }
-    // ⭐ AKHIR BIAYA ADMIN
     
     // Tab switching
     document.querySelectorAll(".tab-btn-bayar").forEach(btn => {
@@ -390,18 +391,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ⭐ PAYMENT PER METODE HANDLER (DIUPDATE)
-    document.querySelectorAll('.btn-metode-bayar').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
+document.querySelectorAll('.btn-metode-bayar').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
 
-            const metode = this.dataset.metode;
-            console.log('🔵 Metode dipilih:', metode);
+        if (isProcessingPayment) {
+            console.warn('sedang di proses, bentar yaa');
+            return;
+        }
+        isProcessingPayment = true;
 
-            // ⭐ Update tampilan biaya SEBELUM proses payment
-            updateBiayaTampilan(metode);
+        const metode = this.dataset.metode;
+        console.log(' Metode dipilih:', metode);
 
-            // Highlight tombol yang dipilih
+        updateBiayaTampilan(metode);
+
             document.querySelectorAll('.btn-metode-bayar').forEach(b => {
                 b.classList.remove('border-blue-500', 'bg-blue-50', 'ring-2', 'ring-blue-300');
                 b.classList.remove('border-green-500', 'bg-green-50');
@@ -410,7 +414,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             this.classList.add('ring-2', 'ring-blue-300');
 
-            // Proses pembayaran
             prosesPayment(metode);
         });
     });
@@ -466,20 +469,27 @@ document.addEventListener('DOMContentLoaded', function() {
                         window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=pending';
                     },
                     onError: function(result) {
+                        isProcessingPayment = false;
                         alert('Pembayaran gagal. Silakan coba lagi.');
                     },
                     onClose: function() {
-                        window.location.reload();
+                        // ✅ JANGAN reload — biarkan user pilih metode lain / klik lagi
+                        // Order_id & snap_token sudah di-cache di DB, akan di-reuse
+                        isProcessingPayment = false;
+                        console.log('⚠️ User closed popup, snap token tetap valid 15 menit');
                     }
                 });
-            } else {
-                errorMsg.textContent = data.message || 'Gagal membuat transaksi.';
-                errorDiv.classList.remove('hidden');
-            }
+                } else {
+                    isProcessingPayment = false; 
+                    errorMsg.textContent = data.message || 'Gagal membuat transaksi.';
+                    errorDiv.classList.remove('hidden');
+                }
         })
-        .catch(error => {
+      .catch(error => {
             console.error('Fetch error:', error);
             loadingDiv.classList.add('hidden');
+            
+            isProcessingPayment = false;
 
             document.querySelectorAll('.btn-metode-bayar').forEach(b => {
                 b.disabled = false;
@@ -538,7 +548,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.text();
             })
             .then(text => {
-                console.log('📄 Response text:', text);
+                console.log(' Response text:', text);
                 
                 let data;
                 try {
@@ -620,6 +630,13 @@ function startPaymentPolling(orderId) {
     }, 2000);
 }
 
+function closeSuccessPopup() {
+    document.getElementById('paymentSuccessPopup')?.classList.add('hidden');
+    document.getElementById('offlineSuccessPopup')?.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+    closeModalBayarPendaftaran();
+}
+
 function showSuccessPopup() {
     const popup = document.getElementById('paymentSuccessPopup');
     if (popup) {
@@ -634,14 +651,13 @@ function showOfflineSuccessPopup() {
         popup.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         
-        setTimeout(() => {
-            closeOfflinePopupAndReload();
-        }, 3000);
+        // setTimeout(() => {
+        //     closeOfflinePopupAndReload();
+        // }, 3000);
     } else {
-        console.error('❌ Popup not found, using fallback');
+        console.error(' Popup not found, using fallback');
         alert('Pembayaran offline berhasil didaftarkan!');
         closeModalBayarPendaftaran();
-        window.location.reload();
     }
 }
 

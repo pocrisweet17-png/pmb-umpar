@@ -20,10 +20,13 @@ class Payment extends Model
         'bukti_manual',
         'payload',
         'biaya_ukt',
+        'snap_token',
+        'snap_token_expires_at',
     ];
 
     protected $casts = [
         'jumlah' => 'decimal:2',
+        'snap_token_expires_at' => 'datetime',
     ];
 
     // ========== RELATIONSHIPS ==========

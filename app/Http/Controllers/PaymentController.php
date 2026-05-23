@@ -49,160 +49,220 @@ class PaymentController extends Controller
         return view('bayar.index', compact('user', 'biaya_pendaftaran'));
     }
 
-    /**
-     * Generate Snap Token untuk pembayaran pendaftaran (AJAX)
-     */
+
     public function store(Request $request)
-{
-    Log::info('Store method called', [
-        'user_id' => Auth::id(),
-        'request_data' => $request->all(),
-        'headers' => $request->headers->all()
-    ]);
-    $user = Auth::user();
-
-    Log::info('Payment store called', ['user_id' => $user->id]);
-
-    if ($user->is_bayar_pendaftaran) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Anda sudah menyelesaikan pembayaran pendaftaran.'
-        ], 400);
-    }
-
-    $biaya = BiayaPmb::where('tahun', date('Y'))
-        ->where('kodeProdi', $user->pilihan_1)
-        ->first();
-
-    if (!$biaya) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Biaya pendaftaran tidak ditemukan.'
-        ], 404);
-    }
-
-    $jumlah = $biaya->biaya_pendaftaran;
-
-    // Cek payment yang sudah settlement
-    $settledPayment = Payment::where('user_id', $user->id)
-        ->where('tipe_pembayaran', 'pendaftaran')
-        ->where('status_transaksi', 'settlement')
-        ->first();
-
-    if ($settledPayment) {
-        if (!$user->is_bayar_pendaftaran) {
-            $user->is_bayar_pendaftaran = true;
-            $user->save();
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Pembayaran Anda sudah diverifikasi.'
-        ], 400);
-    }
-
-    // ✅ Cek apakah ada payment pending yang masih aktif (dalam 24 jam terakhir)
-    $existingPayment = Payment::where('user_id', $user->id)
-        ->where('tipe_pembayaran', 'pendaftaran')
-        ->where('status_transaksi', 'pending')
-        ->where('created_at', '>', now()->subDay())
-        ->first();
-
-    $metodeDipilih = $request->input('metode_pembayaran', 'all');
-    $enabledPayments = $this->getEnabledPayments($metodeDipilih);
-    $biayaAdmin = $this->getBiayaAdmin($metodeDipilih, $jumlah);
-    $totalBayar = $jumlah + $biayaAdmin;
-
-    if ($existingPayment) {
-        Log::info('Existing pending payment found, reusing', [
-            'order_id' => $existingPayment->order_id
+    {
+        // Validasi input
+        $request->validate([
+            'metode_pembayaran' => 'nullable|string|in:qris,gopay,shopeepay,dana,bank_transfer,alfamart,all',
         ]);
 
-        try {
-            $snapToken = $this->generateSnapToken(
-                $user,
-                $jumlah,
-                $existingPayment->order_id,
-                $enabledPayments,
-                $biayaAdmin
-            );
+        $user = Auth::user();
 
+        // Guard: user sudah bayar
+        if ($user->is_bayar_pendaftaran) {
             return response()->json([
-                'success'     => true,
-                'snap_token'  => $snapToken,
-                'order_id'    => $existingPayment->order_id,
-                'amount'      => $jumlah,
-                'biaya_admin' => $biayaAdmin,
-                'total'       => $totalBayar,
-                'existing'    => true
-            ]);
+                'success' => false,
+                'message' => 'Anda sudah menyelesaikan pembayaran pendaftaran.'
+            ], 400);
+        }
 
-        } catch (\Exception $e) {
-            Log::error('Midtrans Snap Token Error (existing payment): ' . $e->getMessage(), [
-                'user_id'  => $user->id,
-                'order_id' => $existingPayment->order_id,
-                'trace'    => $e->getTraceAsString()
-            ]);
+        // Ambil biaya dari master
+        $biaya = BiayaPmb::where('tahun', date('Y'))
+            ->where('kodeProdi', $user->pilihan_1)
+            ->first();
+
+        if (!$biaya) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Biaya pendaftaran tidak ditemukan.'
+            ], 404);
+        }
+
+        $jumlah = (int) $biaya->biaya_pendaftaran;
+
+        // Guard: ada payment settlement → sync flag user lalu tolak
+        $settledPayment = Payment::where('user_id', $user->id)
+            ->where('tipe_pembayaran', 'pendaftaran')
+            ->where('status_transaksi', 'settlement')
+            ->first();
+
+        if ($settledPayment) {
+            if (!$user->is_bayar_pendaftaran) {
+                $user->is_bayar_pendaftaran = true;
+                $user->save();
+            }
 
             return response()->json([
                 'success' => false,
+                'sudah_bayar' => true,
+                'message' => 'Anda sudah pernah bayar.'
+            ], 400);
+        }
+
+        // Hitung biaya admin & total
+        $metodeDipilih   = $request->input('metode_pembayaran', 'all');
+        $enabledPayments = $this->getEnabledPayments($metodeDipilih);
+        $biayaAdmin      = (int) $this->getBiayaAdmin($metodeDipilih, $jumlah);
+        $totalBayar      = $jumlah + $biayaAdmin;
+
+        try {
+            return \DB::transaction(function () use ($user, $jumlah, $biayaAdmin, $totalBayar, $enabledPayments, $metodeDipilih) {
+
+                // Cari payment pending dalam 15 menit terakhir
+                $existingPayment = Payment::where('user_id', $user->id)
+                    ->where('tipe_pembayaran', 'pendaftaran')
+                    ->where('status_transaksi', 'pending')
+                    ->where('created_at', '>', now()->subMinutes(15))
+                    ->lockForUpdate()
+                    ->first();
+
+                // ============================================================
+                // ADA PAYMENT PENDING → REUSE atau UPDATE (jangan buat baru)
+                // ============================================================
+                if ($existingPayment) {
+
+                    $sameAmount = (int) $existingPayment->jumlah === $totalBayar;
+
+                    // CASE A: jumlah SAMA + snap_token masih valid → cached response
+                    if ($sameAmount
+                        && $existingPayment->snap_token
+                        && $existingPayment->snap_token_expires_at
+                        && $existingPayment->snap_token_expires_at->isFuture()) {
+
+                        Log::info('Reusing cached snap token', [
+                            'order_id'   => $existingPayment->order_id,
+                            'expires_at' => $existingPayment->snap_token_expires_at,
+                        ]);
+
+                        return response()->json([
+                            'success'     => true,
+                            'snap_token'  => $existingPayment->snap_token,
+                            'order_id'    => $existingPayment->order_id,
+                            'amount'      => $jumlah,
+                            'biaya_admin' => $biayaAdmin,
+                            'total'       => $totalBayar,
+                            'existing'    => true,
+                            'cached'      => true,
+                        ]);
+                    }
+
+                    // CASE B: jumlah BEDA (ganti metode) ATAU snap_token expired
+                    // → Update row yang sama, ganti order_id, generate snap_token baru
+                    //
+                    // Catatan Midtrans: order_id tidak boleh di-reuse dengan gross_amount
+                    // berbeda, jadi kita pakai order_id baru. Tapi di DB tetap 1 row
+                    // (UPDATE, bukan INSERT) supaya tidak menumpuk.
+                    $newOrderId = 'PMB-PD-' . $user->id . '-' . time() . '-' . substr(uniqid(), -4);
+
+                    Log::info('Updating existing payment (method changed or token expired)', [
+                        'old_order_id' => $existingPayment->order_id,
+                        'new_order_id' => $newOrderId,
+                        'old_jumlah'   => (int) $existingPayment->jumlah,
+                        'new_jumlah'   => $totalBayar,
+                        'metode_baru'  => $metodeDipilih,
+                    ]);
+
+                    // Update row sama: ganti order_id, jumlah, reset token
+                    $existingPayment->update([
+                        'order_id'              => $newOrderId,
+                        'jumlah'                => $totalBayar,
+                        'snap_token'            => null,
+                        'snap_token_expires_at' => null,
+                    ]);
+
+                    try {
+                        $snapToken = $this->generateSnapToken(
+                            $user,
+                            $jumlah,
+                            $newOrderId,
+                            $enabledPayments,
+                            $biayaAdmin
+                        );
+
+                        $existingPayment->update([
+                            'snap_token'            => $snapToken,
+                            'snap_token_expires_at' => now()->addMinutes(15),
+                        ]);
+
+                        return response()->json([
+                            'success'     => true,
+                            'snap_token'  => $snapToken,
+                            'order_id'    => $newOrderId,
+                            'amount'      => $jumlah,
+                            'biaya_admin' => $biayaAdmin,
+                            'total'       => $totalBayar,
+                            'existing'    => true,
+                        ]);
+
+                    } catch (\Exception $e) {
+                        Log::error('Midtrans Snap Token Error (update existing): ' . $e->getMessage(), [
+                            'user_id'  => $user->id,
+                            'order_id' => $newOrderId,
+                        ]);
+
+                        throw $e; // rollback transaction
+                    }
+                }
+
+                // ============================================================
+                // TIDAK ADA PAYMENT PENDING → BUAT BARU
+                // ============================================================
+                $orderId = 'PMB-PD-' . $user->id . '-' . time() . '-' . substr(uniqid(), -4);
+
+                $payment = Payment::create([
+                    'user_id'          => $user->id,
+                    'order_id'         => $orderId,
+                    'jumlah'           => $totalBayar,
+                    'tipe_pembayaran'  => 'pendaftaran',
+                    'status_transaksi' => 'pending',
+                ]);
+
+                try {
+                    $snapToken = $this->generateSnapToken($user, $jumlah, $orderId, $enabledPayments, $biayaAdmin);
+
+                    $payment->update([
+                        'snap_token'            => $snapToken,
+                        'snap_token_expires_at' => now()->addMinutes(15),
+                    ]);
+
+                    Log::info('Payment created with snap token cached', [
+                        'order_id'    => $orderId,
+                        'biaya_pokok' => $jumlah,
+                        'biaya_admin' => $biayaAdmin,
+                        'total'       => $totalBayar,
+                        'metode'      => $metodeDipilih,
+                    ]);
+
+                    return response()->json([
+                        'success'     => true,
+                        'snap_token'  => $snapToken,
+                        'order_id'    => $orderId,
+                        'amount'      => $jumlah,
+                        'biaya_admin' => $biayaAdmin,
+                        'total'       => $totalBayar,
+                    ]);
+
+                } catch (\Exception $e) {
+                    Log::error('Midtrans Snap Token Error (new payment): ' . $e->getMessage(), [
+                        'user_id'  => $user->id,
+                        'order_id' => $orderId,
+                    ]);
+
+                    $payment->delete();
+                    throw $e; // rollback transaction
+                }
+            });
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
                 'message' => 'Gagal membuat transaksi pembayaran. Silakan coba lagi.',
-                'error'   => config('app.debug') ? $e->getMessage() : null
+                'error'   => config('app.debug') ? $e->getMessage() : null,
             ], 500);
         }
     }
 
-    // Tidak ada payment pending → buat order baru
-    $orderId = 'PMB-PD-' . $user->id . '-' . time() . '-' . substr(uniqid(), -4);
-
-    $payment = Payment::create([
-        'user_id'          => $user->id,
-        'order_id'         => $orderId,
-        'jumlah'           => $totalBayar,
-        'tipe_pembayaran'  => 'pendaftaran',
-        'status_transaksi' => 'pending',
-    ]);
-
-    Log::info('Payment record created', ['payment_id' => $payment->id, 'order_id' => $orderId]);
-
-    try {
-        $snapToken = $this->generateSnapToken($user, $jumlah, $orderId, $enabledPayments, $biayaAdmin);
-
-        Log::info('Payment with admin fee', [
-            'order_id'    => $orderId,
-            'biaya_pokok' => $jumlah,
-            'biaya_admin' => $biayaAdmin,
-            'total'       => $totalBayar,
-            'metode'      => $metodeDipilih
-        ]);
-
-        Log::info('Snap token generated', ['order_id' => $orderId]);
-
-        return response()->json([
-            'success'     => true,
-            'snap_token'  => $snapToken,
-            'order_id'    => $orderId,
-            'amount'      => $jumlah,
-            'biaya_admin' => $biayaAdmin,
-            'total'       => $totalBayar
-        ]);
-
-    } catch (\Exception $e) {
-        Log::error('Midtrans Snap Token Error: ' . $e->getMessage(), [
-            'user_id'  => $user->id,
-            'order_id' => $orderId,
-            'trace'    => $e->getTraceAsString()
-        ]);
-
-        Payment::where('order_id', $orderId)->delete();
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Gagal membuat transaksi pembayaran. Silakan coba lagi.',
-            'error'   => config('app.debug') ? $e->getMessage() : null
-        ], 500);
-    }
-}
 
     /**
      * Generate Snap Token
@@ -254,20 +314,17 @@ class PaymentController extends Controller
             'callbacks' => [
                 'finish' => route('payment.finish'),
             ],
+            'expiry' => [
+            'start_time' => now()->format('Y-m-d H:i:s O'),
+            'unit'       => 'minutes',
+            'duration'   => 15,
+        ],
         ];
 
         // Tambahkan enabled_payments jika ada
         if ($enabledPayments && is_array($enabledPayments)) {
             $params['enabled_payments'] = $enabledPayments;
         }
-
-        Log::info('Snap Token Params', [
-            'order_id' => $orderId,
-            'biaya_pokok' => $amount,
-            'biaya_admin' => $biayaAdmin,
-            'total' => $totalAmount,
-            'enabled_payments' => $enabledPayments
-        ]);
 
         return Snap::getSnapToken($params);
     }
@@ -442,68 +499,76 @@ class PaymentController extends Controller
     /**
      * Halaman finish setelah pembayaran
      */
-    public function finish(Request $request)
-    {
-        $orderId = $request->query('order_id');
-        $transactionStatus = $request->query('transaction_status');
+public function finish(Request $request)
+{
+    $orderId = $request->query('order_id');
+    $transactionStatus = $request->query('transaction_status');
 
-        Log::info('Payment finish page accessed', [
-            'order_id' => $orderId,
-            'status' => $transactionStatus
-        ]);
+    Log::info('Payment finish page accessed', [
+        'order_id' => $orderId,
+        'status_from_url' => $transactionStatus
+    ]);
 
-        $payment = null;
-        if ($orderId) {
-            $payment = Payment::where('order_id', $orderId)->first();
-            
-            if ($payment) {
-                // PENTING: Update status berdasarkan transaction_status dari Midtrans redirect
-                if (in_array($transactionStatus, ['settlement', 'capture'])) {
-                    // Update payment status jika belum settlement
+    $payment = null;
+    if ($orderId) {
+        $payment = Payment::where('order_id', $orderId)
+            ->where('user_id', Auth::id()) // ✅ pastikan order milik user yang login
+            ->first();
+
+        // ✅ JANGAN trust query string. Verifikasi langsung ke Midtrans API
+        if ($payment && in_array($transactionStatus, ['settlement', 'capture'])) {
+
+            try {
+                // ✅ Verifikasi status real dari Midtrans
+                $midtransStatus = \Midtrans\Transaction::status($orderId);
+                $realStatus = is_object($midtransStatus)
+                    ? $midtransStatus->transaction_status
+                    : ($midtransStatus['transaction_status'] ?? null);
+
+                Log::info('Midtrans verified status', [
+                    'order_id' => $orderId,
+                    'real_status' => $realStatus
+                ]);
+
+                // ✅ Hanya update kalau Midtrans confirm settlement/capture
+                if (in_array($realStatus, ['settlement', 'capture'])) {
+
                     if ($payment->status_transaksi !== 'settlement') {
                         $payment->status_transaksi = 'settlement';
                         $payment->save();
-                        
-                        Log::info('Payment status updated to settlement', ['order_id' => $orderId]);
                     }
-                    
-                    // Update user status
+
                     $user = User::find($payment->user_id);
                     if ($user) {
                         if ($payment->tipe_pembayaran === 'pendaftaran' && !$user->is_bayar_pendaftaran) {
                             $user->is_bayar_pendaftaran = true;
                             $user->save();
-                            Log::info('User is_bayar_pendaftaran updated to TRUE', ['user_id' => $user->id]);
-                        } 
+                            $this->sendPaymentSuccessNotification($user->id, $payment, 'pendaftaran');
+                        }
                         elseif ($payment->tipe_pembayaran === 'ukt' && !$user->is_ukt_paid) {
-                            // ✨ PERBAIKAN: Generate NIM saat finish juga
-                            Log::info('🎯 Processing UKT settlement at finish page', [
-                                'user_id' => $user->id,
-                                'order_id' => $orderId
-                            ]);
-                            
                             $bayarUktController = app(\App\Http\Controllers\BayarUktController::class);
                             $success = $bayarUktController->processSettlement($payment);
-                            
+
                             if (!$success) {
-                                // Fallback
                                 $user->is_ukt_paid = true;
                                 $user->save();
                             }
-                            
-                            Log::info('User is_ukt_paid updated to TRUE', [
-                                'user_id' => $user->id,
-                                'nim' => $user->fresh()->nim
-                            ]);
                         }
                     }
                 }
+
+            } catch (\Exception $e) {
+                Log::error('Failed to verify Midtrans status at finish', [
+                    'order_id' => $orderId,
+                    'error' => $e->getMessage()
+                ]);
+                // Tidak update status user — biar webhook yang handle nanti
             }
         }
-
-        return view('bayar.finish', compact('payment', 'transactionStatus'));
     }
 
+    return view('bayar.finish', compact('payment', 'transactionStatus'));
+}
     /**
      * Upload bukti transfer manual
      */
