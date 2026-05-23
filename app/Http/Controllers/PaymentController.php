@@ -59,7 +59,6 @@ class PaymentController extends Controller
 
         $user = Auth::user();
 
-        // Guard: user sudah bayar
         if ($user->is_bayar_pendaftaran) {
             return response()->json([
                 'success' => false,
@@ -67,7 +66,6 @@ class PaymentController extends Controller
             ], 400);
         }
 
-        // Ambil biaya dari master
         $biaya = BiayaPmb::where('tahun', date('Y'))
             ->where('kodeProdi', $user->pilihan_1)
             ->first();
@@ -81,7 +79,6 @@ class PaymentController extends Controller
 
         $jumlah = (int) $biaya->biaya_pendaftaran;
 
-        // Guard: ada payment settlement → sync flag user lalu tolak
         $settledPayment = Payment::where('user_id', $user->id)
             ->where('tipe_pembayaran', 'pendaftaran')
             ->where('status_transaksi', 'settlement')
@@ -117,14 +114,10 @@ class PaymentController extends Controller
                     ->lockForUpdate()
                     ->first();
 
-                // ============================================================
-                // ADA PAYMENT PENDING → REUSE atau UPDATE (jangan buat baru)
-                // ============================================================
                 if ($existingPayment) {
 
                     $sameAmount = (int) $existingPayment->jumlah === $totalBayar;
 
-                    // CASE A: jumlah SAMA + snap_token masih valid → cached response
                     if ($sameAmount
                         && $existingPayment->snap_token
                         && $existingPayment->snap_token_expires_at
@@ -147,12 +140,6 @@ class PaymentController extends Controller
                         ]);
                     }
 
-                    // CASE B: jumlah BEDA (ganti metode) ATAU snap_token expired
-                    // → Update row yang sama, ganti order_id, generate snap_token baru
-                    //
-                    // Catatan Midtrans: order_id tidak boleh di-reuse dengan gross_amount
-                    // berbeda, jadi kita pakai order_id baru. Tapi di DB tetap 1 row
-                    // (UPDATE, bukan INSERT) supaya tidak menumpuk.
                     $newOrderId = 'PMB-PD-' . $user->id . '-' . time() . '-' . substr(uniqid(), -4);
 
                     Log::info('Updating existing payment (method changed or token expired)', [
@@ -201,13 +188,10 @@ class PaymentController extends Controller
                             'order_id' => $newOrderId,
                         ]);
 
-                        throw $e; // rollback transaction
+                        throw $e; 
                     }
                 }
 
-                // ============================================================
-                // TIDAK ADA PAYMENT PENDING → BUAT BARU
-                // ============================================================
                 $orderId = 'PMB-PD-' . $user->id . '-' . time() . '-' . substr(uniqid(), -4);
 
                 $payment = Payment::create([
@@ -335,7 +319,7 @@ class PaymentController extends Controller
     public function webhook(Request $request)
     {
         try {
-            Log::info('📥 MIDTRANS WEBHOOK RECEIVED', [
+            Log::info(' MIDTRANS WEBHOOK RECEIVED', [
                 'payload' => $request->all(),
                 'ip' => $request->ip()
             ]);
@@ -349,7 +333,7 @@ class PaymentController extends Controller
             $signature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
             
             if (!hash_equals($signature, $request->signature_key ?? '')) {
-                Log::error('❌ INVALID SIGNATURE', ['order_id' => $orderId]);
+                Log::error(' INVALID SIGNATURE', ['order_id' => $orderId]);
                 return response()->json(['message' => 'Invalid signature'], 403);
             }
 
@@ -357,7 +341,7 @@ class PaymentController extends Controller
             $payment = Payment::where('order_id', $orderId)->first();
 
             if (!$payment) {
-                Log::error('❌ PAYMENT NOT FOUND', ['order_id' => $orderId]);
+                Log::error(' PAYMENT NOT FOUND', ['order_id' => $orderId]);
                 return response()->json(['message' => 'Payment not found'], 404);
             }
 
@@ -365,7 +349,7 @@ class PaymentController extends Controller
             $paymentType = $request->payment_type;
             $fraudStatus = $request->fraud_status ?? '';
 
-            Log::info('🔄 PROCESSING TRANSACTION', [
+            Log::info(' PROCESSING TRANSACTION', [
                 'order_id' => $orderId,
                 'status' => $transactionStatus,
                 'type' => $paymentType,
@@ -399,7 +383,7 @@ class PaymentController extends Controller
                 ]);
             }
 
-            Log::info('✅ WEBHOOK PROCESSED SUCCESSFULLY', [
+            Log::info(' WEBHOOK PROCESSED SUCCESSFULLY', [
                 'order_id' => $orderId,
                 'new_status' => $payment->fresh()->status_transaksi
             ]);
@@ -407,7 +391,7 @@ class PaymentController extends Controller
             return response()->json(['message' => 'Notification processed'], 200);
 
         } catch (\Exception $e) {
-            Log::error('🔥 WEBHOOK ERROR: ' . $e->getMessage(), [
+            Log::error(' WEBHOOK ERROR: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
             return response()->json(['message' => 'Error processing webhook'], 500);
@@ -433,7 +417,7 @@ class PaymentController extends Controller
                 $user->is_bayar_pendaftaran = true;
                 $user->save();
 
-                Log::info('✅ User payment status updated (pendaftaran)', [
+                Log::info(' User payment status updated (pendaftaran)', [
                     'user_id' => $user->id,
                     'order_id' => $payment->order_id
                 ]);
@@ -441,8 +425,7 @@ class PaymentController extends Controller
                 $this->sendPaymentSuccessNotification($user->id, $payment, 'pendaftaran');
             } 
             elseif ($payment->tipe_pembayaran === 'ukt' && !$user->is_ukt_paid) {
-                // ✨ PERBAIKAN: Panggil BayarUktController untuk generate NIM
-                Log::info('🎯 Calling processSettlement for UKT payment', [
+                Log::info(' Calling processSettlement for UKT payment', [
                     'user_id' => $user->id,
                     'order_id' => $payment->order_id
                 ]);
@@ -451,12 +434,12 @@ class PaymentController extends Controller
                 $success = $bayarUktController->processSettlement($payment);
                 
                 if ($success) {
-                    Log::info('✅ UKT settlement processed with NIM generation', [
+                    Log::info('UKT settlement processed with NIM generation', [
                         'user_id' => $user->id,
                         'nim' => $user->fresh()->nim
                     ]);
                 } else {
-                    Log::error('❌ Failed to process UKT settlement', [
+                    Log::error(' Failed to process UKT settlement', [
                         'user_id' => $user->id
                     ]);
                     
@@ -512,14 +495,14 @@ public function finish(Request $request)
     $payment = null;
     if ($orderId) {
         $payment = Payment::where('order_id', $orderId)
-            ->where('user_id', Auth::id()) // ✅ pastikan order milik user yang login
+            ->where('user_id', Auth::id()) // pastikan order milik user yang login
             ->first();
 
-        // ✅ JANGAN trust query string. Verifikasi langsung ke Midtrans API
+        // JANGAN trust query string. Verifikasi langsung ke Midtrans API
         if ($payment && in_array($transactionStatus, ['settlement', 'capture'])) {
 
             try {
-                // ✅ Verifikasi status real dari Midtrans
+                //  Verifikasi status dari Midtrans
                 $midtransStatus = \Midtrans\Transaction::status($orderId);
                 $realStatus = is_object($midtransStatus)
                     ? $midtransStatus->transaction_status
@@ -530,7 +513,6 @@ public function finish(Request $request)
                     'real_status' => $realStatus
                 ]);
 
-                // ✅ Hanya update kalau Midtrans confirm settlement/capture
                 if (in_array($realStatus, ['settlement', 'capture'])) {
 
                     if ($payment->status_transaksi !== 'settlement') {
@@ -562,7 +544,6 @@ public function finish(Request $request)
                     'order_id' => $orderId,
                     'error' => $e->getMessage()
                 ]);
-                // Tidak update status user — biar webhook yang handle nanti
             }
         }
     }
@@ -632,7 +613,7 @@ public function finish(Request $request)
                     $user->save();
                     $this->sendPaymentSuccessNotification($user->id, $payment, 'pendaftaran');
                 } elseif ($payment->tipe_pembayaran === 'ukt' && !$user->is_ukt_paid) {
-                    // ✨ PERBAIKAN: Generate NIM saat polling juga
+                    
                     $bayarUktController = app(\App\Http\Controllers\BayarUktController::class);
                     $bayarUktController->processSettlement($payment);
                     $this->sendPaymentSuccessNotification($user->id, $payment, 'ukt');
@@ -690,7 +671,6 @@ public function finish(Request $request)
                     'existing' => true
                 ], 200);
             }
-            // ✅ AKHIR TAMBAHAN BARU
 
             $biaya = BiayaPmb::where('tahun', date('Y'))
                 ->where('kodeProdi', $user->pilihan_1)

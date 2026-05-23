@@ -337,7 +337,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ Modal script loaded');
+    console.log('Modal script loaded');
     
     let isProcessingPayment = false;
     
@@ -473,7 +473,7 @@ document.querySelectorAll('.btn-metode-bayar').forEach(btn => {
                         alert('Pembayaran gagal. Silakan coba lagi.');
                     },
                     onClose: function() {
-                        // ✅ JANGAN reload — biarkan user pilih metode lain / klik lagi
+                        // JANGAN reload — biarkan user pilih metode lain / klik lagi
                         // Order_id & snap_token sudah di-cache di DB, akan di-reuse
                         isProcessingPayment = false;
                         console.log('⚠️ User closed popup, snap token tetap valid 15 menit');

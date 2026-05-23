@@ -60,10 +60,7 @@
                 <p class="mb-2">Metode pembayaran tersedia:</p>
                 <div class="flex flex-wrap justify-center gap-2">
                     <span class="bg-gray-100 px-3 py-1 rounded">Transfer Bank</span>
-                    <span class="bg-gray-100 px-3 py-1 rounded">GoPay</span>
-                    <span class="bg-gray-100 px-3 py-1 rounded">ShopeePay</span>
                     <span class="bg-gray-100 px-3 py-1 rounded">QRIS</span>
-                    <span class="bg-gray-100 px-3 py-1 rounded">Kartu Kredit</span>
                 </div>
             </div>
 
@@ -97,22 +94,31 @@
         data-client-key="{{ config('midtrans.client_key') }}"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     const payButton = document.getElementById('pay-button');
     const loading = document.getElementById('loading');
     const errorDiv = document.getElementById('error-message');
     const errorText = document.getElementById('error-text');
     
+    // TAMBAHAN: Flag untuk cegah double-click
+    let isProcessingPayment = false;
+    
     if (payButton) {
         payButton.addEventListener('click', function() {
-            // Tampilkan loading
+            
+            //  TAMBAHAN: Cegah spam click
+            if (isProcessingPayment) {
+                console.warn('⚠️ Payment already processing, ignoring click');
+                return;
+            }
+            
+            isProcessingPayment = true;
             loading.classList.remove('hidden');
             errorDiv.classList.add('hidden');
             payButton.disabled = true;
             
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             
-            // Request snap token
             fetch('{{ route("bayar.store") }}', {
                 method: 'POST',
                 headers: {
@@ -127,10 +133,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 payButton.disabled = false;
                 
                 if (data.success && data.snap_token) {
-                    // Store order_id
                     localStorage.setItem('pending_order_id', data.order_id);
                     
-                    // Open Snap popup
+                    // Log kalau snap token di-reuse dari cache
+                    if (data.cached) {
+                        console.log(' Reusing cached snap token (15 min validity)');
+                    } else if (data.existing) {
+                        console.log(' Regenerated snap token for existing order');
+                    } else {
+                        console.log(' New payment created');
+                    }
+                    
                     snap.pay(data.snap_token, {
                         onSuccess: function(result) {
                             console.log('Payment success:', result);
@@ -142,20 +155,24 @@ document.addEventListener('DOMContentLoaded', function() {
                         },
                         onError: function(result) {
                             console.log('Payment error:', result);
+                            isProcessingPayment = false; //  Reset flag
                             errorText.textContent = 'Pembayaran gagal. Silakan coba lagi.';
                             errorDiv.classList.remove('hidden');
                         },
                         onClose: function() {
-                            console.log('Payment popup closed');
+                            console.log('⚠️ User closed popup, snap token tetap valid 15 menit');
+                            isProcessingPayment = false; 
                         }
                     });
                 } else {
+                    isProcessingPayment = false; 
                     errorText.textContent = data.message || 'Gagal membuat transaksi. Silakan coba lagi.';
                     errorDiv.classList.remove('hidden');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
+                isProcessingPayment = false;
                 loading.classList.add('hidden');
                 payButton.disabled = false;
                 errorText.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
