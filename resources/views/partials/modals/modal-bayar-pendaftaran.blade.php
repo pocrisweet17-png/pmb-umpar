@@ -123,6 +123,19 @@
                                 <h3 class="text-xl font-semibold mb-2 text-center">Pilih Metode Pembayaran</h3>
                                 <p class="text-gray-500 mb-6 text-center">Klik metode yang ingin Anda gunakan</p>
 
+                                <div id="bannerLanjutkanBayar" class="hidden mb-4 p-4 bg-yellow-50 border-2 border-yellow-400 rounded-xl shadow-md">
+                                    <div class="flex items-center justify-between gap-3 flex-wrap">
+                                        <div>
+                                            <p class="font-bold text-yellow-800">Pembayaran Belum Selesai</p>
+                                            <p class="text-yellow-700 text-xs mt-1">Klik tombol untuk melanjutkan pembayaran</p>
+                                        </div>
+                                        <button type="button" onclick="lanjutkanBayar()"
+                                                class="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-semibold text-sm shadow">
+                                            Lanjutkan Bayar →
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <!-- Grid Metode Pembayaran -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 
@@ -332,8 +345,7 @@
 </div>
 
 <!-- Midtrans Snap Script -->
-<script src="https://app.{{ config('midtrans.is_production') ? '' : 'sandbox.' }}midtrans.com/snap/snap.js" 
-        data-client-key="{{ config('midtrans.client_key') }}"></script>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -461,24 +473,35 @@ document.querySelectorAll('.btn-metode-bayar').forEach(btn => {
                     localStorage.setItem('pending_payment_type', 'pendaftaran');
                 }
 
+                sessionStorage.setItem('snap_token_pendaftaran', data.snap_token);
+                sessionStorage.setItem('snap_order_id_pendaftaran', data.order_id);
+
                 snap.pay(data.snap_token, {
                     onSuccess: function(result) {
+                        sessionStorage.removeItem('snap_token_pendaftaran');
+                        sessionStorage.removeItem('snap_order_id_pendaftaran');
                         window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=settlement';
                     },
                     onPending: function(result) {
+                        // VA/QRIS sudah dibuat tapi belum dibayar
                         window.location.href = '{{ route("payment.finish") }}?order_id=' + data.order_id + '&transaction_status=pending';
                     },
                     onError: function(result) {
                         isProcessingPayment = false;
+                        // Error → hapus token
+                        sessionStorage.removeItem('snap_token_pendaftaran');
+                        sessionStorage.removeItem('snap_order_id_pendaftaran');
+                        sembunyikanBannerLanjutkan();
                         alert('Pembayaran gagal. Silakan coba lagi.');
                     },
                     onClose: function() {
-                        // JANGAN reload — biarkan user pilih metode lain / klik lagi
-                        // Order_id & snap_token sudah di-cache di DB, akan di-reuse
+                        // ✅ User close popup → tampilkan banner
                         isProcessingPayment = false;
+                        tampilkanBannerLanjutkan();
                         console.log('⚠️ User closed popup, snap token tetap valid 15 menit');
                     }
                 });
+
                 } else {
                     isProcessingPayment = false; 
                     errorMsg.textContent = data.message || 'Gagal membuat transaksi.';
@@ -588,6 +611,13 @@ document.querySelectorAll('.btn-metode-bayar').forEach(btn => {
     if (pendingOrderId && pendingType === 'pendaftaran') {
         startPaymentPolling(pendingOrderId);
     }
+
+    // Tampilkan banner kalau ada snap_token tersimpan dari sesi sebelumnya
+    const savedToken = sessionStorage.getItem('snap_token_pendaftaran');
+    const savedOrderId = sessionStorage.getItem('snap_order_id_pendaftaran');
+    if (savedToken && savedOrderId) {
+        tampilkanBannerLanjutkan();
+    }
 });
 
 // Polling function
@@ -610,16 +640,24 @@ function startPaymentPolling(orderId) {
                 clearInterval(poll);
                 localStorage.removeItem('pending_order_id');
                 localStorage.removeItem('pending_payment_type');
+                // Hapus banner karena sudah bayar
+                sessionStorage.removeItem('snap_token_pendaftaran');
+                sessionStorage.removeItem('snap_order_id_pendaftaran');
+                sembunyikanBannerLanjutkan();
                 showSuccessPopup();
-            } else if (data.status === 'pending' && attempts >= maxAttempts) {
+        } else if (data.status === 'pending' && attempts >= maxAttempts) {
                 clearInterval(poll);
                 alert('Pembayaran masih diproses. Status akan diperbarui secara otomatis.');
-            } else if (['cancel', 'expire', 'deny'].includes(data.status)) {
+        } else if (['cancel', 'expire', 'deny'].includes(data.status)) {
                 clearInterval(poll);
                 localStorage.removeItem('pending_order_id');
                 localStorage.removeItem('pending_payment_type');
+                //  Hapus banner karena pembayaran batal
+                sessionStorage.removeItem('snap_token_pendaftaran');
+                sessionStorage.removeItem('snap_order_id_pendaftaran');
+                sembunyikanBannerLanjutkan();
                 alert(`Pembayaran ${data.status}. Silakan coba lagi.`);
-            }
+        }
         })
         .catch(error => {
             console.error('Polling error:', error);
@@ -689,5 +727,55 @@ function closeModalBayarPendaftaran() {
         modal.classList.add('hidden');
         document.body.style.overflow = 'auto';
     }
+}
+// ============================================================
+// BANNER "LANJUTKAN BAYAR" — helper functions
+// ============================================================
+
+function tampilkanBannerLanjutkan() {
+    const banner = document.getElementById('bannerLanjutkanBayar');
+    if (banner) banner.classList.remove('hidden');
+}
+
+function sembunyikanBannerLanjutkan() {
+    const banner = document.getElementById('bannerLanjutkanBayar');
+    if (banner) banner.classList.add('hidden');
+}
+
+function lanjutkanBayar() {
+    const token   = sessionStorage.getItem('snap_token_pendaftaran');
+    const orderId = sessionStorage.getItem('snap_order_id_pendaftaran');
+
+    if (!token || !orderId) {
+        sembunyikanBannerLanjutkan();
+        alert('Sesi pembayaran sudah berakhir. Silakan pilih metode pembayaran lagi.');
+        return;
+    }
+
+    if (typeof snap === 'undefined') {
+        alert('Mohon muat ulang halaman.');
+        return;
+    }
+
+    // Buka ulang popup Snap dengan token yang sama (tidak hit backend)
+    snap.pay(token, {
+        onSuccess: function(result) {
+            sessionStorage.removeItem('snap_token_pendaftaran');
+            sessionStorage.removeItem('snap_order_id_pendaftaran');
+            window.location.href = '{{ route("payment.finish") }}?order_id=' + orderId + '&transaction_status=settlement';
+        },
+        onPending: function(result) {
+            window.location.href = '{{ route("payment.finish") }}?order_id=' + orderId + '&transaction_status=pending';
+        },
+        onError: function(result) {
+            sembunyikanBannerLanjutkan();
+            sessionStorage.removeItem('snap_token_pendaftaran');
+            sessionStorage.removeItem('snap_order_id_pendaftaran');
+            alert('Pembayaran gagal. Silakan coba lagi.');
+        },
+        onClose: function() {
+            // User close lagi — banner tetap muncul
+        }
+    });
 }
 </script>

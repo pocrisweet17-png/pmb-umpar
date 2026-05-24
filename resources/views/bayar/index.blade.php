@@ -90,8 +90,7 @@
 </div>
 
 <!-- Midtrans Snap Script -->
-<script src="https://app.{{ config('midtrans.is_production') ? '' : 'sandbox.' }}midtrans.com/snap/snap.js" 
-        data-client-key="{{ config('midtrans.client_key') }}"></script>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -108,7 +107,7 @@
             
             //  TAMBAHAN: Cegah spam click
             if (isProcessingPayment) {
-                console.warn('⚠️ Payment already processing, ignoring click');
+                console.warn('Payment already processing, ignoring click');
                 return;
             }
             
@@ -160,7 +159,7 @@
                             errorDiv.classList.remove('hidden');
                         },
                         onClose: function() {
-                            console.log('⚠️ User closed popup, snap token tetap valid 15 menit');
+                            console.log('User closed popup, snap token tetap valid 15 menit');
                             isProcessingPayment = false; 
                         }
                     });

@@ -56,6 +56,10 @@ setTimeout(() => {
     @yield('content')
 
     @stack('scripts')
+    @auth
+<script src="https://app.{{ config('midtrans.is_production') ? '' : 'sandbox.' }}midtrans.com/snap/snap.js" 
+        data-client-key="{{ config('midtrans.client_key') }}"></script>
+@endauth
 
 </body>
 </html>
