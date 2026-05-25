@@ -46,7 +46,14 @@ class PaymentController extends Controller
 
         $biaya_pendaftaran = $biaya->biaya_pendaftaran;
 
-        return view('bayar.index', compact('user', 'biaya_pendaftaran'));
+        $pendingPayment = Payment::where('user_id', $user->id)
+            ->where('tipe_pembayaran', 'pendaftaran')
+            ->where('status_transaksi', 'pending')
+            ->whereNotNull('snap_token')
+            ->where('snap_token_expires_at', '>', now())
+            ->first();
+
+        return view('bayar.index', compact('user', 'biaya_pendaftaran', 'pendingPayment'));
     }
 
 
@@ -106,11 +113,12 @@ class PaymentController extends Controller
         try {
             return \DB::transaction(function () use ($user, $jumlah, $biayaAdmin, $totalBayar, $enabledPayments, $metodeDipilih) {
 
-                // Cari payment pending dalam 15 menit terakhir
+                // Cari payment pending dalam 24 jam terakhir
                 $existingPayment = Payment::where('user_id', $user->id)
                     ->where('tipe_pembayaran', 'pendaftaran')
                     ->where('status_transaksi', 'pending')
-                    ->where('created_at', '>', now()->subMinutes(15))
+                    ->where('created_at', '>', now()->subHours(24))
+                    // ->where('created_at', '>', now()->subMinute(1))
                     ->lockForUpdate()
                     ->first();
 
@@ -137,6 +145,7 @@ class PaymentController extends Controller
                             'total'       => $totalBayar,
                             'existing'    => true,
                             'cached'      => true,
+                            'snap_token_expires_at'=> $existingPayment->snap_token_expires_at?->timestamp * 1000,
                         ]);
                     }
 
@@ -169,7 +178,8 @@ class PaymentController extends Controller
 
                         $existingPayment->update([
                             'snap_token'            => $snapToken,
-                            'snap_token_expires_at' => now()->addMinutes(15),
+                            // 'snap_token_expires_at' => now()->addMinute(1),
+                            'snap_token_expires_at' => now()->addHours(24),
                         ]);
 
                         return response()->json([
@@ -180,6 +190,7 @@ class PaymentController extends Controller
                             'biaya_admin' => $biayaAdmin,
                             'total'       => $totalBayar,
                             'existing'    => true,
+                            'snap_token_expires_at'=> $existingPayment->snap_token_expires_at?->timestamp * 1000,
                         ]);
 
                     } catch (\Exception $e) {
@@ -207,7 +218,8 @@ class PaymentController extends Controller
 
                     $payment->update([
                         'snap_token'            => $snapToken,
-                        'snap_token_expires_at' => now()->addMinutes(15),
+                        'snap_token_expires_at' => now()->addHours(24),
+                        // 'snap_token_expires_at' => now()->addMinute(),
                     ]);
 
                     Log::info('Payment created with snap token cached', [
@@ -225,6 +237,7 @@ class PaymentController extends Controller
                         'amount'      => $jumlah,
                         'biaya_admin' => $biayaAdmin,
                         'total'       => $totalBayar,
+                        'snap_token_expires_at'=> $payment->snap_token_expires_at?->timestamp * 1000,
                     ]);
 
                 } catch (\Exception $e) {
@@ -300,8 +313,8 @@ class PaymentController extends Controller
             ],
             'expiry' => [
             'start_time' => now()->format('Y-m-d H:i:s O'),
-            'unit'       => 'minutes',
-            'duration'   => 15,
+            'unit'       => 'hours',
+            'duration'   => 24,
         ],
         ];
 
@@ -767,12 +780,12 @@ public function finish(Request $request)
     {
         $mapping = [
             'qris'          => ['other_qris'],
-            'gopay'         => ['gopay'],
-            'shopeepay'     => ['shopeepay'],
-            'dana'          => ['dana'],
-            'bank_transfer' => ['bank_transfer', 'bca_va', 'bni_va', 'bri_va', 'permata_va', 'echannel'],
-            'alfamart'      => ['alfamart'],   
-            'all'           => ['gopay', 'shopeepay', 'other_qris', 'bank_transfer', 'bca_va', 'bni_va', 'bri_va'],
+            // 'gopay'         => ['gopay'],
+            // 'shopeepay'     => ['shopeepay'],
+            // 'dana'          => ['dana'],
+            'bank_transfer' => ['bri_va', 'bni_va', 'echannel'],
+            // 'alfamart'      => ['alfamart'],   
+            // 'all'           => ['gopay', 'shopeepay', 'other_qris', 'bank_transfer', 'bca_va', 'bni_va', 'bri_va'],
         ];
 
         return $mapping[$metode] ?? $mapping['all'];

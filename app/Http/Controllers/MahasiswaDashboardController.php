@@ -8,6 +8,7 @@ use App\Models\BiayaPmb;
 use App\Models\FormulirPendaftaran;
 use App\Models\Mahasiswa;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Payment;
 
 class MahasiswaDashboardController extends Controller
 {
@@ -113,6 +114,13 @@ class MahasiswaDashboardController extends Controller
             }
         }
 
+        $pendingPayment = Payment::where('user_id', $user->id)
+            ->where('tipe_pembayaran', 'pendaftaran')
+            ->where('status_transaksi', 'pending')
+            ->whereNotNull('snap_token')
+            ->where('snap_token_expires_at', '>', now())
+            ->first();
+
         return view('mahasiswa.dashboard', compact(
             'steps',
             'percent',
@@ -122,7 +130,8 @@ class MahasiswaDashboardController extends Controller
             'registrasi',
             'formulir',
             'biaya_pendaftaran',
-            'biaya_ukt'
+            'biaya_ukt',
+            'pendingPayment'
         ));
     }
 

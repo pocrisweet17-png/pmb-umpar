@@ -127,7 +127,10 @@
                                     <div class="flex items-center justify-between gap-3 flex-wrap">
                                         <div>
                                             <p class="font-bold text-yellow-800">Pembayaran Belum Selesai</p>
-                                            <p class="text-yellow-700 text-xs mt-1">Klik tombol untuk melanjutkan pembayaran</p>
+                                            <p class="text-yellow-700 text-xs mt-1">
+                                                Klik tombol untuk melanjutkan pembayaran
+                                                &bull; Pembayaran berakhir : <span id="snapTokenCountdown" class="font-semibold tabular-nums"></span>
+                                            </p>
                                         </div>
                                         <button type="button" onclick="lanjutkanBayar()"
                                                 class="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-semibold text-sm shadow">
@@ -138,7 +141,6 @@
 
                                 <!-- Grid Metode Pembayaran -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-
                                     <!-- QRIS -->
                                     <button type="button" class="btn-metode-bayar p-4 border-2 border-gray-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition flex flex-col items-center gap-2 group"
                                             data-metode="qris">
@@ -354,6 +356,15 @@ document.addEventListener('DOMContentLoaded', function() {
     let isProcessingPayment = false;
     
     const biayaPokok = {{ $biaya_pendaftaran }};
+
+    const serverSnapExpiry = @json($pendingPayment?->snap_token_expires_at?->timestamp * 1000 ?? null);
+        if (serverSnapExpiry && serverSnapExpiry > Date.now()) {
+
+            sessionStorage.setItem('snap_token_pendaftaran', @json($pendingPayment?->snap_token ?? ''));
+            sessionStorage.setItem('snap_order_id_pendaftaran', @json($pendingPayment?->order_id ?? ''));
+            tampilkanBannerLanjutkan();
+            startTokenCountdown(serverSnapExpiry);
+    }
     
     const biayaAdminMapping = {
         'qris': Math.round(biayaPokok * 0.007 * 1.12), // 0.7%
@@ -434,6 +445,7 @@ document.querySelectorAll('.btn-metode-bayar').forEach(btn => {
         const loadingDiv = document.getElementById('loadingPayment');
         const errorDiv = document.getElementById('errorPayment');
         const errorMsg = document.getElementById('errorMessage');
+        sessionStorage.setItem('snap_metode_pendaftaran', metode);
 
         loadingDiv.classList.remove('hidden');
         errorDiv.classList.add('hidden');
@@ -475,6 +487,10 @@ document.querySelectorAll('.btn-metode-bayar').forEach(btn => {
 
                 sessionStorage.setItem('snap_token_pendaftaran', data.snap_token);
                 sessionStorage.setItem('snap_order_id_pendaftaran', data.order_id);
+
+                if (data.snap_token_expires_at) {
+                    startTokenCountdown(data.snap_token_expires_at * 1000); // konversi ke ms jika server kirim timestamp detik
+                }
 
                 snap.pay(data.snap_token, {
                     onSuccess: function(result) {
@@ -762,6 +778,7 @@ function lanjutkanBayar() {
         onSuccess: function(result) {
             sessionStorage.removeItem('snap_token_pendaftaran');
             sessionStorage.removeItem('snap_order_id_pendaftaran');
+            sessionStorage.removeItem('snap_metode_pendaftaran');
             window.location.href = '{{ route("payment.finish") }}?order_id=' + orderId + '&transaction_status=settlement';
         },
         onPending: function(result) {
@@ -771,11 +788,62 @@ function lanjutkanBayar() {
             sembunyikanBannerLanjutkan();
             sessionStorage.removeItem('snap_token_pendaftaran');
             sessionStorage.removeItem('snap_order_id_pendaftaran');
+            sessionStorage.removeItem('snap_metode_pendaftaran');
             alert('Pembayaran gagal. Silakan coba lagi.');
         },
         onClose: function() {
             // User close lagi — banner tetap muncul
         }
     });
+}
+
+// TOKEN EXPIRY — lock tombol selama snap token masih aktif
+let _tokenExpiryTimer = null;
+
+function startTokenCountdown(expiresAtMs) {
+    clearInterval(_tokenExpiryTimer);
+    _lockPaymentButtons();
+
+    const tick = () => {
+        const remaining = expiresAtMs - Date.now();
+        _updateCountdownDisplay(remaining);
+
+        if (remaining <= 0) {
+            clearInterval(_tokenExpiryTimer);
+            _unlockPaymentButtons();
+            sembunyikanBannerLanjutkan();
+            sessionStorage.removeItem('snap_token_pendaftaran');
+            sessionStorage.removeItem('snap_order_id_pendaftaran');
+        }
+    };
+
+    tick(); // jalankan langsung sekali
+    _tokenExpiryTimer = setInterval(tick, 1000);
+}
+
+function _lockPaymentButtons() {
+    document.querySelectorAll('.btn-metode-bayar').forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+        btn.title = 'Selesaikan pembayaran yang sedang berlangsung terlebih dahulu';
+    });
+}
+
+function _unlockPaymentButtons() {
+    document.querySelectorAll('.btn-metode-bayar').forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        btn.title = '';
+    });
+}
+
+function _updateCountdownDisplay(remainingMs) {
+    const el = document.getElementById('snapTokenCountdown');
+    if (!el) return;
+    if (remainingMs <= 0) { el.textContent = ''; return; }
+    const h = Math.floor(remainingMs / 3600000);
+    const m = Math.floor((remainingMs % 3600000) / 60000);
+    const s = Math.floor((remainingMs % 60000) / 1000);
+    el.textContent = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 </script>
