@@ -53,6 +53,7 @@
     @endif
 
     <!-- Header Section -->
+     @if(!$isWr3)
     <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-100">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
@@ -70,9 +71,11 @@
             </a>
         </div>
     </div>
+    @endif
     
     <!-- Search & Filter Section -->
     <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          @if(!$isWr3)
         <form method="GET" action="{{ route('admin.user.index') }}" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <!-- Search Input -->
@@ -263,6 +266,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <!-- Table Section -->
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
